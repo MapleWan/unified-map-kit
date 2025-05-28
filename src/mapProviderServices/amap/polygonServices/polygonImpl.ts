@@ -8,7 +8,7 @@ declare const AMap: any;
 
 export class PolygonManager {
   // 添加多边形
-  async zvosAddPolygon(options: IUnifiedPolygonOptions): Promise<any> {
+  async addPolygon(options: IUnifiedPolygonOptions): Promise<any> {
     if (!options.map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -57,7 +57,7 @@ export class PolygonManager {
     return Promise.resolve(polygon);
   }
   // 删除多边形
-  zvosRemovePolygon(map: any, polygon: any): void {
+  removePolygon(map: any, polygon: any): void {
     if (!map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -68,7 +68,7 @@ export class PolygonManager {
   }
 
   // 添加圆
-  async zvosAddCircle(options: IUnifiedCircleOptions) {
+  async addCircle(options: IUnifiedCircleOptions) {
     if (!options.map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -102,7 +102,7 @@ export class PolygonManager {
     return Promise.resolve(circle);
   }
   // 删除圆
-  zvosRemoveCircle(map: any, circle: any) {
+  removeCircle(map: any, circle: any) {
     if (!map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -113,7 +113,7 @@ export class PolygonManager {
   }
 
   // 添加矩形
-  async zvosAddRectangle(options: IUnifiedRectangleOptions) {
+  async addRectangle(options: IUnifiedRectangleOptions) {
     if (!options.map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -156,7 +156,7 @@ export class PolygonManager {
     return Promise.resolve(rectangle);
   }
   // 删除矩形
-  zvosRemoveRectangle(map: any, rectangle: any) {
+  removeRectangle(map: any, rectangle: any) {
     if (!map) {
       throw new Error("Parameter 'map' is required");
     }

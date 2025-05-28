@@ -17,7 +17,8 @@ export default defineConfig({
   },
   plugins: [dts()],
   server: {
-    open: '/demo/index.html',
+    open: '/demo/1_map_init.html',
+    // open: '/demo/2_setCenter_setZoom.html',
     hmr: false // 禁用热模块替换
   }
 })

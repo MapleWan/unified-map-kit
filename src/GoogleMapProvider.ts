@@ -6,9 +6,7 @@
  * @FilePath: /Map/src/GoogleMapProvider.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { Loader } from "@googlemaps/js-api-loader";
 import {
-  IMapInitOption,
   IUnifiedMapMarkerOptions,
   IUnifiedPolylineOptions,
   IUnifiedCircleOptions,
@@ -16,61 +14,40 @@ import {
   IUnifiedSearchOptions,
   IUnifiedSearchResults,
 } from "./types/MapFunctionParamsInterface";
-import { MapProviderInterface } from "./types/MapProviderInterface";
+import { IInitMapOptions, IMapProvider } from "./types/MapProviderInterface";
 
 declare const google: any;
 
-export class GoogleMapProvider implements MapProviderInterface {
-  private map: any;
-  private loader!: Loader;
+export class GoogleMapProvider implements IMapProvider {
+  map: any;
+  private loader: any;
 
-  constructor() {}
-
-  get sourceMap() {
-    return this.map;
+  constructor(loader: any) {
+    this.loader = loader;
   }
 
-  async zvosLoadMap(
-    container: HTMLElement,
-    options: IMapInitOption
-  ): Promise<void> {
-    if (!options.apiKey) {
-      throw new Error("Google Map API key is required");
-    }
-
-    this.loader = new Loader({
-      apiKey: options.apiKey,
-      // libraries: ["maps", "marker"],
-      // libraries: ["places"], // 按需加载库
-      version: "weekly",
-      ...options?.sourceOptions,
-    });
-
+  // 初始化地图对象
+  async initMap(options: IInitMapOptions): Promise<void> {
     const { Map } = await this.loader.importLibrary("maps");
 
-    this.map = new Map(container, {
-      // center: options.center || { lng: -122.4194, lat: 37.7749 },
-      center: {
-        lng: options?.center?.lng || 116.397428,
-        lat: options?.center?.lat || 39.90923,
-      },
-      zoom: options.zoom || 10,
-      mapId: "DEMO_MAP_ID",
-    });
+    this.map = new Map(options.container, options);
+    return Promise.resolve();
   }
 
-  zvosSetCenter(position: { lat: number; lng: number }): void {
+  // 设置地图中心点
+  setCenter(position: { lat: number; lng: number }): void {
     if (!position) {
       throw new Error("Parameter 'position' is required");
     }
     this.map.setCenter(position);
   }
 
-  zvosSetZoom(level: number): void {
+  // 设置地图缩放级别
+  setZoom(level: number): void {
     this.map.setZoom(level);
   }
 
-  async zvosAddMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
+  async addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
     if (!options.position) {
       throw new Error("Parameter 'position' is required");
     }
@@ -125,7 +102,7 @@ export class GoogleMapProvider implements MapProviderInterface {
     return new AdvancedMarkerElement(markerOptions);
   }
 
-  zvosRemoveMarker(marker: any): void {
+  removeMarker(marker: any): void {
     if (!marker) {
       throw new Error("Parameter 'marker' is required");
     }
@@ -134,7 +111,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 添加折线
-  async zvosAddPolyline(options: IUnifiedPolylineOptions): Promise<any> {
+  async addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     if (!options.path || options.path.length === 0) {
       throw new Error(
         "Parameter 'path' is required and must be an array of at least one point"
@@ -185,7 +162,7 @@ export class GoogleMapProvider implements MapProviderInterface {
     return Promise.resolve(polyline);
   }
   // 删除折线
-  zvosRemovePolyline(line: any): void {
+  removePolyline(line: any): void {
     if (!line) {
       throw new Error("Parameter 'line' is required");
     }
@@ -194,7 +171,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 添加多边形
-  async zvosAddPolygon(options: any): Promise<any> {
+  async addPolygon(options: any): Promise<any> {
     const { Polygon } = await this.loader.importLibrary("maps");
 
     if (!options.path) {
@@ -225,7 +202,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 删除多边形
-  zvosRemovePolygon(polygon: any): void {
+  removePolygon(polygon: any): void {
     if (!polygon) {
       throw new Error("Parameter 'polygon' is required");
     }
@@ -234,7 +211,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 添加圆
-  async zvosAddCircle(options: IUnifiedCircleOptions) {
+  async addCircle(options: IUnifiedCircleOptions) {
     if (!options.center) {
       throw new Error("Parameter 'center' is required");
     }
@@ -267,7 +244,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 删除圆
-  zvosRemoveCircle(circle: any) {
+  removeCircle(circle: any) {
     if (!circle) {
       throw new Error("Parameter 'circle' is required");
     }
@@ -276,7 +253,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 添加矩形
-  async zvosAddRectangle(options: IUnifiedRectangleOptions) {
+  async addRectangle(options: IUnifiedRectangleOptions) {
     if (!options.bounds) {
       throw new Error("Parameter 'bounds' is required");
     }
@@ -308,7 +285,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 删除矩形
-  zvosRemoveRectangle(rectangle: any) {
+  removeRectangle(rectangle: any) {
     if (!rectangle) {
       throw new Error("Parameter 'rectangle' is required");
     }
@@ -316,7 +293,7 @@ export class GoogleMapProvider implements MapProviderInterface {
     rectangle = null;
   }
   // 计算两点间距离
-  async zvosGetDistanceBetween(
+  async getDistanceBetween(
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number> {
@@ -330,7 +307,7 @@ export class GoogleMapProvider implements MapProviderInterface {
     return spherical.computeDistanceBetween(start, end);
   }
   // 计算多边形面积
-  async zvosGetPolygonArea(
+  async getPolygonArea(
     path: Array<{ lat: number; lng: number }>
   ): Promise<number> {
     if (!path || path.length < 3) {
@@ -343,7 +320,7 @@ export class GoogleMapProvider implements MapProviderInterface {
   }
 
   // 关键字搜索 或 周边搜索
-  async zvosSearchPlaceByKeyword(
+  async searchPlaceByKeyword(
     options: IUnifiedSearchOptions
   ): Promise<Array<IUnifiedSearchResults>> {
     const { Place } = await google.maps.importLibrary("places");
@@ -376,7 +353,7 @@ export class GoogleMapProvider implements MapProviderInterface {
       const res = await Place.searchByText(requestOption);
       const result = res?.places || [];
       for (let i = 0; i < result.length; i++) {
-        console.log(result[i].location)
+        console.log(result[i].location);
         resPositionList.push({
           name: result[i].displayName,
           formatAddress: result[i].formattedAddress,

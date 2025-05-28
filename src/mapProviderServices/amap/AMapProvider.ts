@@ -8,7 +8,6 @@
  */
 import AMapLoader from "@amap/amap-jsapi-loader";
 import {
-  IMapInitOption,
   IUnifiedMapMarkerOptions,
   IUnifiedPolylineOptions,
   IUnifiedPolygonOptions,
@@ -33,7 +32,7 @@ export class AMapProvider {
 
   async zvosLoadMap(
     container: HTMLElement,
-    options: IMapInitOption
+    options: any
   ): Promise<void> {
     if (!options.apiKey) {
       throw new Error("AMap API key is required");
@@ -56,63 +55,63 @@ export class AMapProvider {
     this.map.setZoom(options.zoom || 10);
   }
 
-  zvosSetCenter(position: { lat: number; lng: number }): void {
+  setCenter(position: { lat: number; lng: number }): void {
     if (!position) {
       throw new Error("Parameter 'position' is required");
     }
     this.map.setCenter([position.lng, position.lat]);
   }
 
-  zvosSetZoom(level: number): void {
+  setZoom(level: number): void {
     this.map.setZoom(level);
   }
   // 添加标记
-  zvosAddMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
-    return this.markerManager.zvosAddMarker({ map: this.map, ...options });
+  addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
+    return this.markerManager.addMarker({ map: this.map, ...options });
   }
   // 删除标记
-  zvosRemoveMarker(marker: any): void {
-    this.markerManager.zvosRemoveMarker(marker);
+  removeMarker(marker: any): void {
+    this.markerManager.removeMarker(marker);
   }
 
   // 添加折线
-  zvosAddPolyline(options: IUnifiedPolylineOptions): Promise<any> {
+  addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     if (!options.path || options.path.length === 0) {
       throw new Error(
         "Parameter 'path' is required and must be an array of at least one point"
       );
     }
-    return this.lineManager.zvosAddPolyline({ map: this.map, ...options });
+    return this.lineManager.addPolyline({ map: this.map, ...options });
   }
   // 删除折线
-  zvosRemovePolyline(line: any): void {
-    this.lineManager.zvosRemovePolyline(this.map, line);
+  removePolyline(line: any): void {
+    this.lineManager.removePolyline(this.map, line);
   }
 
   // 添加多边形
-  zvosAddPolygon(options: IUnifiedPolygonOptions): Promise<any> {
-    return this.polygonManager.zvosAddPolygon({ map: this.map, ...options });
+  addPolygon(options: IUnifiedPolygonOptions): Promise<any> {
+    return this.polygonManager.addPolygon({ map: this.map, ...options });
   }
   // 删除多边形
-  zvosRemovePolygon(polygon: any): void {
-    this.polygonManager.zvosRemovePolygon(this.map, polygon);
+  removePolygon(polygon: any): void {
+    this.polygonManager.removePolygon(this.map, polygon);
   }
 
   // 添加圆
-  zvosAddCircle(options: IUnifiedCircleOptions) {
-    return this.polygonManager.zvosAddCircle({ map: this.map, ...options });
+  addCircle(options: IUnifiedCircleOptions) {
+    return this.polygonManager.addCircle({ map: this.map, ...options });
   }
   // 删除圆
-  zvosRemoveCircle(circle: any) {
-    this.polygonManager.zvosRemoveCircle(this.map, circle);
+  removeCircle(circle: any) {
+    this.polygonManager.removeCircle(this.map, circle);
   }
 
   // 添加矩形
-  async zvosAddRectangle(options: IUnifiedRectangleOptions) {
-    return this.polygonManager.zvosAddRectangle({ map: this.map, ...options });
+  async addRectangle(options: IUnifiedRectangleOptions) {
+    return this.polygonManager.addRectangle({ map: this.map, ...options });
   }
   // 删除矩形
-  zvosRemoveRectangle(rectangle: any) {
-    return this.polygonManager.zvosRemoveRectangle(this.map, rectangle);
+  removeRectangle(rectangle: any) {
+    return this.polygonManager.removeRectangle(this.map, rectangle);
   }
 }

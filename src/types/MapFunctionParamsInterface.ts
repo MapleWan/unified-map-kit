@@ -1,15 +1,7 @@
-import { MapProvider } from "./MapProviderInterface";
-export interface IMapInitOption {
-  container: HTMLElement;
-  provider: MapProvider;
-  apiKey: string;
-  center?: {
-    lat: number;
-    lng: number;
-  };
-  zoom?: number;
-  sourceOptions?: any;
-}
+/**
+ * 约定：A 表示 高德地图，G 表示 google 地图，H 表示 华为地图
+ */
+
 
 export interface IUnifiedMapMarkerOptions {
   // ----------- 所有平台都支持的共性属性 -----------

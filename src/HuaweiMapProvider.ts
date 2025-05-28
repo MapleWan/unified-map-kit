@@ -1,6 +1,4 @@
-import { HuaweiMapLoader } from "./HuaweiMapLoader";
 import {
-  IMapInitOption,
   IUnifiedMapMarkerOptions,
   IUnifiedPolylineOptions,
   IUnifiedCircleOptions,
@@ -8,46 +6,41 @@ import {
   IUnifiedSearchOptions,
   IUnifiedSearchResults,
 } from "./types/MapFunctionParamsInterface";
-
-import { MapProviderInterface } from "./types/MapProviderInterface";
+import { IInitMapOptions, IMapProvider } from "./types/MapProviderInterface";
 
 declare const HWMapJsSDK: any;
 
-export class HuaweiMapProvider implements MapProviderInterface {
-  private map: any;
-  private loader: HuaweiMapLoader;
+export class HuaweiMapProvider implements IMapProvider {
+  map: any;
 
   constructor() {
-    this.loader = new HuaweiMapLoader({ apiKey: "" });
   }
 
   get sourceMap() {
     return this.map;
   }
 
-  async zvosLoadMap(
-    container: HTMLElement,
-    options: IMapInitOption
-  ): Promise<void> {
-    if (!options.apiKey) {
-      throw new Error("Huawei Map API key is required");
-    }
-
-    this.loader = new HuaweiMapLoader({ apiKey: options.apiKey });
-    await this.loader.load();
-
-    this.map = new HWMapJsSDK.HWMap(container, {
-      // center: options.center || { lng: 116.397428, lat: 39.90923 },
-      center: {
-        lng: options?.center?.lng || 116.397428,
-        lat: options?.center?.lat || 39.90923,
-      },
-      zoom: options.zoom || 10,
-      ...options?.sourceOptions,
-    });
+  // 初始化地图对象
+  initMap(options: IInitMapOptions): Promise<void> {
+    this.map = new HWMapJsSDK.HWMap(options.container, options);
+    return Promise.resolve();
   }
 
-  zvosAddMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
+  // 设置地图中心点
+  setCenter(position: { lat: number; lng: number }): void {
+    if (!position) {
+      throw new Error("Parameter 'position' is required");
+    }
+    this.map.setCenter(position);
+  }
+
+  // 设置地图缩放级别
+  setZoom(level: number): void {
+    this.map.setZoom(level);
+  }
+
+  // 添加标记
+  addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
     if (!options.position) {
       throw new Error("Parameter 'position' is required");
     }
@@ -87,26 +80,17 @@ export class HuaweiMapProvider implements MapProviderInterface {
     return Promise.resolve(marker);
   }
 
-  zvosRemoveMarker(marker: any): void {
+  // 删除标记
+  removeMarker(marker: any): void {
     if (!marker) {
       throw new Error("Parameter 'marker' is required");
     }
     marker.setMap(null);
     marker = null;
   }
-  zvosSetCenter(position: { lat: number; lng: number }): void {
-    if (!position) {
-      throw new Error("Parameter 'position' is required");
-    }
-    this.map.setCenter(position);
-  }
-
-  zvosSetZoom(level: number): void {
-    this.map.setZoom(level);
-  }
 
   // 添加折线
-  async zvosAddPolyline(options: IUnifiedPolylineOptions): Promise<any> {
+  async addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     if (!options.path || options.path.length === 0) {
       throw new Error(
         "Parameter 'position' is required and must be an array of at least one point"
@@ -134,13 +118,13 @@ export class HuaweiMapProvider implements MapProviderInterface {
     return Promise.resolve(polyline);
   }
   // 删除折线
-  zvosRemovePolyline(line: any): void {
+  removePolyline(line: any): void {
     line.setMap(null);
     line = null;
   }
 
   // 添加多边形
-  async zvosAddPolygon(options: any): Promise<any> {
+  async addPolygon(options: any): Promise<any> {
     if (!options.path) {
       throw new Error("Parameter 'path' is required");
     }
@@ -176,7 +160,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 删除多边形
-  zvosRemovePolygon(polygon: any): void {
+  removePolygon(polygon: any): void {
     if (!polygon) {
       throw new Error("Parameter 'polygon' is required");
     }
@@ -185,7 +169,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 添加圆
-  async zvosAddCircle(options: IUnifiedCircleOptions) {
+  async addCircle(options: IUnifiedCircleOptions) {
     if (!options.center) {
       throw new Error("Parameter 'center' is required");
     }
@@ -221,7 +205,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 删除圆
-  zvosRemoveCircle(circle: any) {
+  removeCircle(circle: any) {
     if (!circle) {
       throw new Error("Parameter 'circle' is required");
     }
@@ -230,7 +214,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 添加矩形
-  async zvosAddRectangle(options: IUnifiedRectangleOptions) {
+  async addRectangle(options: IUnifiedRectangleOptions) {
     if (!options.bounds) {
       throw new Error("Parameter 'bounds' is required");
     }
@@ -270,7 +254,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
     return Promise.resolve(rectangle);
   }
   // 删除矩形
-  zvosRemoveRectangle(rectangle: any) {
+  removeRectangle(rectangle: any) {
     if (!rectangle) {
       throw new Error("Parameter 'rectangle' is required");
     }
@@ -279,7 +263,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 计算两点间距离
-  async zvosGetDistanceBetween(
+  async getDistanceBetween(
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number> {
@@ -293,7 +277,7 @@ export class HuaweiMapProvider implements MapProviderInterface {
     return Promise.resolve(DistanceClass.computeDistanceBetween(start, end));
   }
   // 计算多边形面积
-  async zvosGetPolygonArea(
+  async getPolygonArea(
     path: Array<{ lat: number; lng: number }>
   ): Promise<number> {
     if (!path || path.length < 3) {
@@ -314,14 +298,14 @@ export class HuaweiMapProvider implements MapProviderInterface {
   }
 
   // 关键字搜索 或 周边搜索
-  async zvosSearchPlaceByKeyword(
+  async searchPlaceByKeyword(
     options: IUnifiedSearchOptions
   ): Promise<Array<IUnifiedSearchResults>> {
     return new Promise((resolve, reject) => {
       let siteService = new HWMapJsSDK.HWSiteService();
       let resPositionList: Array<IUnifiedSearchResults> = [];
       let searchMethod;
-      if(options?.location){
+      if (options?.location) {
         searchMethod = siteService.nearbySearch.bind(siteService);
       } else {
         searchMethod = siteService.searchByText.bind(siteService);

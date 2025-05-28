@@ -2,7 +2,7 @@ import { IUnifiedPolylineOptions } from "../../../types/MapFunctionParamsInterfa
 declare const AMap: any;
 export class LineManager {
   // 添加折线
-  async zvosAddPolyline(options: IUnifiedPolylineOptions): Promise<any> {
+  async addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     if (!options.map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -34,7 +34,7 @@ export class LineManager {
     return Promise.resolve(polyline);
   }
   // 删除折线
-  zvosRemovePolyline(map: any, line: any): void {
+  removePolyline(map: any, line: any): void {
     if (!map) {
       throw new Error("Parameter 'map' is required");
     }

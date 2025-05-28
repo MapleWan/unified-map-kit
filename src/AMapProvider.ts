@@ -6,9 +6,7 @@
  * @FilePath: /Map/src/AMapProvider.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import AMapLoader from "@amap/amap-jsapi-loader";
 import {
-  IMapInitOption,
   IUnifiedMapMarkerOptions,
   IUnifiedPolylineOptions,
   IUnifiedPolygonOptions,
@@ -18,59 +16,39 @@ import {
   IUnifiedSearchResults,
 } from "./types/MapFunctionParamsInterface";
 
-import { MapProviderInterface } from "./types/MapProviderInterface";
-import { LineManager } from "./mapProviderServices/amap/lineServices/lineImpl";
-import { MarkerManager } from "./mapProviderServices/amap/pointServices/markerImpl";
-import { PolygonManager } from "./mapProviderServices/amap/polygonServices/polygonImpl";
+import { IInitMapOptions, IMapProvider } from "./types/MapProviderInterface";
 declare const AMap: any;
 
-export class AMapProvider implements MapProviderInterface {
-  private map: any;
-  private markerManager = new MarkerManager();
-  private lineManager = new LineManager();
-  private polygonManager = new PolygonManager();
+export class AMapProvider implements IMapProvider {
+  map: any;
   constructor() {}
-
-  get sourceMap() {
-    return this.map;
-  }
-
-  async zvosLoadMap(
-    container: HTMLElement,
-    options: IMapInitOption
-  ): Promise<void> {
-    if (!options.apiKey) {
-      throw new Error("AMap API key is required");
-    }
-
-    window._AMapSecurityConfig = {
-      securityJsCode: "8215d7d759a5b8c28827e3f89a65d2a4",
+  // 初始化地图对象
+  initMap(options: IInitMapOptions): Promise<void> {
+    const amapOptions: any = {
+      ...options,
     };
-
-    await AMapLoader.load({
-      key: options.apiKey,
-      version: "2.0",
-      ...options?.sourceOptions,
-    });
-    this.map = new AMap.Map(container);
-    this.map.setCenter([
-      options?.center?.lng || 116.397428,
-      options?.center?.lat || 39.90923,
-    ]);
-    this.map.setZoom(options.zoom || 10);
+    if (options?.center) {
+      amapOptions.center = [options.center.lng, options.center.lat];
+    }
+    amapOptions.zooms = [options?.minZoom || 2, options?.maxZoom || 20];
+    this.map = new AMap.Map(options.container, amapOptions);
+    return Promise.resolve();
   }
-  zvosSetCenter(position: { lat: number; lng: number }): void {
+
+  // 设置中心点
+  setCenter(position: { lat: number; lng: number }): void {
     if (!position) {
       throw new Error("Parameter 'position' is required");
     }
     this.map.setCenter([position.lng, position.lat]);
   }
-  zvosSetZoom(level: number): void {
+  // 设置缩放级别
+  setZoom(level: number): void {
     this.map.setZoom(level);
   }
 
   // 添加标记
-  async zvosAddMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
+  async addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
     if (!options.position) {
       throw new Error("Parameter 'position' is required");
     }
@@ -116,7 +94,7 @@ export class AMapProvider implements MapProviderInterface {
     return Promise.resolve(new AMap.Marker(markerOptions));
   }
   // 删除标记
-  zvosRemoveMarker(marker: any): void {
+  removeMarker(marker: any): void {
     if (!marker) {
       throw new Error("Parameter 'marker' is required");
     }
@@ -125,7 +103,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 添加折线
-  async zvosAddPolyline(options: IUnifiedPolylineOptions): Promise<any> {
+  async addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     if (!options.path || options.path.length === 0) {
       throw new Error(
         "Parameter 'path' is required and must be an array of at least one point"
@@ -154,7 +132,7 @@ export class AMapProvider implements MapProviderInterface {
     return Promise.resolve(polyline);
   }
   // 删除折线
-  zvosRemovePolyline(line: any): void {
+  removePolyline(line: any): void {
     if (!line) {
       throw new Error("Parameter 'line' is required");
     }
@@ -162,7 +140,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 添加多边形
-  async zvosAddPolygon(options: IUnifiedPolygonOptions): Promise<any> {
+  async addPolygon(options: IUnifiedPolygonOptions): Promise<any> {
     if (!options.path) {
       throw new Error("Parameter 'path' is required");
     }
@@ -208,7 +186,7 @@ export class AMapProvider implements MapProviderInterface {
     return Promise.resolve(polygon);
   }
   // 删除多边形
-  zvosRemovePolygon(polygon: any): void {
+  removePolygon(polygon: any): void {
     if (!polygon) {
       throw new Error("Parameter 'polygon' is required");
     }
@@ -216,7 +194,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 添加圆
-  async zvosAddCircle(options: IUnifiedCircleOptions) {
+  async addCircle(options: IUnifiedCircleOptions) {
     if (!options.center) {
       throw new Error("Parameter 'center' is required");
     }
@@ -247,7 +225,7 @@ export class AMapProvider implements MapProviderInterface {
     return Promise.resolve(circle);
   }
   // 删除圆
-  zvosRemoveCircle(circle: any) {
+  removeCircle(circle: any) {
     if (!circle) {
       throw new Error("Parameter 'circle' is required");
     }
@@ -255,7 +233,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 添加矩形
-  async zvosAddRectangle(options: IUnifiedRectangleOptions) {
+  async addRectangle(options: IUnifiedRectangleOptions) {
     if (!options.bounds) {
       throw new Error("Parameter 'bounds' is required");
     }
@@ -295,7 +273,7 @@ export class AMapProvider implements MapProviderInterface {
     return Promise.resolve(rectangle);
   }
   // 删除矩形
-  zvosRemoveRectangle(rectangle: any) {
+  removeRectangle(rectangle: any) {
     if (!rectangle) {
       throw new Error("Parameter 'rectangle' is required");
     }
@@ -303,7 +281,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 计算两点间距离
-  async zvosGetDistanceBetween(
+  async getDistanceBetween(
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number> {
@@ -318,7 +296,7 @@ export class AMapProvider implements MapProviderInterface {
     );
   }
   // 计算多边形面积
-  async zvosGetPolygonArea(
+  async getPolygonArea(
     path: Array<{ lat: number; lng: number }>
   ): Promise<number> {
     if (!path || path.length < 3) {
@@ -331,7 +309,7 @@ export class AMapProvider implements MapProviderInterface {
   }
 
   // 搜索地点
-  async zvosSearchPlaceByKeyword(
+  async searchPlaceByKeyword(
     options: IUnifiedSearchOptions
   ): Promise<Array<IUnifiedSearchResults>> {
     function handleSearchResult(

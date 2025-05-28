@@ -3,7 +3,7 @@ declare const AMap: any;
 
 export class MarkerManager {
   // 添加标记
-  async zvosAddMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
+  async addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
     if (!options.map) {
       throw new Error("Parameter 'map' is required");
     }
@@ -52,7 +52,7 @@ export class MarkerManager {
     return Promise.resolve(new AMap.Marker(markerOptions));
   }
   // 删除标记
-  zvosRemoveMarker(marker: any): void {
+  removeMarker(marker: any): void {
     if (!marker) {
       throw new Error("Parameter 'marker' is required");
     }
