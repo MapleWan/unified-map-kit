@@ -4,7 +4,6 @@ import {
   IUnifiedCircleOptions,
   IUnifiedRectangleOptions,
 } from "../../serviceParamsType";
-declare const AMap: any;
 export class PolygonManager {
   private loader: any;
   constructor(loader: any) {
@@ -12,30 +11,21 @@ export class PolygonManager {
   }
   // 添加多边形
   async addPolygon(map: any, options: IUnifiedPolygonOptions): Promise<any> {
-    let amapPath = [];
-    if (options.path.length) {
-      if (Array.isArray(options.path[0])) {
-        amapPath = options.path.map((item: any) => {
-          return item.map((item: any) => {
-            return [item.lng, item.lat];
-          });
-        });
-      } else {
-        amapPath = options.path.map((item: any) => {
-          return [item.lng, item.lat];
-        });
-      }
-    }
-    const polygonOptions = {
+    const { Polygon } = await this.loader.importLibrary("maps");
+    let polygonOptions = {
       ...options,
-      path: amapPath,
+      map: map,
+      paths:
+        options.path.length && Array.isArray(options.path[0])
+          ? options.path
+          : [options.path],
     };
+    // 设置虚线样式
     if (options?.strokeLineDash) {
-      polygonOptions.strokeDasharray = options.strokeLineDash;
-      polygonOptions.strokeStyle = "dashed";
+      console.warn("google map does not support strokeLineDash");
     }
-    let polygon = new AMap.Polygon(polygonOptions);
-    map.add(polygon);
+    const polygon = new Polygon(polygonOptions);
+    polygon.setMap(map);
     return Promise.resolve(polygon);
   }
   // 删除多边形
@@ -43,21 +33,24 @@ export class PolygonManager {
     if (!polygon) {
       throw new Error("Parameter 'polygon' is required");
     }
-    map.remove(polygon);
+    polygon.setMap(null);
+    polygon = null;
   }
 
   // 添加圆
   async addCircle(map: any, options: IUnifiedCircleOptions) {
+    const { Circle } = await this.loader.importLibrary("maps");
+
     const circleOptions = {
       ...options,
-      center: [options.center.lng, options.center.lat],
-    };
+      map: map,
+    } as any;
+    // 设置虚线样式
     if (options?.strokeLineDash) {
-      circleOptions.strokeDasharray = options.strokeLineDash;
-      circleOptions.strokeStyle = "dashed";
+      console.warn("google map does not support strokeLineDash");
     }
-    const circle = new AMap.Circle(circleOptions);
-    map.add(circle);
+    const circle = new Circle(circleOptions);
+    circle.setMap(map);
     return Promise.resolve(circle);
   }
   // 删除圆
@@ -65,7 +58,8 @@ export class PolygonManager {
     if (!circle) {
       throw new Error("Parameter 'circle' is required");
     }
-    map.remove(circle);
+    circle.setMap(null);
+    circle = null;
   }
 
   // 添加矩形
@@ -73,28 +67,18 @@ export class PolygonManager {
     if (!options.bounds) {
       throw new Error("Parameter 'bounds' is required");
     }
-    const southWest = new AMap.LngLat(
-      options.bounds.west,
-      options.bounds.south
-    );
-    const northEast = new AMap.LngLat(
-      options.bounds.east,
-      options.bounds.north
-    );
-    const bounds = new AMap.Bounds(southWest, northEast);
+    const { Rectangle } = await this.loader.importLibrary("maps");
 
-    const rectangleOptions = {
+    let rectangleOptions = {
       ...options,
       map: map,
-      bounds: bounds,
     } as any;
 
     // 设置虚线样式
     if (options?.strokeLineDash) {
-      rectangleOptions.strokeDasharray = options.strokeLineDash;
-      rectangleOptions.strokeStyle = "dashed";
+      console.warn("google map does not support strokeLineDash");
     }
-    const rectangle = new AMap.Rectangle(rectangleOptions);
+    const rectangle = new Rectangle(rectangleOptions);
     rectangle.setMap(map);
     return Promise.resolve(rectangle);
   }
@@ -103,12 +87,13 @@ export class PolygonManager {
     if (!rectangle) {
       throw new Error("Parameter 'rectangle' is required");
     }
-    map.remove(rectangle);
+    rectangle.setMap(null);
+    rectangle = null;
   }
 }
 
 UnifiedProvider.registerServiceToUnifiedProvider(
-  "amap",
+  "google",
   "polygonManager",
   PolygonManager
 );

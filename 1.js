@@ -1,23 +1,22 @@
-class Animal {
-  constructor(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  speak() {
-    console.log(`${this.name} makes a noise.`);
-  }
+class Father {
+  name; age; tool;
+    constructor(name, age, tool) {
+        this.name = name;
+        this.age = age;
+        this.tool = tool;
+    }
 }
 
-class Dog extends Animal {
-  constructor(name, age) {
-    super(name, age);
+class Son {
+  tool;
+  constructor(tool) {
+    this.tool = tool
   }
+    
 }
 
-const dog = new Dog("Rex", 5);
+let tool = {name: 'kit', type: 'map'}
+const f = new Father('zvos', 18, tool)
+const s = new Son(tool)
 
-function ws(animal) {
-  console.log(dog.speak());
-}
-
-ws(dog);
+console.log(f.tool === s.tool)

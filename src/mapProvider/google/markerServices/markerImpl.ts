@@ -1,24 +1,22 @@
-import { IUnifiedMapMarkerOptions } from "../../../types/MapFunctionParamsInterface";
-declare const AMap: any;
-
+import { UnifiedProvider } from "../../../mapProvider";
+import { IUnifiedMapMarkerOptions } from "../../serviceParamsType";
 export class MarkerManager {
+  private loader: any;
+  constructor(loader: any) {
+    this.loader = loader;
+  }
   // 添加标记
-  async addMarker(options: IUnifiedMapMarkerOptions): Promise<any> {
-    if (!options.map) {
-      throw new Error("Parameter 'map' is required");
-    }
-    if (!options.position) {
-      throw new Error("Parameter 'position' is required");
+  async addMarker(map: any, options: IUnifiedMapMarkerOptions): Promise<void> {
+    if (options?.customData) {
+      console.warn("google map does not support customData");
     }
     let markerOptions = {
-      map: options.map,
-      ...options?.sourceOptions,
-      position: [options.position.lng, options.position.lat],
-      zIndex: options?.zIndex || 10,
-      draggable: options.draggable || false,
-      title: options?.title || "",
-      extData: options?.customData || {},
-    };
+      ...options,
+      map: map,
+      gmpDraggable: options?.draggable,
+    } as any;
+    delete markerOptions.label;
+    delete markerOptions.icon;
     if (options?.label) {
       if (options.label instanceof HTMLElement) {
         markerOptions.content = options.label;
@@ -33,7 +31,7 @@ export class MarkerManager {
       }
     }
     if (options?.icon) {
-      if (typeof options.icon === "object" && options.icon !== null) {
+      if (typeof options.icon === "object") {
         const icon = options.icon;
         const customIcon = document.createElement("img");
         customIcon.src = icon.url;
@@ -48,15 +46,22 @@ export class MarkerManager {
         markerOptions.content = customIcon;
       }
     }
-    // return new AMap.Marker(markerOptions);
-    return Promise.resolve(new AMap.Marker(markerOptions));
+    const { AdvancedMarkerElement } = await this.loader.importLibrary("marker");
+    return Promise.resolve(new AdvancedMarkerElement(markerOptions));
   }
+
   // 删除标记
   removeMarker(marker: any): void {
     if (!marker) {
       throw new Error("Parameter 'marker' is required");
     }
-    marker.setMap(null);
+    marker.map = null;
     marker = null;
   }
 }
+
+UnifiedProvider.registerServiceToUnifiedProvider(
+  "google",
+  "markerManager",
+  MarkerManager
+);

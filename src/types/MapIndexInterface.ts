@@ -7,6 +7,12 @@
  * 支持三种地图服务：高德、谷歌、华为
  */
 export type MapProviderEnum = "amap" | "google" | "huawei";
+export type MapProviderServiceEnum =
+  | "baseManager"
+  | "lineManager"
+  | "markerManager"
+  | "polygonManager"
+  | "searchManager";
 
 export interface ILoadScriptOptions {
   /**

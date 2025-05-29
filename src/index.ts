@@ -10,16 +10,18 @@
  * map-kit - A pure JavaScript map utility library
  */
 
-import { GoogleMapProvider } from "./GoogleMapProvider";
-import { AMapProvider } from "./AMapProvider";
-import { HuaweiMapProvider } from "./HuaweiMapProvider";
-
 import AMapLoader from "@amap/amap-jsapi-loader";
 import { Loader as GoogleMapLoader } from "@googlemaps/js-api-loader";
-import { HuaweiMapLoader } from "./HuaweiMapLoader";
+import { HuaweiMapLoader } from "./mapProvider/huawei/HuaweiMapLoader";
 import { formatOptions } from "./utils";
 import { IMapProvider, IInitMapOptions } from "./types/MapProviderInterface";
 import { MapProviderEnum, ILoadScriptOptions } from "./types/MapIndexInterface";
+import { UnifiedProvider } from "./mapProvider";
+
+// import { BaseManager } from "./mapProvider/amap/baseServices/baseImpl";
+// console.log(BaseManager, " ------ >inited");
+// 注册地图提供者的 service 服务
+import 'virtual:auto-import-impl';
 
 let cachedLoader: Record<string, any> = {}; // 缓存加载器
 
@@ -61,19 +63,6 @@ class MapSourceFactory {
         throw new Error("Unsupported map provider");
     }
   }
-
-  static createProvider(type: MapProviderEnum, loader: any): IMapProvider {
-    switch (type) {
-      case "google":
-        return new GoogleMapProvider(loader);
-      case "amap":
-        return new AMapProvider();
-      case "huawei":
-        return new HuaweiMapProvider();
-      default:
-        throw new Error("Unsupported map provider");
-    }
-  }
 }
 
 const methodCache = new WeakMap(); // 缓存方法
@@ -81,6 +70,9 @@ const methodCache = new WeakMap(); // 缓存方法
 export async function createMap(
   options: ILoadScriptOptions & IInitMapOptions
 ): Promise<IMapProvider> {
+  // createMap 用于前端直接创建地图服务
+
+  // 检查必填参数 与默认参数
   let requiredOptions = ["mapProvider", "apiKey", "container"];
   if (options.mapProvider === "huawei") {
     requiredOptions.push("zoom");
@@ -98,6 +90,8 @@ export async function createMap(
       zoomControl: false,
     }
   );
+
+  // loader 需要加缓存
   let loader; // 加载地图脚本
   if (cachedLoader[formattedOptions.mapProvider]) {
     console.log("加载缓存 loader");
@@ -107,21 +101,20 @@ export async function createMap(
     loader = await MapSourceFactory.loadScript(formattedOptions as any);
     cachedLoader[formattedOptions.mapProvider] = loader || true;
   }
-  const mapProvider = MapSourceFactory.createProvider(
-    formattedOptions.mapProvider,
-    loader
-  );
-  // createMap 用于前端直接创建地图服务
+
+  // 根据地图提供商创建对应的地图对象
+  const mapProvider = new UnifiedProvider(formattedOptions.mapProvider, loader);
+
+  // 对 用户使用地图组件的方法进行拦截
   const mapProxy = new Proxy(mapProvider, {
     get(target, prop, receiver) {
       if (prop === "then") return undefined;
       if (prop === "map") return undefined;
 
       if (prop === "source") {
-        // 在这里可以对用户访问员地图组件的方法进行拦截，例如添加日志、权限控制等
+        // 在这里可以对用户访问原始地图对象的方法进行拦截，后续可能需要限制用户的访问
         return new Proxy(target.map, {
           get(targetMap, prop, receiver) {
-            if(prop === "isFirstInit") return 'wzf';
             let cached = methodCache.get(targetMap);
             if (!cached) {
               cached = {};
@@ -135,10 +128,6 @@ export async function createMap(
                   : tmpGetter;
             }
             return cached[prop];
-            // const tempValue = Reflect.get(targetMap, prop, receiver);
-            // typeof tempValue === "function"
-            //   ? Reflect.get(targetMap, prop, receiver).bind(targetMap)
-            //   : tempValue;
           },
         });
       }
@@ -177,7 +166,7 @@ export async function createMap(
     },
   });
   return mapProvider
-    .initMap(options as any)
+    .initMap(formattedOptions)
     .then(() => mapProxy as IMapProvider);
 }
 
