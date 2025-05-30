@@ -12,6 +12,7 @@ export type MapProviderServiceEnum =
   | "lineManager"
   | "markerManager"
   | "polygonManager"
+  | "geometryManager"
   | "searchManager";
 
 export interface ILoadScriptOptions {

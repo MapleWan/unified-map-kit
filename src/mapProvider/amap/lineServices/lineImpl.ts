@@ -12,22 +12,15 @@ export class LineManager {
       console.warn("amap map does not support visible property")
     }
     const lineOptions = {
+      ...options,
       path: options.path.map((p: any) => [p.lng, p.lat]),
-      strokeOpacity:
-        options?.strokeOpacity || options.strokeOpacity !== 0
-          ? options.strokeOpacity
-          : 1,
       showDir: options?.showDirection || false,
     } as any;
-    if (options?.zIndex) lineOptions.zIndex = options.zIndex;
-
-    if (options?.strokeColor) lineOptions.strokeColor = options.strokeColor;
-    if (options?.strokeWeight) lineOptions.strokeWeight = options.strokeWeight;
     if (options?.strokeLineDash) {
       lineOptions.strokeDasharray = options.strokeLineDash;
       lineOptions.strokeStyle = "dashed";
     }
-    let polyline = new AMap.Polyline(lineOptions);
+    const polyline = new AMap.Polyline(lineOptions);
     map.add(polyline);
     return Promise.resolve(polyline);
   }

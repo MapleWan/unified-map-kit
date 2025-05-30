@@ -8,13 +8,14 @@ import {
   IUnifiedPolygonOptions,
   IUnifiedCircleOptions,
   IUnifiedRectangleOptions,
-  IUnifiedSearchOptions,
-} from "./MapFunctionParamsInterface";
+  IUnifiedSearchByKeywordOptions,
+  IUnifiedSearchNearbyOptions,
+  IUnifiedPlaceResults,
+} from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
   map: any; // 地图实例
   initMap(options: IInitMapOptions): Promise<void>; // 初始化地图对象
-
   setCenter(position: { lat: number; lng: number }): void;
   setZoom(level: number): void;
 
@@ -26,10 +27,8 @@ export interface IMapProvider {
 
   addPolygon(options: IUnifiedPolygonOptions): Promise<any>;
   removePolygon(polygon: any): void;
-
   addCircle(options: IUnifiedCircleOptions): Promise<any>;
   removeCircle(circle: any): void;
-
   addRectangle(options: IUnifiedRectangleOptions): Promise<any>;
   removeRectangle(rectangle: any): void;
 
@@ -37,11 +36,14 @@ export interface IMapProvider {
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number>;
-  getPolygonArea(
-    path: Array<{ lat: number; lng: number }>
-  ): Promise<number>;
+  getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number>;
 
-  searchPlaceByKeyword(options: IUnifiedSearchOptions): Promise<any>;
+  searchPlaceByKeyword(
+    options: IUnifiedSearchByKeywordOptions
+  ): Promise<Array<IUnifiedPlaceResults>>;
+  searchPlaceNearby(
+    options: IUnifiedSearchNearbyOptions
+  ): Promise<Array<IUnifiedPlaceResults>>;
 }
 
 export interface IInitMapOptions {

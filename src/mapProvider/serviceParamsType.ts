@@ -479,3 +479,150 @@ export interface IUnifiedRectangleOptions {
   // visible?: boolean; // 是否显示
   // zIndex?: number; // 层级
 }
+
+export interface IUnifiedSearchByKeywordOptions {
+  /**
+   * 所有地图共有属性
+   */
+  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: textQuery
+  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: includedType
+
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+  pageSize?: number; // 每页结果数 取值范围：1-50，超出取值范围按最大值返回 默认 10
+  pageIndex?: number; // 页码 取值范围：1-20，超出取值范围按最大值返回 默认 1 超过实际页数不返回poi
+
+  /**
+   * GH 地图共有属性
+   */
+  location?: { lat: number; lng: number }; // 搜索结果偏向的经纬度 huawei: location / AMap / Google: locationBias
+  language?: string; // 搜索结果的语种。如果不指定语种，使用地点的当地语言。 huawei: language / AMap: 不支持 / Google: language
+
+  /**
+   * A 地图特有属性
+   */
+  // keyword?: string; // 关键字
+  // type?: string; // POI 类型
+  // pageSize?: number; // 每页结果数 取值范围：1-50，超出取值范围按最大值返回 默认 10
+  // pageIndex?: number; // 页码 取值范围：1-100，超出取值范围按最大值返回 默认 1 超过实际页数不返回poi
+  city?: string; // 城市名 citycode
+  citylimit?: boolean; // 是否限制city 范围搜索
+  extensions?: string; // 此项默认值：base，返回基本地址信息  取值：all，返回基本+详细信息
+  map?: any; // 地图实例
+  panel?: string | HTMLElement; // 结果列表的HTML容器或对应id
+  showCover?: boolean; // 是否在地图上显示周边搜索范围
+  renderStyle?: string; // 结果渲染样式  如使用了map或panel属性，renderStyle可以用来设定绘制的UI风格，缺省为'newpc'。可选值:'newpc'或'default'，'newpc'为带图片展示的新样式，'default'为原有简单样式。
+  autoFitView?: boolean; // 是用于控制在搜索结束后，是否自动调整地图视野使绘制的Marker点都处于视口的可见范围
+
+  /**
+   * G 地图特有属性
+   */
+  // textQuery: string; // 搜索关键字
+  // locationBias?: { lat: number; lng: number } | any; // 搜索结果偏向的经纬度
+  // language?: string; // 地点详情将以首选语言（如果有）显示。将默认采用浏览器的语言偏好设置
+  // includedType?: string; // 请求的地点类型。支持的类型的完整列表：https://developers.google.com/maps/documentation/places/web-service/place-types。
+  maxResultCount?: number; // 返回的结果上限。取值范围：[1, 20]
+  evSearchOptions?: any; //可为地点搜索请求指定的电动汽车相关选项。
+  fields?: Array<string>; // 要包含在响应中的字段（系统会按这些字段进行结算）。如果传入的是 ['*']，系统会返回所有可用字段并据此计费（不建议用于生产环境中的部署）。您可以请求 Place 类中的任何属性作为字段。
+  isOpenNow?: boolean; // 用于将搜索范围限制为当前营业的地点。
+  locationRestriction?: any; // LatLngBounds | LatLngBoundsLiteral。要搜索的区域。此位置用作限制条件，这意味着系统不会返回给定位置以外的结果。不能与 locationBias 一起设置。
+  minRating?: number; // 用于将搜索范围限制为至少具有指定评分的地点。 滤除平均用户评分低于此限制的结果。有效值必须为介于 0 到 5（包括这两个数值）之间的浮点数，间隔为 0.5，
+  priceLevels?: Array<number>; // 用于将搜索范围限制为标记为特定价格水平的地点。
+  rankPreference?: "DISTANCE" | "RELEVANCE"; // 结果在响应中的排名方式。DISTANCE:按距离对结果进行排名。RELEVANCE:按相关性对结果进行排名。
+  region?: string; // 地点详情将根据此区域（如果适用）显示。将默认采用浏览器的区域偏好设置。
+
+  /**
+   * H 地图特有属性
+   */
+  // language?: string; // 搜索建议的语种，如果不指定语种，返回地点的当地语言。
+  // location?: { lat: number; lng: number }; // 搜索建议偏向的经纬度
+  // poiType?: string; // 返回指定POI类型的地点。
+  // pageIndex?: number; // 当前页数。取值范围：[1, 60]，默认1。约束：pageindex*pagesize <= 60。
+  // pageSize?: number; // 每页返回的记录数。取值范围：[1, 20]，默认20。
+  // query?: string; // 搜索建议的关键词。
+  radius?: number; // 搜索建议的半径，单位：米
+  countries?: Array<String>; // 多个国家码，采用ISO 3166-1 alpha-2规范的2位国家码。
+  countryCode?: string; // 在指定的国家内搜索，采用ISO 3166-1 alpha-2规范的2位国家码。
+}
+
+export interface IUnifiedSearchNearbyOptions {
+  /**
+   * 所有地图共有属性
+   */
+  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: includedPrimaryTypes
+  location?: { lat: number; lng: number }; // 当前的位置 huawei: location / AMap: center / Google: locationRestriction.center
+  radius?: number; // 搜索半径，单位：米。 huawei: radius / AMap: radius / Google: locationRestriction.radius
+  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: includedType
+
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+  pageSize?: number; // 每页结果数 取值范围：1-50，超出取值范围按最大值返回 默认 10
+  pageIndex?: number; // 页码 取值范围：1-20，超出取值范围按最大值返回 默认 1 超过实际页数不返回poi
+
+  /**
+   * GH 地图共有属性
+   */
+  language?: string; // 搜索结果的语种。如果不指定语种，使用地点的当地语言。 huawei: language / AMap: 不支持 / Google: language
+
+  /**
+   * A 地图特有属性
+   */
+  // keyword: string; // 关键字
+  // center: Array<number>; //[lng, lat] 中心点经纬度
+  // radius?: number; // 半径
+  // pageSize?: number; // 每页结果数 取值范围：1-50，超出取值范围按最大值返回 默认 10
+  // pageIndex?: number; // 页码 取值范围：1-100，超出取值范围按最大值返回 默认 1 超过实际页数不返回poi
+  // type?: string; // POI 类型
+  city?: string; // 城市名 citycode
+  citylimit?: boolean; // 是否限制city 范围搜索
+  extensions?: string; // 此项默认值：base，返回基本地址信息  取值：all，返回基本+详细信息
+  map?: any; // 地图实例
+  panel?: string | HTMLElement; // 结果列表的HTML容器或对应id
+  showCover?: boolean; // 是否在地图上显示周边搜索范围
+  renderStyle?: string; // 结果渲染样式  如使用了map或panel属性，renderStyle可以用来设定绘制的UI风格，缺省为'newpc'。可选值:'newpc'或'default'，'newpc'为带图片展示的新样式，'default'为原有简单样式。
+  autoFitView?: boolean; // 是用于控制在搜索结束后，是否自动调整地图视野使绘制的Marker点都处于视口的可见范围
+
+  /**
+   * G 地图特有属性
+   */
+  // locationRestriction:
+  //   | google.maps.Circle
+  //   | { center: { lat: number; lng: number }; radius: number }; // 搜索结果偏向的经纬度中心点
+  // includedTypes?: Array<string>; // 包含的地点类型。 具体参考 google 地图官方文档
+  // language?: string; // 地点详情将以首选语言（如果有）显示。将默认采用浏览器的语言偏好设置
+  includedPrimaryTypes?: Array<string>; // 包含的主要地点类型。 具体参考 google 地图官方文档
+  excludedPrimaryTypes?: Array<string>; // 排除的主要地点类型。 具体参考 google 地图官方文档
+  excludedTypes?: Array<string>; // 排除的地点类型。 具体参考 google 地图官方文档
+  fields?: Array<string>; // 要包含在响应中的字段（系统会按这些字段进行结算）。如果传入的是 ['*']，系统会返回所有可用字段并据此计费（不建议用于生产环境中的部署）。您可以请求 Place 类中的任何属性作为字段。
+  maxResultCount?: number; // 返回的结果上限。取值范围：[1, 20]
+  rankPreference?: "DISTANCE" | "POPULARITY"; // 排序偏好。DISTANCE：按距离排序；POPULARITY：按热门程度对结果进行排名。
+  region?: string; // 请求来源位置的 Unicode 国家/地区代码 (CLDR)。
+
+  /**
+   * H 地图特有属性
+   */
+  // language?: string; // 搜索建议的语种，如果不指定语种，返回地点的当地语言。
+  // location: { lat: number; lng: number }; // 当亲用户的位置
+  // pageIndex?: number; // 当前页数。取值范围：[1, 60]，默认1。约束：pageindex*pagesize <= 60。
+  // pageSize?: number; // 每页返回的记录数。取值范围：[1, 20]，默认20。
+  // poiType?: string; // 返回指定POI类型的地点。
+  // query?: string; // 搜索建议的关键词。
+  // radius?: number; // 搜索建议的半径，单位：米
+}
+
+export interface IUnifiedPlaceResults {
+  name: string; // 名称
+  formatAddress: string; // 详细 地址
+  position: { lat: number; lng: number }; // 经纬度
+  sourceResult: any; // 原生返回结果
+}

@@ -9,6 +9,9 @@ import {
   IUnifiedPolygonOptions,
   IUnifiedCircleOptions,
   IUnifiedRectangleOptions,
+  IUnifiedSearchByKeywordOptions,
+  IUnifiedSearchNearbyOptions,
+  IUnifiedPlaceResults,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -27,15 +30,19 @@ import { formatOptions } from "../utils";
 export class UnifiedProvider implements IMapProvider {
   map: any;
   private loader: any;
-  private baseManager: any;
-  private lineManager: any;
-  private markerManager: any;
-  private polygonManager: any;
-  private searchManager: any;
+  private baseManager: any; // 基础服务，比如初始化地图，设置中心点，设置缩放级别等
+  private lineManager: any; // 线服务，比如添加线，删除线等
+  private markerManager: any; // 标记服务，比如添加标记，删除标记等
+  private polygonManager: any; // 多边形服务，比如添加多边形，删除多边形等
+  private geometryManager: any; // 几何服务，比如计算距离，面积等
+  private searchManager: any; // 搜索服务，比如搜索地址，POI等
+
+  // 外部注册的 service 实现类
   static providerSerivces: Record<
     MapProviderEnum,
     Record<MapProviderServiceEnum, any>
   > = {} as Record<MapProviderEnum, Record<MapProviderServiceEnum, any>>;
+  // 外部 service 向 此处提供注册 service
   static registerServiceToUnifiedProvider(
     mapProvider: MapProviderEnum,
     serviceName: MapProviderServiceEnum,
@@ -76,7 +83,8 @@ export class UnifiedProvider implements IMapProvider {
     this.lineManager = initializeService("lineManager", loader);
     this.markerManager = initializeService("markerManager", loader);
     this.polygonManager = initializeService("polygonManager", loader);
-    // this.searchManager = initializeService("searchManager", loader);
+    this.geometryManager = initializeService("geometryManager", loader);
+    this.searchManager = initializeService("searchManager", loader);
   }
 
   /**
@@ -167,12 +175,39 @@ export class UnifiedProvider implements IMapProvider {
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number> {
-    throw new Error("Method not implemented.");
+    if (!start) {
+      throw new Error("Parameter 'start' is required");
+    }
+    if (!end) {
+      throw new Error("Parameter 'end' is required");
+    }
+    return this.geometryManager.getDistanceBetween(start, end);
   }
   getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number> {
-    throw new Error("Method not implemented.");
+    if (!path || path.length < 3) {
+      throw new Error(
+        "Parameter 'paths' is required and must be an array of at least 3 points"
+      );
+    }
+    return this.geometryManager.getPolygonArea(this.map, path);
   }
-  searchPlaceByKeyword(options: IUnifiedSearchOptions): Promise<any> {
-    throw new Error("Method not implemented.");
+  searchPlaceByKeyword(
+    options: IUnifiedSearchByKeywordOptions
+  ): Promise<Array<IUnifiedPlaceResults>> {
+    const formattedOptions = formatOptions<IUnifiedSearchByKeywordOptions>(
+      options,
+      ["query"]
+    );
+    return this.searchManager.searchPlaceByKeyword(this.map, formattedOptions);
+  }
+
+  searchPlaceNearby(
+    options: IUnifiedSearchNearbyOptions
+  ): Promise<Array<IUnifiedPlaceResults>> {
+    const formattedOptions = formatOptions<IUnifiedSearchNearbyOptions>(
+      options,
+      ["location", "radius"]
+    );
+    return this.searchManager.searchPlaceNearby(this.map, formattedOptions);
   }
 }
