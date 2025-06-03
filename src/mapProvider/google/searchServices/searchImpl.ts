@@ -6,6 +6,24 @@ import {
 } from "../../serviceParamsType";
 
 declare const google: any;
+function handleSearchResult(
+  result: any,
+  resolve: (value: Array<IUnifiedPlaceResults>) => void,
+  reject: (reason?: any) => void
+): void {
+  let resPositionList: Array<IUnifiedPlaceResults> = [];
+  const results = result.poiList.pois;
+  for (let i = 0; i < results.length; i++) {
+    resPositionList.push({
+      name: results[i].name,
+      formatAddress: results[i].address,
+      position: results[i].location,
+      sourceResult: results[i],
+    });
+  }
+  resolve(resPositionList);
+}
+
 export class SearchManager {
   private loader: any;
   constructor(loader: any) {
@@ -17,34 +35,30 @@ export class SearchManager {
     map: any,
     options: IUnifiedSearchByKeywordOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
-    const { Place } = await google.maps.importLibrary("places");
-    let resPositionList: Array<IUnifiedPlaceResults> = [];
-    // 初始化请求参数对象
-    let requestOption: any = {
-      ...options,
-      textQuery: options?.query,
-      locationBias: options?.location,
-    };
-    if (options?.poiType) requestOption.includedType = options.poiType;
-    if (!options?.fields) requestOption.fields = ["*"];
+    return new Promise(async (resolve, reject) => {
+      const { PlacesService } = await google.maps.importLibrary("places");
+      let resPositionList: Array<IUnifiedPlaceResults> = [];
+      const pls = new PlacesService(map);
 
-    delete requestOption.query;
-    delete requestOption.location;
-    delete requestOption.radius;
-    const res = await Place.searchByText(requestOption);
-    const result = res?.places || [];
-    for (let i = 0; i < result.length; i++) {
-      resPositionList.push({
-        name: result[i].displayName,
-        formatAddress: result[i].formattedAddress,
-        position: {
-          lat: result[i].location.lat(),
-          lng: result[i].location.lng(),
-        },
-        sourceResult: result[i], // 保存原始结果
+      let requestOption: any = {
+        ...options,
+        type: options?.poiType,
+      };
+      pls.textSearch(requestOption, (res: any) => {
+        res.forEach((item: any) => {
+          resPositionList.push({
+            name: item.name,
+            formatAddress: item.formatted_address,
+            position: {
+              lat: item.geometry.location.lat(),
+              lng: item.geometry.location.lng(),
+            },
+            sourceResult: item, // 保存原始结果
+          });
+        });
+        resolve(resPositionList);
       });
-    }
-    return Promise.resolve(resPositionList);
+    });
   }
 
   // 搜索范围内地点
@@ -52,36 +66,31 @@ export class SearchManager {
     map: any,
     options: IUnifiedSearchNearbyOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
-    const { Place } = await google.maps.importLibrary("places");
-    let resPositionList: Array<IUnifiedPlaceResults> = [];
-    // 初始化请求参数对象
-    let requestOption: any = {
-      ...options,
-    };
-    if (options?.location) {
-      requestOption.locationRestriction = {
-        center: options.location,
-        radius: options?.radius,
+    return new Promise(async (resolve, reject) => {
+      const { PlacesService } = await google.maps.importLibrary("places");
+      let resPositionList: Array<IUnifiedPlaceResults> = [];
+      const pls = new PlacesService(map);
+
+      let requestOption: any = {
+        ...options,
+        keyword: options?.query,
+        type: options?.poiType,
       };
-    }
-    if (options?.poiType) requestOption.includedType = options.poiType;
-    if (!options?.fields) requestOption.fields = ["*"];
-
-    delete requestOption.query;
-    delete requestOption.location;
-    delete requestOption.radius;
-    const res = await Place.searchNearby(requestOption);
-    const result = res?.places || [];
-    for (let i = 0; i < result.length; i++) {
-      resPositionList.push({
-        name: result[i].displayName,
-        formatAddress: result[i].formattedAddress,
-        position: result[i].location,
-        sourceResult: result[i], // 保存原始结果
+      pls.nearbySearch(requestOption, (res: any) => {
+        res.forEach((item: any) => {
+          resPositionList.push({
+            name: item.name,
+            formatAddress: item.formatted_address || item.name,
+            position: {
+              lat: item.geometry.location.lat(),
+              lng: item.geometry.location.lng(),
+            },
+            sourceResult: item, // 保存原始结果
+          });
+        });
+        resolve(resPositionList);
       });
-    }
-
-    return Promise.resolve(resPositionList);
+    });
   }
 }
 

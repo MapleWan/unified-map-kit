@@ -484,8 +484,8 @@ export interface IUnifiedSearchByKeywordOptions {
   /**
    * 所有地图共有属性
    */
-  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: textQuery
-  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: includedType
+  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: query
+  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: type
 
   /**
    * AG 地图共有属性
@@ -500,7 +500,7 @@ export interface IUnifiedSearchByKeywordOptions {
   /**
    * GH 地图共有属性
    */
-  location?: { lat: number; lng: number }; // 搜索结果偏向的经纬度 huawei: location / AMap / Google: locationBias
+  location?: { lat: number; lng: number }; // 搜索结果偏向的经纬度 huawei: location / AMap：不支持 / Google: location
   language?: string; // 搜索结果的语种。如果不指定语种，使用地点的当地语言。 huawei: language / AMap: 不支持 / Google: language
 
   /**
@@ -522,19 +522,18 @@ export interface IUnifiedSearchByKeywordOptions {
   /**
    * G 地图特有属性
    */
+  // language?: string; // 地点详情将以首选语言（如果有）显示。将默认采用浏览器的语言偏好设置
+  // location?: string; // 用于在搜索地点时偏向结果的区域中心。
+  // query?: string; // 搜索关键字
+  // radius?: number; // 用于在搜索地点时自定义调整结果的区域的半径，以米为单位。
+  // type?: string; // 搜索指定类型的地点。
+  region?: string; // 于使结果偏向于某个区域的区域代码
+  bounds?: any; // LatLngBounds | LatLngBoundsLiteral。用于在搜索地点时偏向结果的边界（可选）。如果设置了 bounds，系统会忽略 location 和 radius。结果不会仅限于这些边界内，但这些边界内的结果排名会更高。
+
   // textQuery: string; // 搜索关键字
   // locationBias?: { lat: number; lng: number } | any; // 搜索结果偏向的经纬度
   // language?: string; // 地点详情将以首选语言（如果有）显示。将默认采用浏览器的语言偏好设置
   // includedType?: string; // 请求的地点类型。支持的类型的完整列表：https://developers.google.com/maps/documentation/places/web-service/place-types。
-  maxResultCount?: number; // 返回的结果上限。取值范围：[1, 20]
-  evSearchOptions?: any; //可为地点搜索请求指定的电动汽车相关选项。
-  fields?: Array<string>; // 要包含在响应中的字段（系统会按这些字段进行结算）。如果传入的是 ['*']，系统会返回所有可用字段并据此计费（不建议用于生产环境中的部署）。您可以请求 Place 类中的任何属性作为字段。
-  isOpenNow?: boolean; // 用于将搜索范围限制为当前营业的地点。
-  locationRestriction?: any; // LatLngBounds | LatLngBoundsLiteral。要搜索的区域。此位置用作限制条件，这意味着系统不会返回给定位置以外的结果。不能与 locationBias 一起设置。
-  minRating?: number; // 用于将搜索范围限制为至少具有指定评分的地点。 滤除平均用户评分低于此限制的结果。有效值必须为介于 0 到 5（包括这两个数值）之间的浮点数，间隔为 0.5，
-  priceLevels?: Array<number>; // 用于将搜索范围限制为标记为特定价格水平的地点。
-  rankPreference?: "DISTANCE" | "RELEVANCE"; // 结果在响应中的排名方式。DISTANCE:按距离对结果进行排名。RELEVANCE:按相关性对结果进行排名。
-  region?: string; // 地点详情将根据此区域（如果适用）显示。将默认采用浏览器的区域偏好设置。
 
   /**
    * H 地图特有属性
@@ -554,10 +553,10 @@ export interface IUnifiedSearchNearbyOptions {
   /**
    * 所有地图共有属性
    */
-  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: includedPrimaryTypes
-  location?: { lat: number; lng: number }; // 当前的位置 huawei: location / AMap: center / Google: locationRestriction.center
-  radius?: number; // 搜索半径，单位：米。 huawei: radius / AMap: radius / Google: locationRestriction.radius
-  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: includedType
+  query?: string; // 搜索关键字 huawei: query / AMap: keyword / Google: keyword
+  location?: { lat: number; lng: number }; // 当前的位置 huawei: location / AMap: center / Google: location
+  radius?: number; // 搜索半径，单位：米。 huawei: radius / AMap: radius / Google: radius
+  poiType?: string; // 指定POI类型 huawei: poiType / AMap: type / Google: type
 
   /**
    * AG 地图共有属性
@@ -595,18 +594,16 @@ export interface IUnifiedSearchNearbyOptions {
   /**
    * G 地图特有属性
    */
-  // locationRestriction:
-  //   | google.maps.Circle
-  //   | { center: { lat: number; lng: number }; radius: number }; // 搜索结果偏向的经纬度中心点
-  // includedTypes?: Array<string>; // 包含的地点类型。 具体参考 google 地图官方文档
+  // keyword?: string; // 搜索关键字
+  // radius?: number; // 用于在搜索地点时自定义调整结果的区域的半径，以米为单位。
   // language?: string; // 地点详情将以首选语言（如果有）显示。将默认采用浏览器的语言偏好设置
-  includedPrimaryTypes?: Array<string>; // 包含的主要地点类型。 具体参考 google 地图官方文档
-  excludedPrimaryTypes?: Array<string>; // 排除的主要地点类型。 具体参考 google 地图官方文档
-  excludedTypes?: Array<string>; // 排除的地点类型。 具体参考 google 地图官方文档
-  fields?: Array<string>; // 要包含在响应中的字段（系统会按这些字段进行结算）。如果传入的是 ['*']，系统会返回所有可用字段并据此计费（不建议用于生产环境中的部署）。您可以请求 Place 类中的任何属性作为字段。
-  maxResultCount?: number; // 返回的结果上限。取值范围：[1, 20]
-  rankPreference?: "DISTANCE" | "POPULARITY"; // 排序偏好。DISTANCE：按距离排序；POPULARITY：按热门程度对结果进行排名。
-  region?: string; // 请求来源位置的 Unicode 国家/地区代码 (CLDR)。
+  // location?: string; // 用于在搜索地点时偏向结果的区域中心。
+  // type?: string; // 搜索指定类型的地点。
+  bounds?: any; // LatLngBounds | LatLngBoundsLiteral。用于在搜索地点时偏向结果的边界（可选）。如果设置了 bounds，系统会忽略 location 和 radius。结果不会仅限于这些边界内，但这些边界内的结果排名会更高。
+  maxPriceLevel?: number; // 将结果限制为仅包含指定价位或更低价位的地点。有效值范围介于 0（最实惠）和 4（最昂贵）之间，包括 0 和 4。必须大于或等于 minPrice （如果指定）。
+  minPriceLevel?: number; // 将结果限制为仅包含指定价位或更高价位的地点。有效值范围介于 0（最实惠）和 4（最昂贵）之间，包括 0 和 4。必须小于或等于 maxPrice（如果指定）。
+  openNow?: boolean; // 将结果限制为仅包含在指定时间开放或始终开放的地点。
+  rankBy?: string; // DISTANCE: 根据与地点的距离对地点搜索结果进行排名。PROMINENCE:按地点知名度对地点结果进行排名
 
   /**
    * H 地图特有属性

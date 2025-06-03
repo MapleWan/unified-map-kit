@@ -78,7 +78,7 @@
             "AIzaSyBYSQbOJCrrU2uLUcqOAS9g-oRrvbn7fK0";
 
           const initCommonMapOption = {
-            center: { lat: 39.876405, lng: 116.387175 },
+            center: { lat: 28.169809, lng: 112.929122 },
             zoom: 12,
           };
           const huaweiMap = await init({
@@ -104,30 +104,30 @@
           const searchOptions = {
             query: "北京大学",
             location: { lat: 28.169809, lng: 112.929122 },  // 中南大学附近搜索北京大学
-            radius: 50000,
+            radius: 10000,
           };
           setTimeout(async () => {
             console.log("关键字搜索");
             huaweiMap.searchPlaceByKeyword(searchOptions).then((res) => {
-              console.log(res);
+              console.log("huawei", res);
             });
             amapMap.searchPlaceByKeyword(searchOptions).then((res) => {
-              console.log(res);
+              console.log("amap", res);
             });
             googleMap.searchPlaceByKeyword(searchOptions).then((res) => {
-              console.log(res);
+              console.log("google", res);
             });
 
             setTimeout(async () => {
               console.log("附近搜索");
               huaweiMap.searchPlaceNearby(searchOptions).then((res) => {
-                console.log(res);
+                console.log("huawei", res);
               });
               amapMap.searchPlaceNearby(searchOptions).then((res) => {
-                console.log(res);
+                console.log("amap", res);
               });
               googleMap.searchPlaceNearby(searchOptions).then((res) => {
-                console.log(res);
+                console.log("google", res);
               });
             }, 2000);
           }, 2000);
