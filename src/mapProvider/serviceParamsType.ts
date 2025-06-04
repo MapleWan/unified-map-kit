@@ -623,3 +623,106 @@ export interface IUnifiedPlaceResults {
   position: { lat: number; lng: number }; // 经纬度
   sourceResult: any; // 原生返回结果
 }
+
+export interface IUnifiedGeocodeOptions {
+  /**
+   * 所有地图共有属性
+   */
+  address?: string; // 详细地址
+  language?: string; // 搜索结果的语种。如果不指定语种，返回地点的当地语言。 huawei: language / AMap: lang / Google: language
+
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+  bounds?: {
+    northeast: { lat: number; lng: number };
+    southwest: { lat: number; lng: number };
+  }; // 	LatLngBounds。查询结果偏向的搜索范围。
+
+  /**
+   * A 地图特有属性
+   */
+  // AMap.Geocoder构造方法
+  // lang?: string; // 设置语言
+  city?: string; // 城市，地理编码时，设置地址描述所在城市。可选值：城市名（中文或中文全拼）、citycode、adcode；默认值：“全国”
+  radius?: number; // 搜索范围，默认1000米。取值范围：0-3000，单位：米。
+  batch?: boolean; // 是否批量查询
+  extensions?: string; // 逆地理编码时，返回信息的详略。默认值：base，返回基本地址信息；取值为：all，返回地址信息及附近poi、道路、道路交叉口等信息
+  // AMap.Geocoder.getLocation
+  // address: string
+
+  /**
+   * G 地图特有属性
+   */
+  // address?: string; // 地址信息 必须提供 address、location 和 placeId 中的一个，且只能提供一个。
+  // bounds?: any; //   LatLngBounds|LatLngBoundsLiteral.要在其中进行搜索的 LatLngBounds。
+  // language?: string; // 应返回结果的语言的语言标识符（如果可能)
+  componentRestrictions?: any; // 	GeocoderComponentRestrictions。组成部分用于将结果限制在特定区域内。
+  location?: { lat: number; lng: number }; // 要进行地理编码的 LatLng。
+  placeId?: string; // 与营业地点相关联的地点 ID。地点 ID 可唯一标识 Google Places 数据库中和 Google 地图上的地点。
+  region?: string; // 用于偏向搜索的国家/地区代码，
+
+  /**
+   * H 地图特有属性
+   */
+  // address: string; // 地址信息
+  // bounds?: any; // 	LatLngBounds。查询结果偏向的搜索范围。
+  // language?: string; // 搜索结果的语种。如果不指定语种，返回地点的当地语言。
+}
+
+export interface IUnifiedReverseGeocodeOptions {
+  /**
+   * 所有地图共有属性
+   */
+  location: { lat: number; lng: number }; // 当前的位置 huawei: location / AMap: location / Google: location
+  language?: string; // 搜索结果的语种。如果不指定语种，返回地点的当地语言。 huawei: language / AMap: lang / Google: language
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+
+  /**
+   * A 地图特有属性
+   */
+  // AMap.Geocoder构造方法
+  // lang?: string; // 设置语言
+  city?: string; // 城市，地理编码时，设置地址描述所在城市。可选值：城市名（中文或中文全拼）、citycode、adcode；默认值：“全国”
+  radius?: number; // 搜索范围，默认1000米。取值范围：0-3000，单位：米。
+  batch?: boolean; // 是否批量查询
+  extensions?: string; // 逆地理编码时，返回信息的详略。默认值：base，返回基本地址信息；取值为：all，返回地址信息及附近poi、道路、道路交叉口等信息
+  // AMap.Geocoder.getAddress
+  // location: Array<number>; // [lat,lng] 经纬度，要进行地理编码的 LatLng。
+
+  /**
+   * G 地图特有属性
+   */
+  // language?: string; // 应返回结果的语言的语言标识符（如果可能)
+  // location?: { lat: number; lng: number }; // 要进行地理编码的 LatLng。
+  address?: string; // 地址信息 必须提供 address、location 和 placeId 中的一个，且只能提供一个。
+  bounds?: any; //   LatLngBounds|LatLngBoundsLiteral.要在其中进行搜索的 LatLngBounds。
+  componentRestrictions?: any; // 	GeocoderComponentRestrictions。组成部分用于将结果限制在特定区域内。
+  placeId?: string; // 与营业地点相关联的地点 ID。地点 ID 可唯一标识 Google Places 数据库中和 Google 地图上的地点。
+  region?: string; // 用于偏向搜索的国家/地区代码，
+
+  /**
+   * H 地图特有属性
+   */
+  // language?: string; // 搜索结果的语种。如果不指定语种，返回地点的当地语言。
+  // location?: { lat: number; lng: number }; // 查询结果偏向的搜索范围。
+  returnPoi?: boolean; // 是否返回POI的地点名称，默认true。目前逆地理接口，只能返回机场的名称，其他POI不支持返回名称（2025年6月3日）。
+}

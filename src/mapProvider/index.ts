@@ -12,6 +12,8 @@ import {
   IUnifiedSearchByKeywordOptions,
   IUnifiedSearchNearbyOptions,
   IUnifiedPlaceResults,
+  IUnifiedGeocodeOptions,
+  IUnifiedReverseGeocodeOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -36,6 +38,7 @@ export class UnifiedProvider implements IMapProvider {
   private polygonManager: any; // 多边形服务，比如添加多边形，删除多边形等
   private geometryManager: any; // 几何服务，比如计算距离，面积等
   private searchManager: any; // 搜索服务，比如搜索地址，POI等
+  private geocoderManager: any; // 地理编码服务，比如地址转经纬度，经纬度转地址等
 
   // 外部注册的 service 实现类
   static providerSerivces: Record<
@@ -85,6 +88,7 @@ export class UnifiedProvider implements IMapProvider {
     this.polygonManager = initializeService("polygonManager", loader);
     this.geometryManager = initializeService("geometryManager", loader);
     this.searchManager = initializeService("searchManager", loader);
+    this.geocoderManager = initializeService("geocoderManager", loader);
   }
 
   /**
@@ -209,5 +213,24 @@ export class UnifiedProvider implements IMapProvider {
       ["location", "radius"]
     );
     return this.searchManager.searchPlaceNearby(this.map, formattedOptions);
+  }
+
+  geocode(
+    options: IUnifiedGeocodeOptions
+  ): Promise<Array<IUnifiedPlaceResults>> {
+    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(
+      options,
+      ["address"]
+    );
+    return this.geocoderManager.geocode(this.map, formattedOptions);
+  }
+  reverseGeocode(
+    options: IUnifiedReverseGeocodeOptions
+  ): Promise<Array<IUnifiedPlaceResults>> {
+    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(
+      options,
+      ["location"]
+    );
+    return this.geocoderManager.reverseGeocode(this.map, formattedOptions);
   }
 }

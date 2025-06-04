@@ -13,7 +13,8 @@ export type MapProviderServiceEnum =
   | "markerManager"
   | "polygonManager"
   | "geometryManager"
-  | "searchManager";
+  | "searchManager"
+  | "geocoderManager";
 
 export interface ILoadScriptOptions {
   /**

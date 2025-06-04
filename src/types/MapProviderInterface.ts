@@ -11,6 +11,8 @@ import {
   IUnifiedSearchByKeywordOptions,
   IUnifiedSearchNearbyOptions,
   IUnifiedPlaceResults,
+  IUnifiedGeocodeOptions,
+  IUnifiedReverseGeocodeOptions,x
 } from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
@@ -43,6 +45,13 @@ export interface IMapProvider {
   ): Promise<Array<IUnifiedPlaceResults>>;
   searchPlaceNearby(
     options: IUnifiedSearchNearbyOptions
+  ): Promise<Array<IUnifiedPlaceResults>>;
+
+  geocode(
+    options: IUnifiedGeocodeOptions
+  ): Promise<Array<IUnifiedPlaceResults>>;
+  reverseGeocode(
+    options: IUnifiedReverseGeocodeOptions
   ): Promise<Array<IUnifiedPlaceResults>>;
 }
 
