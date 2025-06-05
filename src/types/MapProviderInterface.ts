@@ -12,7 +12,8 @@ import {
   IUnifiedSearchNearbyOptions,
   IUnifiedPlaceResults,
   IUnifiedGeocodeOptions,
-  IUnifiedReverseGeocodeOptions,x
+  IUnifiedReverseGeocodeOptions,x,
+  IUnifiedRouteDriveOptions
 } from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
@@ -53,6 +54,16 @@ export interface IMapProvider {
   reverseGeocode(
     options: IUnifiedReverseGeocodeOptions
   ): Promise<Array<IUnifiedPlaceResults>>;
+
+  routeDrive(
+    options: IUnifiedRouteDriveOptions
+  ): Promise<any>;
+  routeWalk(
+    options: IUnifiedRouteDriveOptions
+  ): Promise<any>;
+  routeRide(
+    options: IUnifiedRouteDriveOptions
+  ): Promise<any>;
 }
 
 export interface IInitMapOptions {

@@ -726,3 +726,235 @@ export interface IUnifiedReverseGeocodeOptions {
   // location?: { lat: number; lng: number }; // 查询结果偏向的搜索范围。
   returnPoi?: boolean; // 是否返回POI的地点名称，默认true。目前逆地理接口，只能返回机场的名称，其他POI不支持返回名称（2025年6月3日）。
 }
+
+export interface IUnifiedRouteDriveOptions {
+  /**
+   * 所有地图共有属性
+   */
+  origin: { lat: number; lng: number }; // 起点 A: origin  G: origin    H: origin
+  destination: { lat: number; lng: number }; // 终点 A: destination  G: destination    H: destination
+  waypoints?: Array<{ lat: number; lng: number }>; // 中转点 A: opts.waypoints  G: waypoints H: waypoints
+
+  /**
+   * AG 地图共有属性
+   */
+  avoidFerries?: boolean; // 如果为 true，则指示路线服务尽可能避开轮渡 A: ferry(0-使用轮渡,1-不使用轮渡)   G：avoidFerries
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+  trafficMode?: number; // 时间预估模型。取值包括： G -> drivingOptions.trafficModel BEST_GUESS（默认值）:使用历史交通数据，尽可能准确地估算在交通拥堵中花费的时间; OPTIMISTIC	使用历史流量数据乐观估算流量时长; PESSIMISTIC	使用历史流量数据对流量时长进行悲观估计 H -> trafficMode: 0：best guess; 1：路况差于历史平均水平; 2：路况优于历史平均水平;默认值为0。
+  departAt?: number; // 预计出发时间。时间预估模型。取值包括： G -> drivingOptions.departureTime。 H -> departAt
+  avoidHighways?: boolean; // 如果设置为 true，则指示路线服务尽可能避开高速公路  G:avoidHighways   H: avoid=[2]
+  avoidTolls?: boolean; // 如果为 true，则指示路线服务尽可能避开收费道路 G:avoidTolls  H: avoid=[1]
+
+  /**
+   * A 地图特有属性
+   */
+  // AMap.Driving
+  policy?: "LEAST_TIME" | "LEAST_FEE" | "LEAST_DISTANCE" | "REAL_TRAFFIC"; // LEAST_TIME: 最快捷模式     LEAST_FEE:最经济模式     LEAST_DISTANCE: 最短距离模式     REAL_TRAFFIC:考虑实时路况
+  extensions?: string; // 默认值：base，返回基本地址信息  当取值为：all，返回DriveStep基本信息+DriveStep详细信息
+  // ferry?: number; // 默认为0，表示可以使用轮渡，为1的时候表示不可以使用轮渡
+  map?: any; // AMap.Map对象, 展现结果的地图实例。当指定此参数后，搜索结果的标注、线路等均会自动添加到此地图上。可选
+  panel?: string | HTMLElement; // 结果列表的HTML容器id或容器元素，提供此参数后，结果列表将在此容器中进行展示
+  hideMarkers?: boolean; // 设置隐藏路径规划的起始点图标，设置为true：隐藏图标；设置false：显示图标
+  showTraffic?: boolean; // 设置是否显示实时路况信息，默认设置为true。
+  province?: string; // 车牌省份的汉字缩写，用于判断是否限行，与number属性组合使用，
+  number?: string; // 除省份之外车牌的字母和数字，用于判断限行相关，与province属性组合使用，可选。例如:NH1N11
+  isOutline?: boolean; // 使用map属性时，绘制的规划线路是否显示描边 默认 true
+  outlineColor?: string; // 使用map属性时，绘制的规划线路的描边颜色。默认为'white'
+  autoFitView?: boolean; // 用于控制在路径规划结束后，是否自动调整地图视野使绘制的路线处于视口的可见范围
+  // AMap.Driving().search
+  // origin: Array<number> // [lng, lat] 起点
+  // destination: Array<number> // [lng, lat] 终点
+  opts: {
+    // waypoints?: Array<Array<number>>; // [[lng, lat]] 途经点
+  };
+
+  /**
+   * G 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+  // waypoints?: Array<{
+  //   location: { lat: number; lng: number };
+  //   stopover: boolean; // 如果为 true，表示此航点是出发地和目的地之间的经停点。这会将路线一分为二。如果为 false，表示路线应偏向于经过此航点，但不拆分为两段。如果您想根据用户在地图上拖动航点的情况创建路线，这非常有用。
+  // }>; // 中间路标的数组。系统会通过此数组中的每个航点计算从起点到目的地的路线。
+  travelMode: string; // BICYCLING	指定骑车路线请求。  DRIVING	指定行车路线请求。  TRANSIT	指定公交路线指引请求。  WALKING	指定步行路线请求。
+  // drivingOptions?: {
+  //   departureTime: Date; // 路线的预期出发时间， 出发时间必须设置为当前时间或未来的某个时间。而不能是过去的时间。
+  //   trafficModel?: string; // 指定路线类型。 BEST_GUESS（默认值）	使用历史交通数据，尽可能准确地估算在交通拥堵中花费的时间。    OPTIMISTIC	使用历史流量数据乐观估算流量时长。    PESSIMISTIC	使用历史流量数据对流量时长进行悲观估计。
+  // };
+  // avoidFerries?: boolean; // 如果为 true，则指示路线服务尽可能避开轮渡
+  // avoidHighways?: boolean; // 如果设置为 true，则指示路线服务尽可能避开高速公路
+  // avoidTolls?: boolean; // 如果为 true，则指示路线服务尽可能避开收费道路
+  language?: string; // 应返回结果的语言的语言标识符（如果可能）。
+  transitOptions?: {
+    // 仅适用于 travelMode 为 TRANSIT 的请求的设置。此对象对其他出行方式没有影响。
+    arrivalTime?: Date; // 路线的预期到达时间
+    departureTime?: Date; // 路线的预期出发时间
+    modes?: Array<string>; // 一种或多种首选公共交通方式。BUS	将公交车指定为首选公共交通方式。      RAIL	将铁路指定为首选公共交通方式。      SUBWAY	将地铁指定为首选公共交通方式。      TRAIN	将火车指定为首选公共交通方式。      TRAM	将电车指定为首选公共交通方式。
+    routingPreference?: string; // 一种偏好设置，可能会影响公交路线的选择，例如步行路程较短。如果未指定任何偏好设置，API 会返回默认的最佳路线。
+  };
+  optimizeWaypoints?: boolean; // 如果设置为 true，DirectionsService 将尝试重新排列所提供的中间航点，以最大限度地减少路线的总费用。如果航点经过优化，请检查响应中的 DirectionsRoute.waypoint_order 以确定新的排序。
+  provideRouteAlternatives?: boolean; // 是否应提供备选路线
+  region?: string; // 用作地址解析请求偏向的区域代码
+  unitSystem?: string; // 出发地所使用的单位制。显示距离时要使用的首选单位制。IMPERIAL	：距离应以英制单位表示。 METRIC：距离应以公制单位表示。
+
+  /**
+   * H 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+  // waypoints?: Array<{ lat: number; lng: number }>; // 中转点
+  // departAt?: number; // 预计出发时间。以自UTC 1970年1月1日午夜以来的秒数为单位。  必须是当前或者未来时间，不能是过去时间。
+  // trafficMode?: number; // 时间预估模型。取值包括：  0：best guess。  1：路况差于历史平均水平。  2：路况优于历史平均水平   默认值为0。
+  alternatives?: boolean; // 如果设置为true，可以返回多条规划路线结果。 默认值为 false
+  viaType?: boolean; // 途径点类型，是via类型还是stopover类型。  false：stopover类型。  true：via类型  默认值为false。
+  // optimize?: boolean; // 是否对途径点进行优化。 默认值为 false
+  // avoid?: Array<number>; // 表示计算出的路径应避免所指示的特性，取值包括：  1：避免经过收费的公路。  2：避开高速公路。  默认按时间最短返回。
+}
+
+export interface IUnifiedRouteWalkOptions {
+  /**
+   * 所有地图共有属性
+   */
+  origin: { lat: number; lng: number }; // 起点 A: origin  G: origin    H: origin
+  destination: { lat: number; lng: number }; // 终点 A: destination  G: destination    H: destination
+
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+
+  /**
+   * A 地图特有属性
+   */
+  // AMap.Walking
+  map?: any; // AMap.Map对象, 展现结果的地图实例。当指定此参数后，搜索结果的标注、线路等均会自动添加到此地图上。可选
+  panel?: string | HTMLElement; // 结果列表的HTML容器id或容器元素，提供此参数后，结果列表将在此容器中进行展示
+  hideMarkers?: boolean; // 设置隐藏路径规划的起始点图标，设置为true：隐藏图标；设置false：显示图标
+  isOutline?: boolean; // 使用map属性时，绘制的规划线路是否显示描边 默认 true
+  outlineColor?: string; // 使用map属性时，绘制的规划线路的描边颜色。默认为'white'
+  autoFitView?: boolean; // 用于控制在路径规划结束后，是否自动调整地图视野使绘制的路线处于视口的可见范围
+  // AMap.Walking().search
+  // origin: Array<number> // [lng, lat] 起点
+  // destination: Array<number> // [lng, lat] 终点
+
+  /**
+   * G 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+  waypoints?: Array<{
+    location: { lat: number; lng: number };
+    stopover: boolean; // 如果为 true，表示此航点是出发地和目的地之间的经停点。这会将路线一分为二。如果为 false，表示路线应偏向于经过此航点，但不拆分为两段。如果您想根据用户在地图上拖动航点的情况创建路线，这非常有用。
+  }>; // 中间路标的数组。系统会通过此数组中的每个航点计算从起点到目的地的路线。
+  travelMode: string; // BICYCLING	指定骑车路线请求。  DRIVING	指定行车路线请求。  TRANSIT	指定公交路线指引请求。  WALKING	指定步行路线请求。
+  drivingOptions?: {
+    departureTime: Date; // 路线的预期出发时间， 出发时间必须设置为当前时间或未来的某个时间。而不能是过去的时间。
+    trafficModel?: string; // 指定路线类型。 BEST_GUESS（默认值）	使用历史交通数据，尽可能准确地估算在交通拥堵中花费的时间。    OPTIMISTIC	使用历史流量数据乐观估算流量时长。    PESSIMISTIC	使用历史流量数据对流量时长进行悲观估计。
+  };
+  avoidFerries?: boolean; // 如果为 true，则指示路线服务尽可能避开轮渡
+  avoidHighways?: boolean; // 如果设置为 true，则指示路线服务尽可能避开高速公路
+  avoidTolls?: boolean; // 如果为 true，则指示路线服务尽可能避开收费道路
+  language?: string; // 应返回结果的语言的语言标识符（如果可能）。
+  transitOptions?: {
+    // 仅适用于 travelMode 为 TRANSIT 的请求的设置。此对象对其他出行方式没有影响。
+    arrivalTime?: Date; // 路线的预期到达时间
+    departureTime?: Date; // 路线的预期出发时间
+    modes?: Array<string>; // 一种或多种首选公共交通方式。BUS	将公交车指定为首选公共交通方式。      RAIL	将铁路指定为首选公共交通方式。      SUBWAY	将地铁指定为首选公共交通方式。      TRAIN	将火车指定为首选公共交通方式。      TRAM	将电车指定为首选公共交通方式。
+    routingPreference?: string; // 一种偏好设置，可能会影响公交路线的选择，例如步行路程较短。如果未指定任何偏好设置，API 会返回默认的最佳路线。
+  };
+  optimizeWaypoints?: boolean; // 如果设置为 true，DirectionsService 将尝试重新排列所提供的中间航点，以最大限度地减少路线的总费用。如果航点经过优化，请检查响应中的 DirectionsRoute.waypoint_order 以确定新的排序。
+  provideRouteAlternatives?: boolean; // 是否应提供备选路线
+  region?: string; // 用作地址解析请求偏向的区域代码
+  unitSystem?: string; // 出发地所使用的单位制。显示距离时要使用的首选单位制。IMPERIAL	：距离应以英制单位表示。 METRIC：距离应以公制单位表示。
+
+  /**
+   * H 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+}
+export interface IUnifiedRouteRideOptions {
+  /**
+   * 所有地图共有属性
+   */
+  origin: { lat: number; lng: number }; // 起点 A: origin  G: origin    H: origin
+  destination: { lat: number; lng: number }; // 终点 A: destination  G: destination    H: destination
+
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+
+  /**
+   * A 地图特有属性
+   */
+  // AMap.Riding
+  policy?: number; // 骑行路线规划策略；可选值为：  0：推荐路线及最快路线综合  1：推荐路线  2：最快路线  默认值：0
+  map?: any; // AMap.Map对象, 展现结果的地图实例。当指定此参数后，搜索结果的标注、线路等均会自动添加到此地图上。可选
+  panel?: string | HTMLElement; // 结果列表的HTML容器id或容器元素，提供此参数后，结果列表将在此容器中进行展示
+  hideMarkers?: boolean; // 设置隐藏路径规划的起始点图标，设置为true：隐藏图标；设置false：显示图标
+  isOutline?: boolean; // 使用map属性时，绘制的规划线路是否显示描边 默认 true
+  outlineColor?: string; // 使用map属性时，绘制的规划线路的描边颜色。默认为'white'
+  autoFitView?: boolean; // 用于控制在路径规划结束后，是否自动调整地图视野使绘制的路线处于视口的可见范围
+  // AMap.Riding().search
+  // origin: Array<number> // [lng, lat] 起点
+  // destination: Array<number> // [lng, lat] 终点
+
+  /**
+   * G 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+  waypoints?: Array<{
+    location: { lat: number; lng: number };
+    stopover: boolean; // 如果为 true，表示此航点是出发地和目的地之间的经停点。这会将路线一分为二。如果为 false，表示路线应偏向于经过此航点，但不拆分为两段。如果您想根据用户在地图上拖动航点的情况创建路线，这非常有用。
+  }>; // 中间路标的数组。系统会通过此数组中的每个航点计算从起点到目的地的路线。
+  travelMode: string; // BICYCLING	指定骑车路线请求。  DRIVING	指定行车路线请求。  TRANSIT	指定公交路线指引请求。  WALKING	指定步行路线请求。
+  drivingOptions?: {
+    departureTime: Date; // 路线的预期出发时间， 出发时间必须设置为当前时间或未来的某个时间。而不能是过去的时间。
+    trafficModel?: string; // 指定路线类型。 BEST_GUESS（默认值）	使用历史交通数据，尽可能准确地估算在交通拥堵中花费的时间。    OPTIMISTIC	使用历史流量数据乐观估算流量时长。    PESSIMISTIC	使用历史流量数据对流量时长进行悲观估计。
+  };
+  avoidFerries?: boolean; // 如果为 true，则指示路线服务尽可能避开轮渡
+  avoidHighways?: boolean; // 如果设置为 true，则指示路线服务尽可能避开高速公路
+  avoidTolls?: boolean; // 如果为 true，则指示路线服务尽可能避开收费道路
+  language?: string; // 应返回结果的语言的语言标识符（如果可能）。
+  transitOptions?: {
+    // 仅适用于 travelMode 为 TRANSIT 的请求的设置。此对象对其他出行方式没有影响。
+    arrivalTime?: Date; // 路线的预期到达时间
+    departureTime?: Date; // 路线的预期出发时间
+    modes?: Array<string>; // 一种或多种首选公共交通方式。BUS	将公交车指定为首选公共交通方式。      RAIL	将铁路指定为首选公共交通方式。      SUBWAY	将地铁指定为首选公共交通方式。      TRAIN	将火车指定为首选公共交通方式。      TRAM	将电车指定为首选公共交通方式。
+    routingPreference?: string; // 一种偏好设置，可能会影响公交路线的选择，例如步行路程较短。如果未指定任何偏好设置，API 会返回默认的最佳路线。
+  };
+  optimizeWaypoints?: boolean; // 如果设置为 true，DirectionsService 将尝试重新排列所提供的中间航点，以最大限度地减少路线的总费用。如果航点经过优化，请检查响应中的 DirectionsRoute.waypoint_order 以确定新的排序。
+  provideRouteAlternatives?: boolean; // 是否应提供备选路线
+  region?: string; // 用作地址解析请求偏向的区域代码
+  unitSystem?: string; // 出发地所使用的单位制。显示距离时要使用的首选单位制。IMPERIAL	：距离应以英制单位表示。 METRIC：距离应以公制单位表示。
+
+  /**
+   * H 地图特有属性
+   */
+  // origin: { lat: number; lng: number }; // 起点
+  // destination: { lat: number; lng: number }; // 终点
+}

@@ -14,6 +14,7 @@ import {
   IUnifiedPlaceResults,
   IUnifiedGeocodeOptions,
   IUnifiedReverseGeocodeOptions,
+  IUnifiedRouteDriveOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -31,6 +32,7 @@ import { formatOptions } from "../utils";
 
 export class UnifiedProvider implements IMapProvider {
   map: any;
+  mapProvider: MapProviderEnum;
   private loader: any;
   private baseManager: any; // 基础服务，比如初始化地图，设置中心点，设置缩放级别等
   private lineManager: any; // 线服务，比如添加线，删除线等
@@ -39,6 +41,7 @@ export class UnifiedProvider implements IMapProvider {
   private geometryManager: any; // 几何服务，比如计算距离，面积等
   private searchManager: any; // 搜索服务，比如搜索地址，POI等
   private geocoderManager: any; // 地理编码服务，比如地址转经纬度，经纬度转地址等
+  private directionManager: any; // 路径规划服务，比如驾车，步行，骑行等
 
   // 外部注册的 service 实现类
   static providerSerivces: Record<
@@ -64,6 +67,7 @@ export class UnifiedProvider implements IMapProvider {
 
   constructor(provider: MapProviderEnum, loader: any) {
     this.loader = loader;
+    this.mapProvider = provider;
     const initializeService = (
       serviceName: MapProviderServiceEnum,
       loader: any
@@ -89,6 +93,7 @@ export class UnifiedProvider implements IMapProvider {
     this.geometryManager = initializeService("geometryManager", loader);
     this.searchManager = initializeService("searchManager", loader);
     this.geocoderManager = initializeService("geocoderManager", loader);
+    this.directionManager = initializeService("directionManager", loader);
   }
 
   /**
@@ -218,19 +223,39 @@ export class UnifiedProvider implements IMapProvider {
   geocode(
     options: IUnifiedGeocodeOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
-    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(
-      options,
-      ["address"]
-    );
+    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(options, [
+      "address",
+    ]);
     return this.geocoderManager.geocode(this.map, formattedOptions);
   }
   reverseGeocode(
     options: IUnifiedReverseGeocodeOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
-    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(
-      options,
-      ["location"]
-    );
+    const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(options, [
+      "location",
+    ]);
     return this.geocoderManager.reverseGeocode(this.map, formattedOptions);
+  }
+
+  routeDrive(options: IUnifiedRouteDriveOptions): any {
+    const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
+      "origin",
+      "destination",
+    ]);
+    return this.directionManager.routeDrive(this.map, formattedOptions);
+  }
+  routeWalk(options: IUnifiedRouteDriveOptions): Promise<any> {
+    const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
+      "origin",
+      "destination",
+    ]);
+    return this.directionManager.routeWalk(this.map, formattedOptions);
+  }
+  routeRide(options: IUnifiedRouteDriveOptions): Promise<any> {
+    const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
+      "origin",
+      "destination",
+    ]);
+    return this.directionManager.routeRide(this.map, formattedOptions);
   }
 }
