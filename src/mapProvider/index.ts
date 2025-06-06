@@ -15,6 +15,8 @@ import {
   IUnifiedGeocodeOptions,
   IUnifiedReverseGeocodeOptions,
   IUnifiedRouteDriveOptions,
+  IUnifiedRouteWalkOptions,
+  IUnifiedRouteRideOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -244,15 +246,15 @@ export class UnifiedProvider implements IMapProvider {
     ]);
     return this.directionManager.routeDrive(this.map, formattedOptions);
   }
-  routeWalk(options: IUnifiedRouteDriveOptions): Promise<any> {
-    const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
+  routeWalk(options: IUnifiedRouteWalkOptions): Promise<any> {
+    const formattedOptions = formatOptions<IUnifiedRouteWalkOptions>(options, [
       "origin",
       "destination",
     ]);
     return this.directionManager.routeWalk(this.map, formattedOptions);
   }
-  routeRide(options: IUnifiedRouteDriveOptions): Promise<any> {
-    const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
+  routeRide(options: IUnifiedRouteRideOptions): Promise<any> {
+    const formattedOptions = formatOptions<IUnifiedRouteRideOptions>(options, [
       "origin",
       "destination",
     ]);
