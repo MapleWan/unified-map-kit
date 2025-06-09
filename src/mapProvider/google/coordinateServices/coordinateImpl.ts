@@ -1,5 +1,10 @@
 import { UnifiedProvider } from "../..";
-import { lnglatToPixel, pixelToLnglat } from "../../commonHandler";
+import {
+  lnglatToPixel,
+  pixelToLnglat,
+  webMercatorToWgs84,
+  wgs84ToWebMercator,
+} from "../../commonHandler";
 import {
   IPixelToLnglatOptions,
   ILnglatToPixelOptions,
@@ -25,6 +30,16 @@ export class CoordinateManager {
     lng: number;
   } {
     return pixelToLnglat(options.pixel, options.zoom);
+  }
+
+  // wgs84 -> EPSG:3857  WGS84经纬度转3857投影经纬度。
+  wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number } {
+    return wgs84ToWebMercator(lng, lat);
+  }
+
+  // EPSGEPSG:3857 -> wgs84  3857投影经纬度转WGS84经纬度
+  webMercatorToWgs84(x: number, y: number): { lng: number; lat: number } {
+    return webMercatorToWgs84(x, y);
   }
 }
 

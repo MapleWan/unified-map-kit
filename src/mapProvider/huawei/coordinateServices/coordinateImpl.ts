@@ -1,6 +1,14 @@
 import { UnifiedProvider } from "../..";
-import { lnglatToPixel, pixelToLnglat } from "../../commonHandler";
-import { ILnglatToPixelOptions, IPixelToLnglatOptions } from "../../serviceParamsType";
+import {
+  lnglatToPixel,
+  pixelToLnglat,
+  webMercatorToWgs84,
+  wgs84ToWebMercator,
+} from "../../commonHandler";
+import {
+  ILnglatToPixelOptions,
+  IPixelToLnglatOptions,
+} from "../../serviceParamsType";
 
 declare const HWMapJsSDK: any;
 export class CoordinateManager {
@@ -20,8 +28,28 @@ export class CoordinateManager {
   pixelToLngLat(options: IPixelToLnglatOptions): {
     lat: number;
     lng: number;
-  }{
+  } {
     return pixelToLnglat(options.pixel, options.zoom);
+  }
+
+  // wgs84 -> EPSG:3857  WGS84经纬度转3857投影经纬度。
+  wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number } {
+    const res = HWMapJsSDK.HWMapUtils.epsgFromLatLng({
+      lat: lat,
+      lng: lng,
+    });
+    return {
+      x: res[0],
+      y: res[1],
+    };
+    // return wgs84ToWebMercator(lng, lat);
+  }
+
+  // EPSGEPSG:3857 -> wgs84  3857投影经纬度转WGS84经纬度
+  webMercatorToWgs84(x: number, y: number): { lng: number; lat: number } {
+    const res = HWMapJsSDK.HWMapUtils.epsgToLatLng([x, y])
+    return res;
+    // return webMercatorToWgs84(x, y);
   }
 }
 

@@ -110,31 +110,43 @@
             pixel: { x: 525, y: 761 },
             zoom: 3,
           };
-          setTimeout(() => {
-            console.log("经纬度转平面地图像素");
-            console.log(
-              "huawei",
-              huaweiMap.lnglatToPixel(lnglatToPixelOptions)
-            );
-            console.log("amap", amapMap.lnglatToPixel(lnglatToPixelOptions));
-            console.log(
-              "google",
-              googleMap.lnglatToPixel(lnglatToPixelOptions)
-            );
+          console.log("经纬度转平面地图像素");
+          console.log("huawei", huaweiMap.lnglatToPixel(lnglatToPixelOptions));
+          console.log("amap", amapMap.lnglatToPixel(lnglatToPixelOptions));
+          console.log("google", googleMap.lnglatToPixel(lnglatToPixelOptions));
 
-            setTimeout(() => {
-              console.log("平面地图像素转经纬度");
-              console.log(
-                "huawei",
-                huaweiMap.pixelToLngLat(pixelToLnglatOptions)
-              );
-              console.log("amap", amapMap.pixelToLngLat(pixelToLnglatOptions));
-              console.log(
-                "google",
-                googleMap.pixelToLngLat(pixelToLnglatOptions)
-              );
-            }, 2000);
-          }, 2000);
+          console.log("平面地图像素转经纬度");
+          console.log("huawei", huaweiMap.pixelToLngLat(pixelToLnglatOptions));
+          console.log("amap", amapMap.pixelToLngLat(pixelToLnglatOptions));
+          console.log("google", googleMap.pixelToLngLat(pixelToLnglatOptions));
+
+          console.log("wgs84 -> EPSG:3857  WGS84经纬度转3857投影经纬度。");
+          console.log(
+            "huawei",
+            huaweiMap.wgs84ToWebMercator(116.442581, 39.882498)
+          );
+          console.log(
+            "amap",
+            amapMap.wgs84ToWebMercator(116.442581, 39.882498)
+          );
+          console.log(
+            "google",
+            googleMap.wgs84ToWebMercator(116.442581, 39.882498)
+          );
+
+          console.log("EPSGEPSG:3857 -> wgs84  3857投影经纬度转WGS84经纬度");
+          console.log(
+            "huawei",
+            huaweiMap.webMercatorToWgs84(12962328.823574513, 4848881.871897727)
+          );
+          console.log(
+            "amap",
+            amapMap.webMercatorToWgs84(12962328.823574513, 4848881.871897727)
+          );
+          console.log(
+            "google",
+            googleMap.webMercatorToWgs84(12962328.823574513, 4848881.871897727)
+          );
         } catch (error) {
           console.error("Map initialization failed:", error);
         }

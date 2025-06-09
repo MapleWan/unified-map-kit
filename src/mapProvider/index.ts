@@ -19,6 +19,7 @@ import {
   IUnifiedRouteRideOptions,
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
+  IPathAnimateOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -278,5 +279,22 @@ export class UnifiedProvider implements IMapProvider {
       "zoom",
     ]);
     return this.coordinateManager.pixelToLngLat(formattedOptions);
+  }
+
+  wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number } {
+    if(!lng || !lat || typeof lng !== 'number' || typeof lat !== 'number' ){
+      throw new Error("Parameter 'lng' and 'lat' is required");
+    }
+    return this.coordinateManager.wgs84ToWebMercator(lng, lat);
+  }
+  webMercatorToWgs84(x: number, y: number): { lng: number; lat: number } {
+    if(!x || !y || typeof x !== 'number' || typeof y !== 'number' ){
+      throw new Error("Parameter 'x' and 'y' is required");
+    }
+    return this.coordinateManager.webMercatorToWgs84(x, y);
+  }
+
+  animatePath(options?: IPathAnimateOptions): void {
+    this.directionManager.animatePath(this.map, options);
   }
 }

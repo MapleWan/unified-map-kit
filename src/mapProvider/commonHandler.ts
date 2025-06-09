@@ -55,5 +55,32 @@ export function pixelToLnglat(
   return latLng;
 }
 
+// wgs84 -> EPSG:3857  WGS84经纬度转3857投影经纬度。
+export function wgs84ToWebMercator(
+  lng: number,
+  lat: number
+): { x: number; y: number } {
+  const R = 6378137.0;
+  const x = (R * lng * Math.PI) / 180;
+  const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+  return { x, y };
+}
+
+// EPSGEPSG:3857 -> wgs84  3857投影经纬度转WGS84经纬度
+export function webMercatorToWgs84(
+  x: number,
+  y: number
+): { lng: number; lat: number } {
+  const R = 6378137.0;
+  const lng = ((x / R) * 180) / Math.PI;
+  const lat = ((2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) * 180) / Math.PI;
+  return { lng: Number(lng.toFixed(6)), lat: Number(lat.toFixed(6)) };
+}
+
+
 // console.log(lnglatToPixel({ lat: 41.85, lng: -87.65 }, 3));
 // console.log(pixelToLnglat({ x: 525, y: 761 }, 3));
+
+// console.log(wgs84ToWebMercator(116.442581, 39.882498));
+// console.log(webMercatorToWgs84(12962328.823574513, 4848881.871897727));
+

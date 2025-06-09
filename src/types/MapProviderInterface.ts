@@ -73,6 +73,9 @@ export interface IMapProvider {
     lat: number;
     lng: number;
   };
+
+  wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number };
+  webMercatorToWgs84(x: number, y: number): { lng: number; lat: number };
 }
 export interface IInitMapOptions {
   /**
