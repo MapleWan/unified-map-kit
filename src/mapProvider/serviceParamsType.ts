@@ -958,3 +958,13 @@ export interface IUnifiedRouteRideOptions {
   // origin: { lat: number; lng: number }; // 起点
   // destination: { lat: number; lng: number }; // 终点
 }
+
+export interface ILnglatToPixelOptions {
+  position: { lat: number; lng: number }; // 经纬度
+  zoom: number; // 缩放级别
+}
+
+export interface IPixelToLnglatOptions {
+  pixel: { x: number; y: number }; // 像素坐标
+  zoom: number; // 缩放级别
+}

@@ -15,7 +15,9 @@ import {
   IUnifiedReverseGeocodeOptions,
   IUnifiedRouteDriveOptions,
   IUnifiedRouteWalkOptions,
-  IUnifiedRouteRideOptions
+  IUnifiedRouteRideOptions,
+  ILnglatToPixelOptions,
+  IPixelToLnglatOptions,
 } from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
@@ -57,17 +59,21 @@ export interface IMapProvider {
     options: IUnifiedReverseGeocodeOptions
   ): Promise<Array<IUnifiedPlaceResults>>;
 
-  routeDrive(
-    options: IUnifiedRouteDriveOptions
-  ): Promise<any>;
-  routeWalk(
-    options: IUnifiedRouteWalkOptions
-  ): Promise<any>;
-  routeRide(
-    options: IUnifiedRouteRideOptions
-  ): Promise<any>;
-}
+  routeDrive(options: IUnifiedRouteDriveOptions): Promise<any>;
+  routeWalk(options: IUnifiedRouteWalkOptions): Promise<any>;
+  routeRide(options: IUnifiedRouteRideOptions): Promise<any>;
 
+  // containerToLnglat(options: any): Promise<any>;
+  // lngLatToContainer(options: any): Promise<any>;
+  lnglatToPixel(options: ILnglatToPixelOptions): {
+    x: number;
+    y: number;
+  };
+  pixelToLngLat(options: IPixelToLnglatOptions): {
+    lat: number;
+    lng: number;
+  };
+}
 export interface IInitMapOptions {
   /**
    * map-kit 需要的配置参数

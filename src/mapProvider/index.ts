@@ -17,6 +17,8 @@ import {
   IUnifiedRouteDriveOptions,
   IUnifiedRouteWalkOptions,
   IUnifiedRouteRideOptions,
+  ILnglatToPixelOptions,
+  IPixelToLnglatOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -44,6 +46,7 @@ export class UnifiedProvider implements IMapProvider {
   private searchManager: any; // 搜索服务，比如搜索地址，POI等
   private geocoderManager: any; // 地理编码服务，比如地址转经纬度，经纬度转地址等
   private directionManager: any; // 路径规划服务，比如驾车，步行，骑行等
+  private coordinateManager: any; // 坐标服务，比如坐标转换相关
 
   // 外部注册的 service 实现类
   static providerSerivces: Record<
@@ -96,6 +99,7 @@ export class UnifiedProvider implements IMapProvider {
     this.searchManager = initializeService("searchManager", loader);
     this.geocoderManager = initializeService("geocoderManager", loader);
     this.directionManager = initializeService("directionManager", loader);
+    this.coordinateManager = initializeService("coordinateManager", loader);
   }
 
   /**
@@ -259,5 +263,20 @@ export class UnifiedProvider implements IMapProvider {
       "destination",
     ]);
     return this.directionManager.routeRide(this.map, formattedOptions);
+  }
+
+  lnglatToPixel(options: ILnglatToPixelOptions): { x: number; y: number } {
+    const formattedOptions = formatOptions<ILnglatToPixelOptions>(options, [
+      "position",
+      "zoom",
+    ]);
+    return this.coordinateManager.lnglatToPixel(formattedOptions);
+  }
+  pixelToLngLat(options: IPixelToLnglatOptions): { lat: number; lng: number } {
+    const formattedOptions = formatOptions<IPixelToLnglatOptions>(options, [
+      "pixel",
+      "zoom",
+    ]);
+    return this.coordinateManager.pixelToLngLat(formattedOptions);
   }
 }
