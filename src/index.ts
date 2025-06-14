@@ -21,7 +21,7 @@ import { UnifiedProvider } from "./mapProvider";
 // import { BaseManager } from "./mapProvider/amap/baseServices/baseImpl";
 // console.log(BaseManager, " ------ >inited");
 // 注册地图提供者的 service 服务
-import 'virtual:auto-import-impl';
+import "virtual:auto-import-impl";
 
 let cachedLoader: Record<string, any> = {}; // 缓存加载器
 
@@ -106,68 +106,72 @@ export async function createMap(
   const mapProvider = new UnifiedProvider(formattedOptions.mapProvider, loader);
 
   // 对 用户使用地图组件的方法进行拦截
-  const mapProxy = new Proxy(mapProvider, {
-    get(target, prop, receiver) {
-      if (prop === "then") return undefined;
-      if (prop === "map") return undefined;
+  // const mapProxy = new Proxy(mapProvider, {
+  //   get(target, prop, receiver) {
+  //     if (prop === "then") return undefined;
+  //     if (prop === "map") return undefined;
 
-      if (prop === "source") {
-        // 在这里可以对用户访问原始地图对象的方法进行拦截，后续可能需要限制用户的访问
-        return new Proxy(target.map, {
-          get(targetMap, prop, receiver) {
-            let cached = methodCache.get(targetMap);
-            if (!cached) {
-              cached = {};
-              methodCache.set(targetMap, cached);
-            }
-            if (!cached[prop]) {
-              const tmpGetter = Reflect.get(targetMap, prop, receiver);
-              cached[prop] =
-                typeof tmpGetter === "function"
-                  ? Reflect.get(targetMap, prop, receiver).bind(target)
-                  : tmpGetter;
-            }
-            return cached[prop];
-          },
-        });
-      }
-      if (prop in target) {
-        let cached = methodCache.get(target);
-        if (!cached) {
-          cached = {};
-          methodCache.set(target, cached);
-        }
-        if (!cached[prop]) {
-          const tmpGetter = Reflect.get(target, prop, receiver);
-          cached[prop] =
-            typeof tmpGetter === "function"
-              ? Reflect.get(target, prop, receiver).bind(target)
-              : tmpGetter;
-        }
+  //     if (prop === "source") {
+  //       // 在这里可以对用户访问原始地图对象的方法进行拦截，后续可能需要限制用户的访问
+  //       return new Proxy(target.map, {
+  //         get(targetMap, prop, receiver) {
+  //           let cached = methodCache.get(targetMap);
+  //           if (!cached) {
+  //             cached = {};
+  //             methodCache.set(targetMap, cached);
+  //           }
+  //           if (!cached[prop]) {
+  //             const tmpGetter = Reflect.get(targetMap, prop, receiver);
+  //             cached[prop] =
+  //               typeof tmpGetter === "function"
+  //                 ? tmpGetter.bind(targetMap)
+  //                 : tmpGetter;
+  //           }
+  //           return cached[prop];
+  //         },
+  //       });
+  //     }
+  //     if (prop in target) {
+  //       let cached = methodCache.get(target);
+  //       if (!cached) {
+  //         cached = {};
+  //         methodCache.set(target, cached);
+  //       }
+  //       if (!cached[prop]) {
+  //         const tmpGetter = Reflect.get(target, prop, receiver);
+  //         cached[prop] =
+  //           typeof tmpGetter === "function"
+  //             ? tmpGetter.bind(target)
+  //             : tmpGetter;
+  //       }
 
-        return cached[prop];
-      }
+  //       return cached[prop];
+  //     }
 
-      console.warn(
-        `Property ${String(
-          prop
-        )} not found in provider, maybe you can use 'provider.source' to access it. 'provider.source' is a proxy object which can access all properties of provider map object.`
-      );
-      return undefined;
-    },
-    set(target, prop, value, receiver) {
-      if (prop in target) {
-        return Reflect.set(target, prop, value, receiver);
-      }
-      console.warn(
-        `Property ${String(prop)} not found in provider. Assignment ignored.`
-      );
-      return false;
-    },
-  });
+  //     console.warn(
+  //       `Property ${String(
+  //         prop
+  //       )} not found in provider, maybe you can use 'provider.source' to access it. 'provider.source' is a proxy object which can access all properties of provider map object.`
+  //     );
+  //     return undefined;
+  //   },
+  //   set(target, prop, value, receiver) {
+  //     if (prop in target) {
+  //       return Reflect.set(target, prop, value, receiver);
+  //     }
+  //     console.warn(
+  //       `Property ${String(prop)} not found in provider. Assignment ignored.`
+  //     );
+  //     return false;
+  //   },
+  // });
+  // return mapProxy
+  //   .initMap(formattedOptions)
+  //   .then(() => mapProxy as IMapProvider);
+
   return mapProvider
     .initMap(formattedOptions)
-    .then(() => mapProxy as IMapProvider);
+    .then(() => mapProvider as IMapProvider);
 }
 
 /**

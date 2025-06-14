@@ -93,6 +93,96 @@
     </div>
 
     <script type="module">
+      class Depend {
+        constructor() {
+          // 使用函数避免被重复添加
+          this.reactiveFns = new Set();
+        }
+        addDepend(fn) {
+          if (fn) {
+            this.reactiveFns.add(fn);
+          }
+        }
+        depend() {
+          if (reactiveFn) {
+            this.reactiveFns.add(reactiveFn);
+          }
+        }
+        notify() {
+          this.reactiveFns.forEach((fn) => {
+            fn();
+          });
+        }
+      }
+
+      // 设置一个专门执行响应式函数的一个函数
+      let reactiveFn = null;
+      function watchFn(fn) {
+        reactiveFn = fn;
+        fn();
+        reactiveFn = null;
+      }
+
+      // 封装一个函数: 负责通过obj的key获取对应的Depend对象
+      const objMap = new WeakMap();
+      function getDepend(obj, key) {
+        // 1.根据对象obj, 找到对应的map对象
+        let map = objMap.get(obj);
+        if (!map) {
+          map = new Map();
+          objMap.set(obj, map);
+        }
+        // 2.根据key, 找到对应的depend对象
+        let dep = map.get(key);
+        if (!dep) {
+          dep = new Depend();
+          map.set(key, dep);
+        }
+        return dep;
+      }
+
+      // 方案一: Object.defineProperty() -> Vue2
+      function reactive(obj) {
+        debugger
+        Object.keys(obj).forEach((key) => {
+          let value = obj[key];
+          Object.defineProperty(obj, key, {
+            set: function (newValue) {
+              value = newValue;
+              const dep = getDepend(obj, key);
+              dep.notify();
+            },
+            get: function () {
+              // 找到对应的obj对象的key对应的dep对象
+              const dep = getDepend(obj, key);
+              // dep.addDepend(reactiveFn)
+              dep.depend();
+
+              return value;
+            },
+          });
+        });
+        return obj;
+      }
+
+      // 方式二: new Proxy() -> Vue3
+      // function reactive(obj) {
+      //   const objProxy = new Proxy(obj, {
+      //     set: function (target, key, newValue, receiver) {
+      //       // target[key] = newValue
+      //       Reflect.set(target, key, newValue, receiver);
+      //       const dep = getDepend(target, key);
+      //       dep.notify();
+      //     },
+      //     get: function (target, key, receiver) {
+      //       const dep = getDepend(target, key);
+      //       dep.depend();
+      //       return Reflect.get(target, key, receiver);
+      //     },
+      //   });
+      //   return objProxy;
+      // }
+
       import { createMap, init } from "../src/index";
 
       (async () => {
@@ -113,43 +203,47 @@
             container: document.getElementById("huawei-map"),
             mapProvider: "huawei",
             apiKey: YOUR_HUAWEI_MAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
 
           const amapMap = await init({
             container: document.getElementById("amap-map"),
             mapProvider: "amap",
             apiKey: YOUR_AMAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
 
           const googleMap = await init({
             container: document.getElementById("google-map"),
             mapProvider: "google",
             apiKey: YOUR_GOOGLE_MAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
-          
+
           const huaweiMap1 = await init({
             container: document.getElementById("huawei-map1"),
             mapProvider: "huawei",
             apiKey: YOUR_HUAWEI_MAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
 
           const amapMap1 = await init({
             container: document.getElementById("amap-map1"),
             mapProvider: "amap",
             apiKey: YOUR_AMAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
 
           const googleMap1 = await init({
             container: document.getElementById("google-map1"),
             mapProvider: "google",
             apiKey: YOUR_GOOGLE_MAP_API_KEY,
-            ...initCommonMapOption
+            ...initCommonMapOption,
           });
+
+          const mapleWan = reactive(huaweiMap)
+
+          console.log(mapleWan)
         } catch (error) {
           console.error("Map initialization failed:", error);
         }

@@ -109,10 +109,9 @@ export class UnifiedProvider implements IMapProvider {
    * 2. 设置中心点
    * 3. 设置缩放级别
    */
-  initMap(options: IInitMapOptions): Promise<void> {
-    this.baseManager.initMap(options).then((map: any) => {
-      this.map = map;
-    });
+  async initMap(options: IInitMapOptions): Promise<void> {
+    const map = await this.baseManager.initMap(options);
+    this.map = map;
     return Promise.resolve();
   }
   setCenter(position: { lat: number; lng: number }): void {
@@ -282,19 +281,24 @@ export class UnifiedProvider implements IMapProvider {
   }
 
   wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number } {
-    if(!lng || !lat || typeof lng !== 'number' || typeof lat !== 'number' ){
+    if (!lng || !lat || typeof lng !== "number" || typeof lat !== "number") {
       throw new Error("Parameter 'lng' and 'lat' is required");
     }
     return this.coordinateManager.wgs84ToWebMercator(lng, lat);
   }
   webMercatorToWgs84(x: number, y: number): { lng: number; lat: number } {
-    if(!x || !y || typeof x !== 'number' || typeof y !== 'number' ){
+    if (!x || !y || typeof x !== "number" || typeof y !== "number") {
       throw new Error("Parameter 'x' and 'y' is required");
     }
     return this.coordinateManager.webMercatorToWgs84(x, y);
   }
 
-  animatePath(options?: IPathAnimateOptions): void {
-    this.directionManager.animatePath(this.map, options);
+  animatePath(options: IPathAnimateOptions): any {
+    const formattedOptions = formatOptions<IPathAnimateOptions>(options, [
+      "path",
+    ], {
+      isAutoPlay: false
+    });
+    return this.directionManager.animatePath(this.map, formattedOptions);
   }
 }

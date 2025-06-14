@@ -18,6 +18,7 @@ import {
   IUnifiedRouteRideOptions,
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
+  IPathAnimateOptions,
 } from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
@@ -62,6 +63,12 @@ export interface IMapProvider {
   routeDrive(options: IUnifiedRouteDriveOptions): Promise<any>;
   routeWalk(options: IUnifiedRouteWalkOptions): Promise<any>;
   routeRide(options: IUnifiedRouteRideOptions): Promise<any>;
+  animatePath(options: IPathAnimateOptions): Promise<{
+    start(): void;
+    stop(): void;
+    pause(): void;
+    resume(): void;
+  }>;
 
   // containerToLnglat(options: any): Promise<any>;
   // lngLatToContainer(options: any): Promise<any>;

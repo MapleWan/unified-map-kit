@@ -968,3 +968,20 @@ export interface IPixelToLnglatOptions {
   pixel: { x: number; y: number }; // 像素坐标
   zoom: number; // 缩放级别
 }
+
+export interface IPathAnimateOptions {
+  path: Array<{ lat: number; lng: number, duration: number }>; // 路径
+  strokeColor?: string; // 线条颜色
+  strokeWeight?: number; // 线条宽度（单位像素）
+  passedStrokeColor?: string; // 已经过路线的线条颜色
+  passedStrokeWeight?: number; // 已经过路线的线条宽度（单位像素）
+  isAutoPlay?: boolean; // 是否自动播放
+  duration?: number; // 毫秒
+  /** 图标配置（支持三种格式转换） */
+  icon?:
+    | string // 直接使用图片 URL
+    | {
+        url: string; // google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image
+        size?: [number, number]; // 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size
+      };
+}

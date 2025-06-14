@@ -1,0 +1,191 @@
+<!-- 地图 init 方法测试，loader 缓存测试 -->
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <style>
+      #map-container {
+        width: 400px;
+        height: 300px;
+        border: 1px solid #ccc;
+      }
+
+      .map-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .map-item {
+        width: 45%;
+        height: 600px;
+        margin: 10px;
+        border: 1px solid #ccc;
+      }
+
+      #huawei-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #google-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #amap-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      .map-item-title {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="map-wrapper">
+      <div class="map-item">
+        <div class="map-item-title">华为地图</div>
+        <div id="huawei-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">谷歌地图</div>
+        <div id="google-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">高德地图</div>
+        <div id="amap-map"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createMap, init } from "../src/index";
+
+      (async () => {
+        try {
+          const YOUR_HUAWEI_MAP_API_KEY =
+            "DQEDAOsMbufDe6F1yd9h/n2oT0X6cgvox100RZ1grENQYkeg6U8WKkMwraTufpxslI6sBDPNV2gkWyInl34w2z7k/rrGxv+AtPwTqg==";
+          const YOUR_AMAP_API_KEY = "9354b13f06de39b2c918b02439054582";
+          const YOUR_GOOGLE_MAP_API_KEY =
+            "AIzaSyBYSQbOJCrrU2uLUcqOAS9g-oRrvbn7fK0";
+
+          const initCommonMapOption = {
+            // center: { lat: 39.865042, lng: 116.379028 },
+            center: { lat: 39.997761, lng: 116.478935 },
+            zoom: 17,
+          };
+          const huaweiMap = await init({
+            container: document.getElementById("huawei-map"),
+            mapProvider: "huawei",
+            apiKey: YOUR_HUAWEI_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+          const amapMap = await init({
+            container: document.getElementById("amap-map"),
+            mapProvider: "amap",
+            apiKey: YOUR_AMAP_API_KEY,
+            securityJsCode: "8215d7d759a5b8c28827e3f89a65d2a4",
+            // version: "2.0",
+            ...initCommonMapOption,
+          });
+          const googleMap = await init({
+            container: document.getElementById("google-map"),
+            mapProvider: "google",
+            apiKey: YOUR_GOOGLE_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          const path = [
+            { lat: 39.997761, lng: 116.478935 },
+            { lat: 39.997825, lng: 116.478939 },
+            { lat: 39.998549, lng: 116.478912 },
+            { lat: 39.998555, lng: 116.478998 },
+            { lat: 39.99856, lng: 116.479282 },
+            { lat: 39.998528, lng: 116.479658 },
+            { lat: 39.998453, lng: 116.480151 },
+            { lat: 39.998302, lng: 116.480784 },
+            { lat: 39.998184, lng: 116.481149 },
+            { lat: 39.997997, lng: 116.481573 },
+            { lat: 39.997846, lng: 116.481863 },
+            { lat: 39.997718, lng: 116.482072 },
+            { lat: 39.997718, lng: 116.482362 },
+            { lat: 39.998935, lng: 116.483633 },
+            { lat: 39.998968, lng: 116.48367 },
+            { lat: 39.999861, lng: 116.484648 },
+          ];
+          function deepClone(obj) {
+            if (obj === null || typeof obj !== "object") return obj;
+
+            // 处理数组
+            if (Array.isArray(obj)) {
+              return obj.map((item) => deepClone(item));
+            }
+
+            // 处理对象
+            const cloned = {};
+            for (const key in obj) {
+              if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                cloned[key] = deepClone(obj[key]);
+              }
+            }
+            return cloned;
+          }
+          const res = await amapMap.animatePath({
+            path: deepClone(path),
+            duration: 5000,
+            isAutoPlay: false,
+          });
+          // const res = await googleMap.animatePath({
+          //   path: deepClone(path),
+          //   duration: 5000,
+          //   isAutoPlay: false,
+          // });
+          // const res = await huaweiMap.animatePath({
+          //   path: deepClone(path),
+          //   duration: 5000,
+          //   isAutoPlay: false,
+          // });
+          console.log(res);
+          // console.log("开始", options.isAutoPlay);
+          res.start();
+          setTimeout(() => {
+            console.log("暂停");
+            res.pause();
+            setTimeout(() => {
+              console.log("继续");
+              res.resume();
+              setTimeout(() => {
+                console.log("重置");
+                res.reset();
+                setTimeout(() => {
+                  console.log("重新开始");
+                  res.start();
+                }, 2000);
+              }, 2000);
+            }, 2000);
+          }, 2000);
+          // googleMap.animatePath({
+          //   path: deepClone(path),
+          //   duration: 5000,
+          //   isAutoPlay: true,
+          // });
+          // huaweiMap.animatePath({
+          //   path: deepClone(path),
+          //   duration: 5000,
+          //   isAutoPlay: true,
+          // });
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+        }
+      })();
+    </script>
+  </body>
+</html>
