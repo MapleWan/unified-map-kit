@@ -110,6 +110,9 @@ export class UnifiedProvider implements IMapProvider {
    * 3. 设置缩放级别
    */
   async initMap(options: IInitMapOptions): Promise<void> {
+    const formattedOptions = formatOptions<IInitMapOptions>(options, [
+      "container",
+    ]);
     const map = await this.baseManager.initMap(options);
     this.map = map;
     return Promise.resolve();

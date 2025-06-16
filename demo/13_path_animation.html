@@ -139,7 +139,7 @@
             return cloned;
           }
           const res = await amapMap.animatePath({
-            path: deepClone(path),
+            path,
             duration: 5000,
             isAutoPlay: false,
           });
