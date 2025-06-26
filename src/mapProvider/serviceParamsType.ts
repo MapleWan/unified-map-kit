@@ -7,34 +7,44 @@ export interface IUnifiedMapMarkerOptions {
    * 所有地图共有属性
    */
   //   map?: any; // 地图实例
-  position: { lat: number; lng: number }; // 坐标位置，google:position, huawei:position, amap:[position.lng, position.lat]
-  zIndex?: number; // 层级高度（默认由地图实现决定）
-  draggable?: boolean; // 是否可拖拽（默认 false），google:gmpDraggable, huawei:draggable, amap:draggable
+  // 坐标位置，google:position, huawei:position, amap:[position.lng, position.lat]
+  position: { lat: number; lng: number };
+  // 层级高度（默认由地图实现决定）
+  zIndex?: number;
+  // 是否可拖拽（默认 false），google:gmpDraggable, huawei:draggable, amap:draggable
+  draggable?: boolean;
 
   // ----------- 跨平台兼容设计属性 -----------
   /** 图标配置（支持三种格式转换） */
-  icon?:
-    | string // 直接使用图片 URL
+  icon?: // 直接使用图片 URL
+  | string
     | {
-        url: string; // google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image
-        size?: [number, number]; // 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size
+        // google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image
+        url: string;
+        // 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size
+        size?: [number, number];
       };
 
   /** 标记的文本描述 */
   label?: {
-    content: string | HTMLElement; // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
-    fontSize?: string; // 设置字体大小
-    color?: string; // 字体颜色
+    // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
+    content: string | HTMLElement;
+    // 设置字体大小
+    fontSize?: string;
+    // 字体颜色
+    color?: string;
   };
   /**
    * AG 地图共有属性
    */
-  title?: string; // 鼠标悬停标题（google:title, huawei 不支持, amap:title）
+  // 鼠标悬停标题（google:title, huawei 不支持, amap:title）
+  title?: string;
 
   /**
    * AH 地图共有属性
    */
-  customData?: any; // 自定义数据 google 不支持, huawei:properties, amap:extData
+  // 自定义数据 google 不支持, huawei:properties, amap:extData
+  customData?: any;
 
   /**
    * GH 地图共有属性
@@ -62,17 +72,28 @@ export interface IUnifiedMapMarkerOptions {
   //     offset?: Array<number>; // [x, y] 偏移量。如设置了 direction，以 direction 方位为基准点进行偏移。
   //     direction?: "top" | "right" | "bottom" | "left" | "center"; // 文本标注的方位
   //   }; // 文本标注
-  visible?: boolean; // 标记是否显示
-  offset?: Array<number>; // 锚点偏移量
-  anchor?: string | Array<number>; // 锚点位置
-  angle?: number; // 旋转角度
-  clickable?: boolean; // 是否可点击
-  bubble?: boolean; // 事件是否冒泡
-  zooms?: Array<number>; // 点标记层级范围
-  cursor?: string; // 鼠标样式
-  topWhenClick?: boolean; // 点击时是否置顶
-  height?: number; // 设置Marker点是否离地绘制，默认值为0，等于0时贴地绘制。大于0时离地绘制，此时Marker点高度等于height值加Marker点高程值（JSAPI v2.1新增属性目前只适用于v2.1版本）。
-  extData?: any; // 用户自定义属性
+  // 标记是否显示
+  visible?: boolean;
+  // 锚点偏移量
+  offset?: Array<number>;
+  // 锚点位置
+  anchor?: string | Array<number>;
+  // 旋转角度
+  angle?: number;
+  // 是否可点击
+  clickable?: boolean;
+  // 事件是否冒泡
+  bubble?: boolean;
+  // 点标记层级范围
+  zooms?: Array<number>;
+  // 鼠标样式
+  cursor?: string;
+  // 点击时是否置顶
+  topWhenClick?: boolean;
+  // 设置Marker点是否离地绘制，默认值为0，等于0时贴地绘制。大于0时离地绘制，此时Marker点高度等于height值加Marker点高程值（JSAPI v2.1新增属性目前只适用于v2.1版本）。
+  height?: number;
+  // 用户自定义属性
+  extData?: any;
 
   /**
    * G 地图特有属性
@@ -90,10 +111,11 @@ export interface IUnifiedMapMarkerOptions {
   //     scale: number; // 缩放比例
   //   };
   //   gmpDraggable?: boolean; // 是否允许拖拽
+  // 碰撞处理方式
   collisionBehavior?:
     | "OPTIONAL_AND_HIDES_LOWER_PRIORITY"
     | "REQUIRED"
-    | "REQUIRED_AND_HIDES_OPTIONAL"; // 碰撞处理方式
+    | "REQUIRED_AND_HIDES_OPTIONAL";
 
   /**
    * H 地图特有属性
@@ -126,7 +148,100 @@ export interface IUnifiedMapMarkerOptions {
   //   position: { lat: number; lng: number }; // 标记的位置
   //   properties?: Object; // 自定义属性
   //   zIndex?: number; // z轴方向的叠加关系
-  animation?: "DROP" | "BOUNCE" | null; // 标记点进入动画
+  // 标记点进入动画
+  animation?: "DROP" | "BOUNCE" | null;
+}
+
+export interface IUnifiedMarkerClusterOptions {
+  // 点，weight属性只适用于高德地图,
+  points: Array<{
+    weight?: number;
+    lng: number;
+    lat: number;
+    markerOptions?: {
+      /** 图标配置 */
+      icon?:
+        | string
+        | {
+            url: string;
+            size?: [number, number];
+          };
+
+      /** 标记的文本描述 */
+      label?: {
+        content: string | HTMLElement;
+        fontSize?: string;
+        color?: string;
+      };
+    };
+  }>;
+
+  /** 自定义聚合点和非聚合点的样式 */
+  // 非聚合点图标配置
+  singlePointIcon?: // 直接使用图片 URL
+  | string
+    | {
+        // google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image
+        url: string;
+        // 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size
+        size?: [number, number];
+      };
+  // 非聚合点文本配置
+  singlePointLabel?: {
+    // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
+    content: string | HTMLElement;
+    // 设置字体大小
+    fontSize?: string;
+    // 字体颜色
+    color?: string;
+  };
+  // 聚合点图标配置
+  clusterPointIcon?:
+    | string
+    | {
+        url: string;
+        size?: [number, number];
+      };
+  // 聚合点文本配置
+  clusterPointLabel?: {
+    content: string | HTMLElement;
+    fontSize?: string;
+    color?: string;
+  };
+  // 聚合点分层样式, 必须按升序排列 clusterPointIntervalList[0]
+  clusterPointIntervalList?: Array<{
+    // 此分段最大支持的点数量，包含 maxNumber 数，区间为左开右闭
+    maxNumber: number;
+    // 聚合点图标配置
+    clusterPointIcon?:
+      | string
+      | {
+          url: string;
+          size?: [number, number];
+        };
+    // 聚合点文本配置
+    clusterPointLabel?: {
+      content: string | HTMLElement;
+      fontSize?: string;
+      color?: string;
+    };
+  }>;
+
+  /**
+   * A
+   */
+  // 自定义聚合点样式渲染函数
+  amapClusterRendererFunc?: (obj: any) => any;
+  /**
+   * G
+   */
+  // 自定义聚合点样式渲染函数
+  googleClusterRendererFunc?: (obj: any) => any;
+  /**
+   * H
+   */
+  // 自定义聚合点样式渲染函数
+  huaweiClusterRendererFunc?: (obj: any) => any;
 }
 
 export interface IUnifiedPolylineOptions {
@@ -134,28 +249,38 @@ export interface IUnifiedPolylineOptions {
    * 所有地图共有属性
    */
   //   map?: any; // 地图实例（可选）
-  path: Array<{ lat: number; lng: number }>; // 路径坐标集合。google: path, huawei: path, amap: path<Array<Array<number>>>
-  zIndex?: number; // 层级高度（默认由地图实现决定）
-  strokeColor?: string; // 线条颜色
-  strokeWeight?: number; // 线条宽度（单位像素）
-  strokeLineDash?: Array<number>; // 虚线样式（需要平台转换逻辑）。华为: strokeLineDash / AMap: strokeDasharray / Google: 通过 icons 实现，取数组第一个值设置虚线间隔像素
+  // 路径坐标集合。google: path, huawei: path, amap: path<Array<Array<number>>>
+  path: Array<{ lat: number; lng: number }>;
+  // 层级高度（默认由地图实现决定）
+  zIndex?: number;
+  // 线条颜色
+  strokeColor?: string;
+  // 线条宽度（单位像素）
+  strokeWeight?: number;
+  // 虚线样式（需要平台转换逻辑）。华为: strokeLineDash / AMap: strokeDasharray / Google: 通过 icons 实现，取数组第一个值设置虚线间隔像素
+  strokeLineDash?: Array<number>;
 
   /**
    * AG 地图共有属性
    */
-  strokeOpacity?: number; // 线条透明度（0-1，默认 1）、AMap/Google 原生支持，华为需通过颜色透明度实现
-  draggable?: boolean; // 是否可拖动 默认 false
-  geodesic?: boolean; // 折线是否是大地曲线，默认为false
+  // 线条透明度（0-1，默认 1）、AMap/Google 原生支持，华为需通过颜色透明度实现
+  strokeOpacity?: number;
+  // 是否可拖动 默认 false
+  draggable?: boolean;
+  // 折线是否是大地曲线，默认为false
+  geodesic?: boolean;
 
   /**
    * AH 地图共有属性
    */
-  showDirection?: boolean; // 是否显示方向箭头（默认 false）、华为: showDir / AMap: showDir / Google 无原生支持
+  // 是否显示方向箭头（默认 false）、华为: showDir / AMap: showDir / Google 无原生支持
+  showDirection?: boolean;
 
   /**
    * GH 地图共有属性
    */
-  visible?: boolean; // 折线是否可见
+  // 折线是否可见
+  visible?: boolean;
 
   /**
    * A 地图特有属性
@@ -168,17 +293,28 @@ export interface IUnifiedPolylineOptions {
   //   showDir?: boolean; // 是否显示方向
   //   draggable?: boolean; // 是否可拖动 默认 false
   //   geodesic?: boolean; // 折线是否是大地曲线，默认为false
-  bubble?: boolean; // 是否将覆盖物的鼠标或 touch 事件冒泡至地图
-  cursor?: string; // 鼠标悬停时的鼠标样式
-  isOutline?: boolean; // 是否显示描边
-  borderWeight?: number; // 描边宽度 px 默认 1
-  outlineColor?: string; // 描边颜色
-  height?: number; // 离地绘制的高度
-  extData?: any; // 自定义属性
-  strokeStyle?: string; // 线样式 solid | dashed
-  strokeDasharray?: Array<number>; // 勾勒形状轮廓的虚线和间隙的样式，此属性在strokeStyle 为dashed 时有效。虚线： [10,10] ， [10,10] 表示10个像素的实线和10个像素的空白（如此反复）组成的虚线
-  lineJoin?: string; // 折线拐点的绘制样式，可以是： round | bevel | miter,  圆角｜斜角｜尖角（默认）
-  lineCap?: string; // 折线两端线帽的绘制样式，可以是： butt | round | square,   无头(默认)｜圆头｜方头
+  // 是否将覆盖物的鼠标或 touch 事件冒泡至地图
+  bubble?: boolean;
+  // 鼠标悬停时的鼠标样式
+  cursor?: string;
+  // 是否显示描边
+  isOutline?: boolean;
+  // 描边宽度 px 默认 1
+  borderWeight?: number;
+  // 描边颜色
+  outlineColor?: string;
+  // 离地绘制的高度
+  height?: number;
+  // 自定义属性
+  extData?: any;
+  // 线样式 solid | dashed
+  strokeStyle?: string;
+  // 勾勒形状轮廓的虚线和间隙的样式，此属性在strokeStyle 为dashed 时有效。虚线： [10,10] ， [10,10] 表示10个像素的实线和10个像素的空白（如此反复）组成的虚线
+  strokeDasharray?: Array<number>;
+  // 折线拐点的绘制样式，可以是： round | bevel | miter,  圆角｜斜角｜尖角（默认）
+  lineJoin?: string;
+  // 折线两端线帽的绘制样式，可以是： butt | round | square,   无头(默认)｜圆头｜方头
+  lineCap?: string;
 
   /**
    * G 地图特有属性
@@ -970,7 +1106,7 @@ export interface IPixelToLnglatOptions {
 }
 
 export interface IPathAnimateOptions {
-  path: Array<{ lat: number; lng: number, duration: number }>; // 路径
+  path: Array<{ lat: number; lng: number; duration: number }>; // 路径
   strokeColor?: string; // 线条颜色
   strokeWeight?: number; // 线条宽度（单位像素）
   passedStrokeColor?: string; // 已经过路线的线条颜色

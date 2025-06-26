@@ -1,0 +1,208 @@
+<!-- 地图 init 方法测试，loader 缓存测试 -->
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <style>
+      #map-container {
+        width: 400px;
+        height: 300px;
+        border: 1px solid #ccc;
+      }
+
+      .map-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .map-item {
+        width: 45%;
+        height: 600px;
+        margin: 10px;
+        border: 1px solid #ccc;
+      }
+
+      #huawei-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #google-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #amap-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      .map-item-title {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="map-wrapper">
+      <div class="map-item">
+        <div class="map-item-title">华为地图</div>
+        <div id="huawei-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">谷歌地图</div>
+        <div id="google-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">高德地图</div>
+        <div id="amap-map"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createMap, init } from "../src/index";
+
+      (async () => {
+        try {
+          const YOUR_HUAWEI_MAP_API_KEY =
+            "DQEDAOsMbufDe6F1yd9h/n2oT0X6cgvox100RZ1grENQYkeg6U8WKkMwraTufpxslI6sBDPNV2gkWyInl34w2z7k/rrGxv+AtPwTqg==";
+          const YOUR_AMAP_API_KEY = "9354b13f06de39b2c918b02439054582";
+          const YOUR_GOOGLE_MAP_API_KEY =
+            "AIzaSyBYSQbOJCrrU2uLUcqOAS9g-oRrvbn7fK0";
+
+          const initCommonMapOption = {
+            center: { lat: 39.904989, lng: 116.405285 },
+            zoom: 8,
+          };
+          const huaweiMap = await init({
+            container: document.getElementById("huawei-map"),
+            mapProvider: "huawei",
+            apiKey: YOUR_HUAWEI_MAP_API_KEY,
+            ...initCommonMapOption,
+            zoom: 13,
+            // language: "ENG",
+          });
+          const amapMap = await init({
+            container: document.getElementById("amap-map"),
+            mapProvider: "amap",
+            apiKey: YOUR_AMAP_API_KEY,
+            securityJsCode: "8215d7d759a5b8c28827e3f89a65d2a4",
+            version: "2.0",
+            ...initCommonMapOption,
+            center: { lat: 39.904989, lng: 116.405285 },
+            zoom: 8,
+          });
+          const googleMap = await init({
+            container: document.getElementById("google-map"),
+            mapProvider: "google",
+            apiKey: YOUR_GOOGLE_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          const div = document.createElement("div");
+          div.style.backgroundColor = "#95b223";
+          const size = 32;
+          div.style.width = div.style.height = size + "px";
+          div.style.borderRadius = size / 2 + "px";
+          div.style.lineHeight = size + "px";
+          div.style.color = "#ffffff";
+          div.style.fontSize = "14px";
+          div.style.textAlign = "center";
+
+          const div2 = document.createElement("div");
+          div2.style.backgroundColor = "green";
+          div2.style.width = div2.style.height = size + "px";
+          div2.style.borderRadius = size / 2 + "px";
+          div2.style.lineHeight = size + "px";
+          div2.style.color = "#ffffff";
+          div2.style.fontSize = "14px";
+          div2.style.textAlign = "center";
+
+          const div3 = document.createElement("div");
+          div3.style.backgroundColor = "blue";
+          div3.style.width = div3.style.height = size + "px";
+          div3.style.borderRadius = size / 2 + "px";
+          div3.style.lineHeight = size + "px";
+          div3.style.color = "#ffffff";
+          div3.style.fontSize = "14px";
+          div3.style.textAlign = "center";
+          const addMarkerClusterOptions = {
+            points: [
+              {
+                weight: 8,
+                lng: 116.506647,
+                lat: 39.795337,
+                markerOptions: {
+                  // icon:
+                  //   "//a.amap.com/jsapi_demos/static/images/red.png",
+                  label: {
+                    content: "bj",
+                    fontSize: "16px",
+                    color: "#ffc6cc",
+                  },
+                },
+              },
+              { weight: 1, lng: 116.843352, lat: 40.377362 },
+              { weight: 1, lng: 116.637122, lat: 40.324272 },
+              { weight: 1, lng: 116.105381, lat: 39.937183 },
+              { weight: 1, lng: 116.653525, lat: 40.128936 },
+              { weight: 1, lng: 116.486409, lat: 39.921489 },
+              { weight: 1, lng: 116.658603, lat: 39.902486 },
+              { weight: 1, lng: 116.338033, lat: 39.728908 },
+              { weight: 1, lng: 116.235906, lat: 40.218085 },
+              { weight: 1, lng: 116.366794, lat: 39.915309 },
+              { weight: 1, lng: 116.418757, lat: 39.917544 },
+              { weight: 1, lng: 116.139157, lat: 39.735535 },
+              { weight: 1, lng: 116.195445, lat: 39.914601 },
+              { weight: 1, lng: 116.310316, lat: 39.956074 },
+              { weight: 1, lng: 116.286968, lat: 39.863642 },
+            ],
+            singlePointIcon:
+              "//a.amap.com/jsapi_demos/static/images/orange.png",
+            singlePointLabel: {
+              content: '1',
+              color: "#fff",
+            },
+            clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
+            clusterPointLabel: { content: div, color: '#fff' },
+            clusterPointIntervalList: [
+              {
+                maxNumber: 2,
+                clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
+                clusterPointLabel: { content: div },
+              },
+              {
+                maxNumber: 4,
+                // clusterPointLabel: { content: div2 },
+                clusterPointIcon: {
+                  url: "//a.amap.com/jsapi_demos/static/images/green.png",
+                  size: [32, 32],
+                },
+              },
+              {
+                maxNumber: 6,
+                // clusterPointLabel: { content: div3 },
+                clusterPointIcon: {
+                  url: "//a.amap.com/jsapi_demos/static/images/red.png",
+                  size: [32, 32],
+                },
+              },
+            ],
+          };
+          amapMap.addMarkerCluster(addMarkerClusterOptions);
+          googleMap.addMarkerCluster(addMarkerClusterOptions);
+          huaweiMap.addMarkerCluster(addMarkerClusterOptions);
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+        }
+      })();
+    </script>
+  </body>
+</html>

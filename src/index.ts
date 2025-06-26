@@ -51,9 +51,17 @@ class MapSourceFactory {
 
     switch (options.mapProvider) {
       case "amap":
+        // 为高德地图加载默认插件 AMap.MarkerCluster
+        let amapPlugins = []
+        if (options?.plugins?.length) {
+          amapPlugins = [...options.plugins, "AMap.MarkerCluster"];
+        } else {
+          amapPlugins = ["AMap.MarkerCluster"];
+        }
         return AMapLoader.load({
           key: formattedOptions.apiKey,
           ...(formattedOptions as any),
+          plugins: amapPlugins
         });
       case "google":
         return Promise.resolve(new GoogleMapLoader(formattedOptions as any));

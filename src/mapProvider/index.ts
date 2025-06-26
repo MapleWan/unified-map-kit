@@ -20,6 +20,7 @@ import {
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
   IPathAnimateOptions,
+  IUnifiedMarkerClusterOptions,
 } from "./serviceParamsType";
 import { formatOptions } from "../utils";
 
@@ -141,6 +142,10 @@ export class UnifiedProvider implements IMapProvider {
   removeMarker(marker: any): void {
     this.markerManager.removeMarker(marker);
   }
+  addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any> {
+    return this.markerManager.addMarkerCluster(this.map, options);
+  }
+
   addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
     const formattedOptions = formatOptions<IUnifiedPolylineOptions>(options, [
       "path",
@@ -156,6 +161,7 @@ export class UnifiedProvider implements IMapProvider {
   removePolyline(polyline: any): void {
     this.lineManager.removePolyline(this.map, polyline);
   }
+
   addPolygon(options: IUnifiedPolygonOptions): Promise<any> {
     const formattedOptions = formatOptions<IUnifiedPolygonOptions>(options, [
       "path",
@@ -189,6 +195,7 @@ export class UnifiedProvider implements IMapProvider {
   removeRectangle(rectangle: any): void {
     this.polygonManager.removeRectangle(this.map, rectangle);
   }
+
   getDistanceBetween(
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
@@ -209,6 +216,7 @@ export class UnifiedProvider implements IMapProvider {
     }
     return this.geometryManager.getPolygonArea(this.map, path);
   }
+
   searchPlaceByKeyword(
     options: IUnifiedSearchByKeywordOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
@@ -218,7 +226,6 @@ export class UnifiedProvider implements IMapProvider {
     );
     return this.searchManager.searchPlaceByKeyword(this.map, formattedOptions);
   }
-
   searchPlaceNearby(
     options: IUnifiedSearchNearbyOptions
   ): Promise<Array<IUnifiedPlaceResults>> {
@@ -267,6 +274,16 @@ export class UnifiedProvider implements IMapProvider {
     ]);
     return this.directionManager.routeRide(this.map, formattedOptions);
   }
+  animatePath(options: IPathAnimateOptions): any {
+    const formattedOptions = formatOptions<IPathAnimateOptions>(
+      options,
+      ["path"],
+      {
+        isAutoPlay: false,
+      }
+    );
+    return this.directionManager.animatePath(this.map, formattedOptions);
+  }
 
   lnglatToPixel(options: ILnglatToPixelOptions): { x: number; y: number } {
     const formattedOptions = formatOptions<ILnglatToPixelOptions>(options, [
@@ -282,7 +299,6 @@ export class UnifiedProvider implements IMapProvider {
     ]);
     return this.coordinateManager.pixelToLngLat(formattedOptions);
   }
-
   wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number } {
     if (!lng || !lat || typeof lng !== "number" || typeof lat !== "number") {
       throw new Error("Parameter 'lng' and 'lat' is required");
@@ -294,14 +310,5 @@ export class UnifiedProvider implements IMapProvider {
       throw new Error("Parameter 'x' and 'y' is required");
     }
     return this.coordinateManager.webMercatorToWgs84(x, y);
-  }
-
-  animatePath(options: IPathAnimateOptions): any {
-    const formattedOptions = formatOptions<IPathAnimateOptions>(options, [
-      "path",
-    ], {
-      isAutoPlay: false
-    });
-    return this.directionManager.animatePath(this.map, formattedOptions);
   }
 }

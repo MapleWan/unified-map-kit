@@ -4,6 +4,7 @@
 
 import {
   IUnifiedMapMarkerOptions,
+  IUnifiedMarkerClusterOptions,
   IUnifiedPolylineOptions,
   IUnifiedPolygonOptions,
   IUnifiedCircleOptions,
@@ -29,6 +30,7 @@ export interface IMapProvider {
 
   addMarker(options: IUnifiedMapMarkerOptions): Promise<any>;
   removeMarker(marker: any): void;
+  addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any>;
 
   addPolyline(options: IUnifiedPolylineOptions): Promise<any>;
   removePolyline(polyline: any): void;
