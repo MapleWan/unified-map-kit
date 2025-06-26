@@ -135,6 +135,7 @@ export class MarkerManager {
         content.innerHTML = context.count;
         context.marker.setContent(content);
       };
+      if(options?.amapClusterRendererFunc) _renderClusterMarker = options.amapClusterRendererFunc
       //非聚合点样式
       let _renderMarker = function (context: any) {
         //context 为回调参数，

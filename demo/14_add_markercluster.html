@@ -96,7 +96,6 @@
             securityJsCode: "8215d7d759a5b8c28827e3f89a65d2a4",
             version: "2.0",
             ...initCommonMapOption,
-            center: { lat: 39.904989, lng: 116.405285 },
             zoom: 8,
           });
           const googleMap = await init({
@@ -167,15 +166,16 @@
             singlePointIcon:
               "//a.amap.com/jsapi_demos/static/images/orange.png",
             singlePointLabel: {
-              content: '1',
+              content: "1",
               color: "#fff",
             },
             clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
-            clusterPointLabel: { content: div, color: '#fff' },
+            clusterPointLabel: { content: div, color: "#fff" },
             clusterPointIntervalList: [
               {
                 maxNumber: 2,
-                clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
+                clusterPointIcon:
+                  "//a.amap.com/jsapi_demos/static/images/blue.png",
                 clusterPointLabel: { content: div },
               },
               {
@@ -195,6 +195,118 @@
                 },
               },
             ],
+            amapClusterRendererFunc: function (context) {
+              // 创建自定义的聚类点容器
+              const clusterDiv = document.createElement("div");
+              clusterDiv.style.cssText = `
+                background-color: #4285f4;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                line-height: 40px;
+                width: 40px;
+                height: 40px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+              `;
+              // 根据聚类点数量设置不同的样式
+              const count = context.count;
+              if (count <= 2) {
+                clusterDiv.style.backgroundColor = "#4CAF50"; // 绿色
+                clusterDiv.style.fontSize = "12px";
+              } else if (count <= 4) {
+                clusterDiv.style.backgroundColor = "#FF9800"; // 橙色
+                clusterDiv.style.fontSize = "14px";
+              } else if (count <= 8) {
+                clusterDiv.style.backgroundColor = "#F44336"; // 红色
+                clusterDiv.style.fontSize = "16px";
+              } else {
+                clusterDiv.style.backgroundColor = "#9C27B0"; // 紫色
+                clusterDiv.style.fontSize = "18px";
+                clusterDiv.style.width = "50px";
+                clusterDiv.style.height = "50px";
+                clusterDiv.style.lineHeight = "50px";
+              }
+              // 设置数量文本
+              clusterDiv.innerHTML = count.toString();
+              // content 也可以是 HTMLElement
+              context.marker.setContent(clusterDiv);
+            },
+            googleClusterRendererFunc: function render(context) {
+              // 创建自定义的聚类点容器
+              const clusterDiv = document.createElement("div");
+              clusterDiv.style.cssText = `
+                background-color: #4285f4;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                line-height: 40px;
+                width: 40px;
+                height: 40px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+              `;
+              // 根据聚类点数量设置不同的样式
+              const count = context.count;
+              if (count <= 2) {
+                clusterDiv.style.backgroundColor = "#4CAF50"; // 绿色
+                clusterDiv.style.fontSize = "12px";
+              } else if (count <= 4) {
+                clusterDiv.style.backgroundColor = "#FF9800"; // 橙色
+                clusterDiv.style.fontSize = "14px";
+              } else if (count <= 8) {
+                clusterDiv.style.backgroundColor = "#F44336"; // 红色
+                clusterDiv.style.fontSize = "16px";
+              } else {
+                clusterDiv.style.backgroundColor = "#9C27B0"; // 紫色
+                clusterDiv.style.fontSize = "18px";
+                clusterDiv.style.width = "50px";
+                clusterDiv.style.height = "50px";
+                clusterDiv.style.lineHeight = "50px";
+              }
+              // 设置数量文本
+              clusterDiv.innerHTML = count.toString();
+              // 创建 Marker 对象
+              const marker = new google.maps.marker.AdvancedMarkerElement({
+                position: context.position, // 使用 obj.position
+                content: clusterDiv,
+              });
+              return marker;
+            },
+            huaweiClusterRendererFunc: function renderClusterMarker(markers) {
+              let count = markers.length;
+              let icon = {
+                url: "",
+                anchor: [0.5, 0.5],
+                anchorUnit: "fraction",
+              };
+              let label = {
+                text: "",
+                color: "#000",
+                strokeColor: "white",
+                strokeWeight: 2,
+              };
+              label.text = count.toString();
+              if (count <= 4) {
+                icon.url = "//a.amap.com/jsapi_demos/static/images/red.png";
+              } else if (count < 10 && count > 4) {
+                icon.url = "//a.amap.com/jsapi_demos/static/images/green.png";
+              } else {
+                icon.url = "//a.amap.com/jsapi_demos/static/images/blue.png";
+              }
+              return {
+                label,
+                icon,
+              };
+            },
           };
           amapMap.addMarkerCluster(addMarkerClusterOptions);
           googleMap.addMarkerCluster(addMarkerClusterOptions);

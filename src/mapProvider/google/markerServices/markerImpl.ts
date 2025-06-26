@@ -124,48 +124,47 @@ export class MarkerManager {
       return marker;
     });
     // Add a marker clusterer to manage the markers.
-    const clusterPointRenderer = {
-      render(obj: any) {
-        let content = undefined;
-        if (options?.clusterPointLabel) {
-          const res = handleIconAndLabel(
-            options?.clusterPointLabel,
-            options?.clusterPointIcon
-          );
-          content = res?.content;
-        }
-        if (options?.clusterPointIcon) {
-          const res = handleIconAndLabel(
-            options?.clusterPointLabel,
-            options?.clusterPointIcon
-          );
-          content = res?.content;
-        }
-        if (
-          options?.clusterPointIntervalList &&
-          options.clusterPointIntervalList.length
-        ) {
-          let iconIndex = getIndexFromIntervalList(
-            options?.clusterPointIntervalList.map((item) => item.maxNumber),
-            obj.count
-          );
-          const res = handleIconAndLabel(
-            options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel,
-            options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon
-          );
-          content = res?.content;
-        }
-        content.innerHTML = obj.count;
-        return new AdvancedMarkerElement({
-          position: obj._position,
-          content: content,
-        });
-      },
+    let clusterPointRenderer = function render(obj: any) {
+      let content = undefined;
+      if (options?.clusterPointLabel) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (options?.clusterPointIcon) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (
+        options?.clusterPointIntervalList &&
+        options.clusterPointIntervalList.length
+      ) {
+        let iconIndex = getIndexFromIntervalList(
+          options?.clusterPointIntervalList.map((item) => item.maxNumber),
+          obj.count
+        );
+        const res = handleIconAndLabel(
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel,
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      content.innerHTML = obj.count;
+      return new AdvancedMarkerElement({
+        position: obj._position,
+        content: content,
+      });
     };
+    if(options?.googleClusterRendererFunc) clusterPointRenderer = options.googleClusterRendererFunc
     new MarkerClusterer({
       markers,
       map,
-      renderer: clusterPointRenderer,
+      renderer: { render: clusterPointRenderer },
     });
   }
 }

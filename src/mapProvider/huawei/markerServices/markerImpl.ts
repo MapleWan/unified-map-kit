@@ -135,7 +135,7 @@ export class MarkerManager {
       const marker = new HWMapJsSDK.HWMarker(opts);
       markers.push(marker);
     }
-    const renderClusterMarker = (markers: any) => {
+    let renderClusterMarker = (markers: any) => {
       let tmpIcon: any, tmpLabel: any;
       const count = markers.length;
       if (options?.clusterPointLabel) tmpLabel = options.clusterPointLabel;
@@ -149,9 +149,11 @@ export class MarkerManager {
           count
         );
         tmpLabel =
-          options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel || tmpLabel;
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel ||
+          tmpLabel;
         tmpIcon =
-          options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon || tmpIcon;
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon ||
+          tmpIcon;
       }
       const res = handleIconAndLabel(tmpLabel, tmpIcon);
       tmpLabel = res.label;
@@ -162,6 +164,9 @@ export class MarkerManager {
         icon: tmpIcon,
       };
     };
+    if (options?.huaweiClusterRendererFunc)
+      renderClusterMarker = options.huaweiClusterRendererFunc;
+
     // 初始化聚合点
     markerCluster = new HWMapJsSDK.HWMarkerCluster(map, markers, {
       renderClusterMarker,
