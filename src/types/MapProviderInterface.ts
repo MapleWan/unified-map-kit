@@ -20,6 +20,7 @@ import {
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
   IPathAnimateOptions,
+  IInfoWindowOptions,
 } from "../mapProvider/serviceParamsType";
 
 export interface IMapProvider {
@@ -85,6 +86,11 @@ export interface IMapProvider {
 
   wgs84ToWebMercator(lng: number, lat: number): { x: number; y: number };
   webMercatorToWgs84(x: number, y: number): { lng: number; lat: number };
+
+  createInfoWindow(options: IInfoWindowOptions): Promise<any>;
+  openInfoWindow(infoWindow: any, marker?: any): void;
+  closeInfoWindow(infoWindow: any): void;
+
 }
 export interface IInitMapOptions {
   /**

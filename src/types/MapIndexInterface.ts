@@ -16,7 +16,8 @@ export type MapProviderServiceEnum =
   | "searchManager"
   | "geocoderManager"
   | "directionManager"
-  | "coordinateManager";
+  | "coordinateManager"
+  | "widgetManager";
 
 export interface ILoadScriptOptions {
   /**

@@ -1342,3 +1342,90 @@ export interface IPathAnimateOptions {
         size?: [number, number];
       };
 }
+
+export interface IInfoWindowOptions {
+  /**
+   * map-kit 属性
+   */
+  // 是否自动打开 默认值为true
+  isAutoOpen?: boolean;
+
+  /**
+   * 所有地图共有属性
+   */
+  // 弹出框中的显示内容，可以是纯文本或者是HTML元素。  A: content    G: content   H: content
+  content?: string | HTMLElement;
+  // 设置x，y偏移量。默认位置是position指定的位置。 A: offset    G: pixelOffset   H: offset
+  offset?: [number, number];
+  // 弹出框显示的位置。 A: [lng, lat]    G: { lng: number; lat: number }   H: { lng: number; lat: number }
+  position: { lng: number; lat: number };
+  /**
+   * AG 地图共有属性
+   */
+
+  /**
+   * AH 地图共有属性
+   */
+
+  /**
+   * GH 地图共有属性
+   */
+
+  /**
+   * A 地图特有属性
+   */
+  // 显示内容，可以是HTML要素字符串或者HTMLElement对象,
+  // content: string | HTMLElement;
+  // 信息窗体显示位置偏移量。默认基准点为信息窗体的底部中心。默认值: [0, 0]
+  // offset?: [number, number];
+  // 信息窗体显示基点位置 [lng, lat]
+  // position: [number, number];
+  // 是否自定义窗体。设为true时，信息窗体外框及内容完全按照content所设的值添加（默认为false，即在系统默认的信息窗体外框中显示content内容）
+  isCustom?: boolean;
+  // 是否自动调整窗体到视野内（当信息窗体超出视野范围时，通过该属性设置是否自动平移地图，使信息窗体完全显示）
+  autoMove?: boolean;
+  // autoMove 为 true 时，自动平移到视野内后的上右下左的避让宽度。默认值： [20, 20, 20, 20]
+  avoid?: Array<number>;
+  // 控制是否在鼠标点击地图后关闭信息窗体，默认false，鼠标点击地图后不关闭信息窗体
+  closeWhenClickMap?: boolean;
+  //  信息窗体尺寸（isCustom为true时，该属性无效） [width, height]
+  size?: [number, number];
+  // 信息窗体锚点。默认值：'bottom-center'。可选值：'top-left'|'top-center'|'top-right'|'middle-left'|'center'|'middle-right'|'bottom-left'|'bottom-center'|'bottom-right'
+  anchor?: string;
+
+  /**
+   * G 地图特有属性
+   */
+  // 要在 InfoWindow 中显示的内容。这可以是 HTML 元素、纯文本字符串或包含 HTML 的字符串。InfoWindow 的大小将根据内容而定。要设置内容的具体大小，请将内容设置为相应大小的 HTML 元素。
+  // content: string | HTMLElement;
+  // 信息窗口尖端相对于地图上信息窗口锚定地理坐标的点的偏移量（以像素为单位）。如果使用锚点打开 InfoWindow，系统会根据锚点的 anchorPoint 属性计算 pixelOffset。
+  // pixelOffset?: [number, number];
+  // 弹出框显示的位置。
+  // position: { lng: number; lat: number };
+  // 要分配给 InfoWindow 的 AriaLabel。
+  ariaLabel?: string;
+  // 停用平移地图，以便在 InfoWindow 打开时使其完全可见。 默认 false
+  disableAutoPan?: boolean;
+  // 要在 InfoWindow 标题行中显示的内容。这可以是 HTML 元素，也可以是纯文本字符串。InfoWindow 的大小将根据内容而定。如需为标题内容设置显式大小，请将 headerContent 设置为具有该大小的 HTML 元素。
+  headerContent?: string | HTMLElement;
+  // 停用 InfoWindow 中的整个标题行。设置为 true 后，系统会移除标题，以隐藏标题内容和关闭按钮。
+  headerDisabled?: boolean;
+  // InfoWindow 的最大宽度，不考虑内容的宽度。只有在调用 open() 之前设置此值时，系统才会考虑此值。如需在更改内容时更改最大宽度，请依次调用 close()、setOptions() 和 open()。
+  maxWidth?: number;
+  // InfoWindow 的宽度下限，不考虑内容的宽度。使用此属性时，强烈建议将 minWidth 设置为小于地图宽度（以像素为单位）的值。只有在调用 open() 之前设置此值时，系统才会考虑此值。如需在更改内容时更改最小宽度，请依次调用 close()、setOptions() 和 open()。
+  minWidth?: number;
+  // 所有 InfoWindow 都会按照 zIndex 的顺序显示在地图上，值越高，显示位置就越靠前。默认情况下，InfoWindow 会按其纬度显示，纬度较低的 InfoWindow 会显示在纬度较高的 InfoWindow 前面。信息窗口始终在标记前面显示。
+  zIndex?: number;
+
+  /**
+   * H 地图特有属性
+   */
+  // 弹出框中的显示内容，可以是纯文本或者是HTML元素。窗口会根据内容自动调整大小。调用该接口需要注意跨站脚本攻击，SDK没有过滤有可能导致跨站脚本攻击的html代码，因为SDK无法区分是否为您主动使用。
+  // content?: string | HTMLElement;
+  // 设置x，y偏移量。默认位置是position指定的位置。
+  // offset?: [number, number];
+  // 弹出框显示的位置。
+  // position: { lng: number; lat: number };
+  // 地图实例
+  map: any;
+}
