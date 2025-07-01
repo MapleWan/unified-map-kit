@@ -39,7 +39,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: "src/index.ts",
-      name: "zvos-map-kit",
+      name: "unified-map-kit",
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
