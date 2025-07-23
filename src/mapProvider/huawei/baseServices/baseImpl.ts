@@ -47,6 +47,16 @@ export class BaseManager {
       },
     });
   }
+
+  // 监听 zoom 变化
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void {
+    map.onZoomChanged((e: any) => {
+      callback(e);
+    });
+  }
 }
 // export function registerService() {
 UnifiedProvider.registerServiceToUnifiedProvider(

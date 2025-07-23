@@ -43,7 +43,19 @@ export class BaseManager {
       west: number;
     }
   ): void {
-    map.setBounds(new AMap.Bounds([bounds.west, bounds.south], [bounds.east, bounds.north]));
+    map.setBounds(
+      new AMap.Bounds([bounds.west, bounds.south], [bounds.east, bounds.north])
+    );
+  }
+
+  // 监听 zoom 变化
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void {
+    map.on("zoomchange", (e: any) => {
+      callback(e);
+    });
   }
 }
 

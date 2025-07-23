@@ -145,6 +145,10 @@ export class UnifiedProvider implements IMapProvider {
     }
     this.baseManager.fitBounds(this.map, bounds);
   }
+  // 监听 zoom 变化
+  onZoomChange(callback: (zoom: number) => void): void {
+    this.baseManager.onZoomChange(this.map, callback);
+  }
 
   /**
    * 1. 添加点标记

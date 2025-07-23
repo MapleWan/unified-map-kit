@@ -41,6 +41,16 @@ export class BaseManager {
   ): void {
     map.fitBounds(bounds);
   }
+
+  // 监听 zoom 变化
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void {
+    map.addListener("zoom_changed", (e: any) => {
+      callback(e);
+    });
+  }
 }
 // export function registerService() {
 UnifiedProvider.registerServiceToUnifiedProvider(
