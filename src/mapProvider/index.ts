@@ -127,6 +127,24 @@ export class UnifiedProvider implements IMapProvider {
   setZoom(level: number): void {
     this.baseManager.setZoom(this.map, level);
   }
+  fitBounds(bounds: {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+  }): void {
+    // 西南 116.274645,39.867461
+    // 东北 116.460773,39.969328
+    if (!bounds) {
+      throw new Error("Parameter 'bounds' is required");
+    }
+    if (!bounds.north || !bounds.south || !bounds.east || !bounds.west) {
+      throw new Error(
+        "Parameter 'bounds' is required and must be an object with 'north', 'south', 'east', and 'west' properties"
+      );
+    }
+    this.baseManager.fitBounds(this.map, bounds);
+  }
 
   /**
    * 1. 添加点标记

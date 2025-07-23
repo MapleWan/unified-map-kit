@@ -28,6 +28,19 @@ export class BaseManager {
     }
     map.setZoom(level);
   }
+
+  // 设置地理区域
+  fitBounds(
+    map: any,
+    bounds: {
+      north: number;
+      south: number;
+      east: number;
+      west: number;
+    }
+  ): void {
+    map.fitBounds(bounds);
+  }
 }
 // export function registerService() {
 UnifiedProvider.registerServiceToUnifiedProvider(
