@@ -10,9 +10,9 @@
 
 npm使用源：`http://10.39.52.175/repository/npm-group/`
 
-npm安装统一地图组件库：`npm install zvos-map-kit`
+npm安装统一地图组件库：`npm install unified-map-kit`
 
-在需要使用的地方引入：`import {createMap, init} from “zvos-map-kit”`
+在需要使用的地方引入：`import {createMap, init} from “unified-map-kit”`
 
 ---
 
@@ -322,7 +322,141 @@ export interface IInitMapOptions {
 }
 ```
 
+---
 
+## 通用功能
+
+### 设置中心点：setCenter
+
+#### setCenter使用说明
+
+##### setCenter 方法声明及参数
+
+```javascript
+setCenter(position: { lat: number; lng: number }): void;
+```
+
+#### 示例代码
+
+```javascript
+const initCommonMapOption = {
+    center: { lat: 28.190884, lng: 112.81362 },
+    zoom: 2,
+};
+const amapMap = await init({
+	container: document.getElementById("amap-map"),
+	mapProvider: "amap",
+	apiKey: YOUR_AMAP_API_KEY,
+	...initCommonMapOption,
+  });
+
+const position = { lat: 39.909, lng: 116.397 };
+console.log("设置中心点");
+amapMap.setCenter(position);
+```
+
+### 设置缩放等级：setZoom
+
+#### setZoom使用说明
+
+##### setZoom 方法声明及参数
+
+```javascript
+setZoom(level: number): void;
+```
+
+#### 示例代码
+
+```javascript
+const initCommonMapOption = {
+    center: { lat: 28.190884, lng: 112.81362 },
+    zoom: 2,
+};
+const amapMap = await init({
+	container: document.getElementById("amap-map"),
+	mapProvider: "amap",
+	apiKey: YOUR_AMAP_API_KEY,
+	...initCommonMapOption,
+  });
+
+console.log("设置缩放等级");
+amapMap.setZoom(2);
+```
+
+### 设置地图显示区域：fitBounds
+
+#### fitBounds使用说明
+
+##### fitBounds 方法声明及参数
+```javascript
+fitBounds(bounds: {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+  }): void;
+```
+
+#### 示例代码
+
+```javascript
+const initCommonMapOption = {
+    center: { lat: 28.190884, lng: 112.81362 },
+    zoom: 2,
+};
+
+const amapMap = await init({
+    container: document.getElementById("amap-map"),
+    mapProvider: "amap",
+    apiKey: YOUR_AMAP_API_KEY,
+    ...initCommonMapOption,
+});
+// 西南 116.274645,39.867461
+// 东北 116.460773,39.969328
+const bounds = {
+    north: 39.969328,
+    south: 39.867461,
+    east: 116.460773,
+    west: 116.274645,
+};
+console.log("设置地图范围");
+amapMap.fitBounds(bounds);
+```
+
+### 缩放等级监听：onZoomChange
+
+#### onZoomChange使用说明
+
+##### onZoomChange 方法声明及参数
+
+```javascript
+onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+): void;
+```
+
+#### 示例代码
+
+```javascript
+const initCommonMapOption = {
+    center: { lat: 28.190884, lng: 112.81362 },
+    zoom: 2,
+};
+
+const amapMap = await init({
+    container: document.getElementById("amap-map"),
+    mapProvider: "amap",
+    apiKey: YOUR_AMAP_API_KEY,
+    ...initCommonMapOption,
+});
+
+const zoomChangeCallback = (params) => {
+    console.log("zoom change:", params);
+}
+console.log("监听地图 zoom 变化");
+amapMap.onZoomChange(zoomChangeCallback);
+```
 
 ---
 

@@ -8,9 +8,9 @@
 2. map-kit 将提供三地图 api 公共参数与两两地图api 公共参数。如存在需使用原地图服务 api 特定参数的情况，也可以传入 option， map-kit 也对其适配（请谨慎使用）
 3. 文档中关于高德、google、华为 API 参数整理仅供参考，详细请参考相关官方文档。
 
-npm安装统一地图组件库：`npm install zvos-map-kit`（TODO，暂未发布）
+npm安装统一地图组件库：`npm install unified-map-kit`（TODO，暂未发布）
 
-在需要使用的地方引入：`import {createMap, init} from “zvos-map-kit”`
+在需要使用的地方引入：`import {createMap, init} from “unified-map-kit”`
 
 ---
 

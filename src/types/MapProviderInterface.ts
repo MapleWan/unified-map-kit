@@ -32,6 +32,18 @@ export interface IMapProvider {
   setCenter(position: { lat: number; lng: number }): void;
   /** 设置地图缩放级别 */
   setZoom(level: number): void;
+  /** 设置地图地理区域 */
+  fitBounds(bounds: {
+    north: number;
+    south: number;
+    east: number;
+    west: number;
+  }): void;
+  /** 监听 zoom 变化 */
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void;
 
   /** 添加标记 */
   addMarker(options: IUnifiedMapMarkerOptions): Promise<any>;

@@ -1,5 +1,5 @@
 {
-  "name": "zvos-map-kit",
+  "name": "unified-map-kit",
   "version": "0.0.1",
   "description": "A pure JavaScript map utility library",
   "main": "dist/index.es.js",
