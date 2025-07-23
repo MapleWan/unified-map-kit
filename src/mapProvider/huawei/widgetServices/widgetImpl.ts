@@ -22,6 +22,8 @@ export class WidgetManager {
     });
     if (options.isAutoOpen) {
       infoWindow.open();
+    } else {
+      infoWindow.close();
     }
     return Promise.resolve(infoWindow);
   }

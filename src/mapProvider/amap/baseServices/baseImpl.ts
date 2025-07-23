@@ -32,6 +32,31 @@ export class BaseManager {
     }
     map.setZoom(level);
   }
+
+  // 设置地理区域
+  fitBounds(
+    map: any,
+    bounds: {
+      north: number;
+      south: number;
+      east: number;
+      west: number;
+    }
+  ): void {
+    map.setBounds(
+      new AMap.Bounds([bounds.west, bounds.south], [bounds.east, bounds.north])
+    );
+  }
+
+  // 监听 zoom 变化
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void {
+    map.on("zoomchange", (e: any) => {
+      callback(e);
+    });
+  }
 }
 
 UnifiedProvider.registerServiceToUnifiedProvider(

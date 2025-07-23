@@ -1,0 +1,125 @@
+<!-- 地图 init 方法测试，loader 缓存测试 -->
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <style>
+      #map-container {
+        width: 400px;
+        height: 300px;
+        border: 1px solid #ccc;
+      }
+
+      .map-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .map-item {
+        width: 45%;
+        height: 400px;
+        margin: 10px;
+        border: 1px solid #ccc;
+      }
+
+      #huawei-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #google-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      #amap-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      .map-item-title {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="map-wrapper">
+      <div class="map-item">
+        <div class="map-item-title">华为地图</div>
+        <div id="huawei-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">谷歌地图</div>
+        <div id="google-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">高德地图</div>
+        <div id="amap-map"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createMap, init } from "../src/index";
+
+      (async () => {
+        try {
+          const YOUR_HUAWEI_MAP_API_KEY =
+            "xxx";
+          const YOUR_AMAP_API_KEY = "xxx";
+          const YOUR_GOOGLE_MAP_API_KEY =
+            "xxx";
+
+          const initCommonMapOption = {
+            center: { lat: 28.190884, lng: 112.81362 },
+            zoom: 2,
+          };
+          const huaweiMap = await init({
+            container: document.getElementById("huawei-map"),
+            mapProvider: "huawei",
+            apiKey: YOUR_HUAWEI_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          const amapMap = await init({
+            container: document.getElementById("amap-map"),
+            mapProvider: "amap",
+            apiKey: YOUR_AMAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          const googleMap = await init({
+            container: document.getElementById("google-map"),
+            mapProvider: "google",
+            apiKey: YOUR_GOOGLE_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+          // 西南 116.274645,39.867461
+          // 东北 116.460773,39.969328
+          const bounds = {
+            north: 39.969328,
+            south: 39.867461,
+            east: 116.460773,
+            west: 116.274645,
+          };
+
+          setTimeout(() => {
+            console.log("设置地图范围");
+            huaweiMap.fitBounds(bounds);
+            amapMap.fitBounds(bounds);
+            googleMap.fitBounds(bounds);
+          }, 2000);
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -25,6 +25,38 @@ export class BaseManager {
     }
     map.setZoom(level);
   }
+
+  // 设置地理区域
+  fitBounds(
+    map: any,
+    bounds: {
+      north: number;
+      south: number;
+      east: number;
+      west: number;
+    }
+  ): void {
+    map.fitBounds({
+      ne: {
+        lat: bounds.north,
+        lng: bounds.east,
+      },
+      sw: {
+        lat: bounds.south,
+        lng: bounds.west,
+      },
+    });
+  }
+
+  // 监听 zoom 变化
+  onZoomChange(
+    map: any,
+    callback: (originMapZoomChangeParams: any) => void
+  ): void {
+    map.onZoomChanged((e: any) => {
+      callback(e);
+    });
+  }
 }
 // export function registerService() {
 UnifiedProvider.registerServiceToUnifiedProvider(
