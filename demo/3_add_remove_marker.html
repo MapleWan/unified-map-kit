@@ -118,6 +118,9 @@
               size: [20, 20],
               url: "../src/assets/images/location-icon.png",
             },
+            customData: {
+              test: 'test'
+            }
           };
 
           setTimeout(async () => {
@@ -128,8 +131,12 @@
             });
             const amapMarker = await amapMap.addMarker({
               ...commonOptions,
-            });
+            })
             const googleMarker = await googleMap.addMarker(commonOptions);
+
+            console.log(huaweiMarker.getPropertiesUinified(), "----->>>>> huaiwei properties")
+            console.log(amapMarker.getPropertiesUinified(), "----->>>>> amap properties")
+            console.log(googleMarker.getPropertiesUinified(), "----->>>>> google properties")
 
             setTimeout(() => {
               console.log("删除 marker");

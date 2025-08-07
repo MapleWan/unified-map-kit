@@ -52,8 +52,12 @@ export class MarkerManager {
 
     const res = handleIconAndLabel(options?.label, options?.icon);
     markerOptions.content = res.content;
+    const marker = new AMap.Marker(markerOptions)
+    marker.getPropertiesUinified = () => {
+      return options?.customData || {}
+    }
     // return new AMap.Marker(markerOptions);
-    return Promise.resolve(new AMap.Marker(markerOptions));
+    return Promise.resolve(marker);
   }
 
   // 删除标记
