@@ -52,6 +52,9 @@ export class MarkerManager {
         });
       }
     }
+    marker.getPropertiesUinified = () => {
+      return options?.customData || {}
+    }
     return Promise.resolve(marker);
   }
 

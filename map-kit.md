@@ -8,8 +8,6 @@
 2. map-kit 将提供三地图 api 公共参数与两两地图api 公共参数。如存在需使用原地图服务 api 特定参数的情况，也可以传入 option， map-kit 也对其适配（请谨慎使用）
 3. 文档中关于高德、google、华为 API 参数整理仅供参考，详细请参考相关官方文档。
 
-npm使用源：`http://10.39.52.175/repository/npm-group/`
-
 npm安装统一地图组件库：`npm install unified-map-kit`
 
 在需要使用的地方引入：`import {createMap, init} from “unified-map-kit”`
@@ -519,6 +517,12 @@ interface IUnifiedMapMarkerOptions {
 }
 ```
 
+##### addMarkder返回说明
+
+对于参数`customData`：google原返回对象不支持自定义数据的获取，且华为地图返回对象`marker`需要调用`getProperties()`获取，高德地图返回对象`marker`需要调用`getExtData()`获取。
+
+在返回各地图`marker`对象中，获取自定义属性的方法不一致，因此，我们为其添加了`getPropertiesUinified`函数，如`marker.getPropertiesUinified = () => { }`，用户可以通过 `marker.getPropertiesUinified()`获取自定义属性，可参照示例代码
+
 #### 示例代码
 
 ```javascript
@@ -549,6 +553,9 @@ const commonOptions = {
     size: [20, 20],
     url: "../src/assets/images/location-icon.png",
   },
+  customData: {
+    test: 'test'
+  }
 };
 
 setTimeout(async () => {
@@ -556,6 +563,7 @@ setTimeout(async () => {
   const amapMarker = await amapMap.addMarker({
     ...commonOptions,
   });
+  console.log(amapMarker.getPropertiesUinified(), "----->>>>> amap properties")
   setTimeout(() => {
     console.log("删除 marker");
     amapMap.removeMarker(amapMarker);

@@ -21,6 +21,10 @@ export class MarkerManager {
       map: map,
       gmpDraggable: options?.draggable,
     } as any;
+    // 传入 customData AdanceMarkerElement 构造函数会报错
+    if ("customData" in markerOptions) {
+      delete markerOptions.customData
+    }
     delete markerOptions.label;
     delete markerOptions.icon;
     const res = handleIconAndLabel(options?.label, options?.icon);
@@ -56,7 +60,11 @@ export class MarkerManager {
     //   }
     // }
     const { AdvancedMarkerElement } = await this.loader.importLibrary("marker");
-    return Promise.resolve(new AdvancedMarkerElement(markerOptions));
+    const marker = new AdvancedMarkerElement(markerOptions);
+    marker.getPropertiesUinified = () => {
+      return options?.customData || {}
+    }
+    return Promise.resolve(marker);
   }
 
   // 删除标记
