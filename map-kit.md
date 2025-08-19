@@ -521,7 +521,7 @@ interface IUnifiedMapMarkerOptions {
 
 对于参数`customData`：google原返回对象不支持自定义数据的获取，且华为地图返回对象`marker`需要调用`getProperties()`获取，高德地图返回对象`marker`需要调用`getExtData()`获取。
 
-在返回各地图`marker`对象中，获取自定义属性的方法不一致，因此，我们为其添加了`getPropertiesUinified`函数，如`marker.getPropertiesUinified = () => { }`，用户可以通过 `marker.getPropertiesUinified()`获取自定义属性，可参照示例代码
+在返回各地图`marker`对象中，获取自定义属性的方法不一致，因此，我们为其添加了`getCustomDataUinified`函数，如`marker.getCustomDataUinified = () => { }`，用户可以通过 `marker.getCustomDataUinified()`获取自定义属性，可参照示例代码
 
 #### 示例代码
 
@@ -563,7 +563,7 @@ setTimeout(async () => {
   const amapMarker = await amapMap.addMarker({
     ...commonOptions,
   });
-  console.log(amapMarker.getPropertiesUinified(), "----->>>>> amap properties")
+  console.log(amapMarker.getCustomDataUinified(), "----->>>>> amap properties")
   setTimeout(() => {
     console.log("删除 marker");
     amapMap.removeMarker(amapMarker);
@@ -720,14 +720,18 @@ amapMap.removeMarker(ampMarker) // 详细可参考 addMarker 中示例代码
 
 ### 添加标记聚类：addMarkerCluster
 #### addMarkerCluster使用说明
-1. addMarkerCluster 中 `point` 参数为必传参数，其中`weight`的属性只对 高德地图生效；当需要为某一个点设置自定义的样式，可以在 `markerOptions`属性中设置，需要注意：“icon 和 label 属性同时设置”且“label.content 中传入 HTMLElement”的时候会优先生效 icon
-2. 针对单点样式的设置，我们也可以在 `singlePointIcon` 和 `singlePointLabel`属性中设置整个 `points`中单点的样式，同时需要注意：需要注意：“singlePointIcon 和 singlePointLabel 属性同时设置”且“singlePointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
-3. 针对聚类点样式的设置，可以通过 `clusterPointIcon` 和 `clusterPointLabel` 来设置，同样需要注意：，同时需要注意：需要注意：“clusterPointIcon 和 clusterPointLabel 属性同时设置”且“clusterPointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
-4. 当需要根据聚类点里点的数量来自定义设置不同的聚类点样式时，可以通过 `clusterPointIntervalList` 数组参数来设置，此参数使用需要注意以下几点
+
+1. <font color="red">在构造 MarkerCluster 的时候，各地图服务商构造方法的使用是不一致的，如华为和 google 使用 `xxx(markers, **args)`，需要传入构造好的`marker`对象；而高德使用`xxx([{position: [lng1, lat1]}, ...])`，只能传入具体的点的位置信息，甚至无法传入‘额外的对象信息’`customData`。对于以上差异，我们参考高德地图的使用方式，因为采用 google 或 华为地图的方式，暂时无法做到统一 api。</font>
+2. addMarkerCluster 中 `points` 参数为必传参数，类型为：`Array<IUnifiedMapMarkerOptions>`
+3. 针对单点样式的设置，我们也可以在 `singlePointIcon` 和 `singlePointLabel`属性中设置整个 `points`中单点的样式，同时需要注意：“singlePointIcon 和 singlePointLabel 属性同时设置”且“singlePointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
+4. 针对聚类点样式的设置，可以通过 `clusterPointIcon` 和 `clusterPointLabel` 来设置，同样需要注意：“clusterPointIcon 和 clusterPointLabel 属性同时设置”且“clusterPointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
+5. 当需要根据聚类点里点的数量来自定义设置不同的聚类点样式时，可以通过 `clusterPointIntervalList` 数组参数来设置，此参数使用需要注意以下几点
 	1. 数组中的元素需要按照 `maxNumber` 属性从小到大按照升序排列
 	2. maxNumber 用于划分区间，区间为“左开右闭”。如：`[{maxNumber: 2， clusterPointIcon： icon1}, {maxNumber: 4, clusterPointIcon: icon2}, {maxNumber: 8, clusterPointIcon: icon3}]`表示`（0,2]`数量的点设置`icon1`，`(2,4]`数量的点设置 `icon2`，以此类推。当点数量 > 8 时，默认取`clusterPointIntervalList`中最后一个元素设置的样式，此示例中会设置为`icon3`
 	3. “clusterPointIcon 和 clusterPointLabel 属性同时设置”且“clusterPointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
-5. 为了满足各地图的一些自定义的功能，提供`amapClusterRendererFunc`， `googleClusterRendererFunc`，`huaweiClusterRendererFunc`三个参数，支持用户传入对应地图的自定义聚类样式方法，可以参考以下示例代码以及官方文档 [高德地图自定义聚类样式参考](https://lbs.amap.com/api/javascript-api-v2/guide/amap-massmarker/marker-cluster#s3)，[google 地图自定义聚类样式参考](https://googlemaps.github.io/js-markerclusterer/classes/DefaultRenderer.html)，[huawei 地图自定义样式参考](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/javascript-api-marker-clustering-0000001064784288#section11832838155511)
+6. 为了满足各地图的一些自定义的功能，提供`amapClusterRendererFunc`， `googleClusterRendererFunc`，`huaweiClusterRendererFunc`三个参数，支持用户传入对应地图的自定义聚类样式方法，可以参考以下示例代码以及官方文档 [高德地图自定义聚类样式参考](https://lbs.amap.com/api/javascript-api-v2/guide/amap-massmarker/marker-cluster#s3)，[google 地图自定义聚类样式参考](https://googlemaps.github.io/js-markerclusterer/classes/DefaultRenderer.html)，[huawei 地图自定义样式参考](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/javascript-api-marker-clustering-0000001064784288#section11832838155511)
+7. 默认提供对 `points`中点的 `click` 事件监听方法，需要通过 `singlePointClickFunc`参数传入，其中`singlePointClickFunc`函数的入参是点击的点对象。<font color="red">`singlePointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
+
 ##### addMarkerCluster 方法声明
 ```typescript
 addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any>;
@@ -735,94 +739,76 @@ addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any>;
 ##### addMarkerCluster 参数
 ```typescript
 interface IUnifiedMarkerClusterOptions {
-  // 点，weight属性只适用于高德地图,
-  points: Array<{
-    weight?: number;
-    lng: number;
-    lat: number;
-    markerOptions?: {
-      /** 图标配置 */
-      icon?:
-        | string
-        | {
-            url: string;
-            size?: [number, number];
-          };
-
-      /** 标记的文本描述 */
-      label?: {
-        content: string | HTMLElement;
-        fontSize?: string;
-        color?: string;
-      };
-    };
-  }>;
+  /** 点，weight属性只适用于高德地图, */
+  points: Array<IUnifiedMapMarkerOptions>;
 
   /** 自定义聚合点和非聚合点的样式 */
-  // 非聚合点图标配置
+  /** 非聚合点图标配置 */
   singlePointIcon?: // 直接使用图片 URL
   | string
     | {
-        // google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image
+        /** google:创建HTMLElement 传给content.glyph, huawei:icon.url, amap:icon.image */
         url: string;
-        // 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size
+        /** 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size */
         size?: [number, number];
       };
-  // 非聚合点文本配置
+  /** 非聚合点文本配置 */
   singlePointLabel?: {
-    // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
+    /** google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement> */
     content: string | HTMLElement;
-    // 设置字体大小
+    /** 设置字体大小 */
     fontSize?: string;
-    // 字体颜色
+    /** 字体颜色 */
     color?: string;
   };
-  // 聚合点图标配置
+  /** 聚合点图标配置 */
   clusterPointIcon?:
     | string
     | {
         url: string;
         size?: [number, number];
       };
-  // 聚合点文本配置
+  /** 聚合点文本配置 */
   clusterPointLabel?: {
     content: string | HTMLElement;
     fontSize?: string;
     color?: string;
   };
-  // 聚合点分层样式, 必须按升序排列 clusterPointIntervalList[0]
+  /** 聚合点分层样式, 必须按升序排列 clusterPointIntervalList[0] */
   clusterPointIntervalList?: Array<{
-    // 此分段最大支持的点数量，包含 maxNumber 数，区间为左开右闭
+    /** 此分段最大支持的点数量，包含 maxNumber 数，区间为左开右闭 */
     maxNumber: number;
-    // 聚合点图标配置
+    /** 聚合点图标配置 */
     clusterPointIcon?:
       | string
       | {
           url: string;
           size?: [number, number];
         };
-    // 聚合点文本配置
+    /** 聚合点文本配置 */
     clusterPointLabel?: {
       content: string | HTMLElement;
       fontSize?: string;
       color?: string;
     };
   }>;
-
+  /** 单个点点击方法 */
+  singlePointClickFunc?: (obj: any) => any;
+  
   /**
    * A
    */
-  // 自定义聚合点样式渲染函数
+  /** 自定义聚合点样式渲染函数 */
   amapClusterRendererFunc?: (obj: any) => any;
   /**
    * G
    */
-  // 自定义聚合点样式渲染函数
+  /** 自定义聚合点样式渲染函数 */
   googleClusterRendererFunc?: (obj: any) => any;
   /**
    * H
    */
-  // 自定义聚合点样式渲染函数
+  /** 自定义聚合点样式渲染函数 */
   huaweiClusterRendererFunc?: (obj: any) => any;
 }
 ```
@@ -842,6 +828,7 @@ const amapMap = await init({
   ...initCommonMapOption,
   zoom: 8,
 });
+
 
 const div = document.createElement("div");
 div.style.backgroundColor = "#95b223";
@@ -873,50 +860,48 @@ div3.style.textAlign = "center";
 const addMarkerClusterOptions = {
   points: [
     {
-      weight: 8,
-      lng: 116.506647,
-      lat: 39.795337,
-      markerOptions: {
-        // icon:
-        //   "//a.amap.com/jsapi_demos/static/images/red.png",
-        label: {
-          content: "bj",
-          fontSize: "16px",
-          color: "#ffc6cc",
-        },
+      position: {
+        lng: 116.506647,
+        lat: 39.795337,
+      },
+      // icon:
+      //   "//a.amap.com/jsapi_demos/static/images/red.png",
+      label: {
+        content: "bj",
+        fontSize: "16px",
+        color: "#ffc6cc",
       },
     },
-    { weight: 1, lng: 116.843352, lat: 40.377362 },
-    { weight: 1, lng: 116.637122, lat: 40.324272 },
-    { weight: 1, lng: 116.105381, lat: 39.937183 },
-    { weight: 1, lng: 116.653525, lat: 40.128936 },
-    { weight: 1, lng: 116.486409, lat: 39.921489 },
-    { weight: 1, lng: 116.658603, lat: 39.902486 },
-    { weight: 1, lng: 116.338033, lat: 39.728908 },
-    { weight: 1, lng: 116.235906, lat: 40.218085 },
-    { weight: 1, lng: 116.366794, lat: 39.915309 },
-    { weight: 1, lng: 116.418757, lat: 39.917544 },
-    { weight: 1, lng: 116.139157, lat: 39.735535 },
-    { weight: 1, lng: 116.195445, lat: 39.914601 },
-    { weight: 1, lng: 116.310316, lat: 39.956074 },
-    { weight: 1, lng: 116.286968, lat: 39.863642 },
+    { position: { lng: 116.843352, lat: 40.377362 }, customData: { a: 1 } },
+    { position: { lng: 116.637122, lat: 40.324272 }, customData: { a: 2 } },
+    { position: { lng: 116.105381, lat: 39.937183 }, customData: { a: 3 } },
+    { position: { lng: 116.653525, lat: 40.128936 }, customData: { a: 4 } },
+    { position: { lng: 116.486409, lat: 39.921489 }, customData: { a: 5 } },
+    { position: { lng: 116.658603, lat: 39.902486 }, customData: { a: 6 } },
+    { position: { lng: 116.338033, lat: 39.728908 }, customData: { a: 7 } },
+    { position: { lng: 116.235906, lat: 40.218085 }, customData: { a: 8 } },
+    { position: { lng: 116.366794, lat: 39.915309 }, customData: { a: 9 } },
+    { position: { lng: 116.418757, lat: 39.917544 }, customData: { a: 10 } },
+    { position: { lng: 116.139157, lat: 39.735535 }, customData: { a: 11 } },
+    { position: { lng: 116.195445, lat: 39.914601 }, customData: { a: 12 } },
+    { position: { lng: 116.310316, lat: 39.956074 }, customData: { a: 13 } },
+    {
+      position: { lng: 116.286968, lat: 39.863642 },
+      customData: { a: 1 },
+    },
   ],
-  singlePointIcon: "//a.amap.com/jsapi_demos/static/images/orange.png",
-  singlePointLabel: {
-    content: "1",
-    color: "#fff",
-  },
   clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
   clusterPointLabel: { content: div, color: "#fff" },
   clusterPointIntervalList: [
     {
       maxNumber: 2,
-      clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
+      clusterPointIcon:
+        "//a.amap.com/jsapi_demos/static/images/blue.png",
       clusterPointLabel: { content: div },
     },
     {
       maxNumber: 4,
-      // clusterPointLabel: { content: div2 },
+      // clusterPointLabel: { content: div2 },∑
       clusterPointIcon: {
         url: "//a.amap.com/jsapi_demos/static/images/green.png",
         size: [32, 32],
@@ -931,24 +916,28 @@ const addMarkerClusterOptions = {
       },
     },
   ],
+  singlePointClickFunc: function (context) {
+    console.log(this, '>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<', context)
+    console.log(context.getCustomDataUinified())
+  }.bind({ "a": "2" }),
   amapClusterRendererFunc: function (context) {
     // 创建自定义的聚类点容器
     const clusterDiv = document.createElement("div");
     clusterDiv.style.cssText = `
-      background-color: #4285f4;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      line-height: 40px;
-      width: 40px;
-      height: 40px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    `;
+                background-color: #4285f4;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                line-height: 40px;
+                width: 40px;
+                height: 40px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+              `;
     // 根据聚类点数量设置不同的样式
     const count = context.count;
     if (count <= 2) {
@@ -1044,7 +1033,8 @@ const addMarkerClusterOptions = {
     };
   },
 };
-amapMap.addMarkerCluster(addMarkerClusterOptions);
+const amapMarkerCluster = await amapMap.addMarkerCluster(addMarkerClusterOptions);
+console.log(amapMarkerCluster, "---> amap");
 ```
 
 

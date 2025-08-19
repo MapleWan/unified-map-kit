@@ -13,9 +13,9 @@ export class MarkerManager {
   }
   // 添加标记
   async addMarker(map: any, options: IUnifiedMapMarkerOptions): Promise<any> {
-    if (options?.customData) {
-      console.warn("google map does not support customData");
-    }
+    // if (options?.customData) {
+    //   console.warn("google map does not support customData");
+    // }
     let markerOptions = {
       ...options,
       map: map,
@@ -23,7 +23,7 @@ export class MarkerManager {
     } as any;
     // 传入 customData AdanceMarkerElement 构造函数会报错
     if ("customData" in markerOptions) {
-      delete markerOptions.customData
+      delete markerOptions.customData;
     }
     delete markerOptions.label;
     delete markerOptions.icon;
@@ -61,9 +61,9 @@ export class MarkerManager {
     // }
     const { AdvancedMarkerElement } = await this.loader.importLibrary("marker");
     const marker = new AdvancedMarkerElement(markerOptions);
-    marker.getPropertiesUinified = () => {
-      return options?.customData || {}
-    }
+    marker.getCustomDataUinified = () => {
+      return options?.customData || {};
+    };
     return Promise.resolve(marker);
   }
 
@@ -109,26 +109,50 @@ export class MarkerManager {
     const { AdvancedMarkerElement, PinElement } =
       await this.loader.importLibrary("marker");
     // Add some markers to the map.
-    const markers = locations.map((position, i) => {
+    const markers = locations.map((markerOption, i) => {
       let tmpLabel, tmpIcon;
 
-      if (options?.singlePointLabel) {
-        tmpLabel = options?.singlePointLabel;
-      }
-      if (options?.singlePointIcon) {
-        tmpIcon = options?.singlePointIcon;
-      }
-      // 优先使用点的自定义配置
-      if (position.markerOptions) {
-        tmpLabel = position.markerOptions?.label;
-        tmpIcon = position.markerOptions?.icon;
-      }
+      if (options?.singlePointLabel) tmpLabel = options?.singlePointLabel;
+      if (options?.singlePointIcon) tmpIcon = options?.singlePointIcon;
 
-      const { content } = handleIconAndLabel(tmpLabel, tmpIcon);
-      const marker = new AdvancedMarkerElement({
-        position: { lat: position.lat, lng: position.lng },
-        content,
-      });
+      // 优先使用点的自定义配置
+      if (markerOption?.label) tmpLabel = markerOption.label;
+      if (markerOption?.icon) tmpIcon = markerOption.icon;
+
+      const tmpOption = {
+        ...markerOption,
+        map: map,
+        gmpDraggable: markerOption?.draggable,
+      } as any;
+      // 传入 customData AdanceMarkerElement 构造函数会报错
+      if ("customData" in tmpOption) {
+        delete tmpOption.customData;
+      }
+      delete tmpOption.label;
+      delete tmpOption.icon;
+      const res = handleIconAndLabel(tmpLabel, tmpIcon);
+      tmpOption.content = res.content;
+      const marker = new AdvancedMarkerElement(tmpOption);
+      marker.getCustomDataUinified = () => {
+        return markerOption?.customData || {};
+      };
+      if (options?.singlePointClickFunc) {
+        if (options?.singlePointClickFuncThis) {
+          marker.addListener("click", (c: any) => {
+            const marker = c?.domEvent?.target;
+            if (marker && options?.singlePointClickFunc) {
+              // if (options?.singlePointClickFuncThis) {
+              //   options.singlePointClickFunc.bind(
+              //     options.singlePointClickFuncThis
+              //   );
+              // }
+              options.singlePointClickFunc(marker);
+            }
+          });
+        } else {
+          throw new Error("Parameter 'singlePointClickFuncThis' is required");
+        }
+      }
       return marker;
     });
     // Add a marker clusterer to manage the markers.
@@ -168,12 +192,14 @@ export class MarkerManager {
         content: content,
       });
     };
-    if(options?.googleClusterRendererFunc) clusterPointRenderer = options.googleClusterRendererFunc
-    new MarkerClusterer({
+    if (options?.googleClusterRendererFunc)
+      clusterPointRenderer = options.googleClusterRendererFunc;
+    const markerCluster = new MarkerClusterer({
       markers,
       map,
       renderer: { render: clusterPointRenderer },
     });
+    return Promise.resolve(markerCluster);
   }
 }
 

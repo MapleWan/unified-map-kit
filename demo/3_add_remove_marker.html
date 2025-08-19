@@ -133,9 +133,9 @@
             })
             const googleMarker = await googleMap.addMarker(commonOptions);
 
-            console.log(huaweiMarker.getPropertiesUinified(), "----->>>>> huaiwei properties")
-            console.log(amapMarker.getPropertiesUinified(), "----->>>>> amap properties")
-            console.log(googleMarker.getPropertiesUinified(), "----->>>>> google properties")
+            console.log(huaweiMarker.getCustomDataUinified(), "----->>>>> huaiwei properties")
+            console.log(amapMarker.getCustomDataUinified(), "----->>>>> amap properties")
+            console.log(googleMarker.getCustomDataUinified(), "----->>>>> google properties")
 
             setTimeout(() => {
               console.log("删除 marker");

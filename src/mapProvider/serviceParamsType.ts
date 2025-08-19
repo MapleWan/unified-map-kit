@@ -154,27 +154,7 @@ export interface IUnifiedMapMarkerOptions {
 
 export interface IUnifiedMarkerClusterOptions {
   /** 点，weight属性只适用于高德地图, */
-  points: Array<{
-    weight?: number;
-    lng: number;
-    lat: number;
-    markerOptions?: {
-      /** 图标配置 */
-      icon?:
-        | string
-        | {
-            url: string;
-            size?: [number, number];
-          };
-
-      /** 标记的文本描述 */
-      label?: {
-        content: string | HTMLElement;
-        fontSize?: string;
-        color?: string;
-      };
-    };
-  }>;
+  points: Array<IUnifiedMapMarkerOptions>;
 
   /** 自定义聚合点和非聚合点的样式 */
   /** 非聚合点图标配置 */
@@ -226,6 +206,8 @@ export interface IUnifiedMarkerClusterOptions {
       color?: string;
     };
   }>;
+  /** 单个点点击方法 */
+  singlePointClickFunc?: (obj: any) => any;
 
   /**
    * A
