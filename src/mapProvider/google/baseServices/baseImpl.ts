@@ -7,12 +7,18 @@ export class BaseManager {
   }
   // 初始化地图
   async initMap(options: IInitMapOptions): Promise<void> {
-    const { Map } = await this.loader.importLibrary("maps");
-    const map = new Map(options.container, {
-      ...options,
-      mapId: "PLACEHOLDER_MAP_ID",
-    });
-    return Promise.resolve(map);
+    let map: any;
+    try {
+      const { Map } = await this.loader.importLibrary("maps");
+      map = new Map(options.container, {
+        ...options,
+        mapId: "PLACEHOLDER_MAP_ID",
+      });
+      return Promise.resolve(map);
+    } catch (error) {
+      console.error("Initialize map failed:", error);
+      return Promise.reject("Initialize map failed");
+    }
   }
   // 设置中心
   setCenter(map: any, position: { lat: number; lng: number }): void {
