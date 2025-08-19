@@ -52,10 +52,10 @@ export class MarkerManager {
 
     const res = handleIconAndLabel(options?.label, options?.icon);
     markerOptions.content = res.content;
-    const marker = new AMap.Marker(markerOptions)
-    marker.getPropertiesUinified = () => {
-      return options?.customData || {}
-    }
+    const marker = new AMap.Marker(markerOptions);
+    marker.getCustomDataUinified = () => {
+      return options?.customData || {};
+    };
     // return new AMap.Marker(markerOptions);
     return Promise.resolve(marker);
   }
@@ -74,30 +74,12 @@ export class MarkerManager {
     options: IUnifiedMarkerClusterOptions
   ): Promise<any> {
     return new Promise((resolve, reject) => {
-      // let points = [
-      //   { weight: 8, lnglat: ["116.506647", "39.795337"] },
-      //   { weight: 1, lnglat: ["116.843352", "40.377362"] },
-      //   { weight: 1, lnglat: ["116.637122", "40.324272"] },
-      //   { weight: 1, lnglat: ["116.105381", "39.937183"] },
-      //   { weight: 1, lnglat: ["116.653525", "40.128936"] },
-      //   { weight: 1, lnglat: ["116.486409", "39.921489"] },
-      //   { weight: 1, lnglat: ["116.658603", "39.902486"] },
-      //   { weight: 1, lnglat: ["116.338033", "39.728908"] },
-      //   { weight: 1, lnglat: ["116.235906", "40.218085"] },
-      //   { weight: 1, lnglat: ["116.366794", "39.915309"] },
-      //   { weight: 1, lnglat: ["116.418757", "39.917544"] },
-      //   { weight: 1, lnglat: ["116.139157", "39.735535"] },
-      //   { weight: 1, lnglat: ["116.195445", "39.914601"] },
-      //   { weight: 1, lnglat: ["116.310316", "39.956074"] },
-      //   { weight: 1, lnglat: ["116.286968", "39.863642"] },
-      // ];
       let points = options.points.map((item) => {
         return {
           ...item,
-          lnglat: [item.lng, item.lat],
+          lnglat: [item.position.lng, item.position.lat],
         };
       });
-
       //聚合点样式
       let _renderClusterMarker = function (context: any) {
         //context 为回调参数，
@@ -139,9 +121,11 @@ export class MarkerManager {
         content.innerHTML = context.count;
         context.marker.setContent(content);
       };
-      if(options?.amapClusterRendererFunc) _renderClusterMarker = options.amapClusterRendererFunc
+      if (options?.amapClusterRendererFunc)
+        _renderClusterMarker = options.amapClusterRendererFunc;
       //非聚合点样式
       let _renderMarker = function (context: any) {
+        console.log(context, "--------<<<<<");
         //context 为回调参数，
         //包含如下属性 marker:当前非聚合点
         // console.log("非聚合点", context);
@@ -161,7 +145,43 @@ export class MarkerManager {
           tmpIcon = pointData?.icon;
         }
         const { content } = handleIconAndLabel(tmpLabel, tmpIcon);
+
+        // 由于 context 拿不到原始 marker option 对象，这里通过经纬度唯一标识获取原始 option信息
+        const markerOriginOption = options.points.find((item) => {
+          if (
+            item.position.lng + "" + item.position.lat ===
+            context.data[0].position.lng + "" + context.data[0].position.lat
+          )
+            return item;
+        });
+        context.marker.getCustomDataUinified = () => {
+          // return context.data[0]?.customData || {};  // 拿不到 customData 信息
+          return markerOriginOption?.customData || {};
+        };
         context.marker.setContent(content);
+        if (options?.singlePointClickFunc) {
+          if (options?.singlePointClickFuncThis) {
+            // context.marker.on(
+            //   "click",
+            //   options.singlePointClickFunc.bind(
+            //     options.singlePointClickFuncThis
+            //   )
+            // );
+            context.marker.on("click", (c: any) => {
+              const marker = c?.target;
+              if (marker && options?.singlePointClickFunc) {
+                if (options?.singlePointClickFuncThis) {
+                  options.singlePointClickFunc.bind(
+                    options.singlePointClickFuncThis
+                  );
+                }
+                options.singlePointClickFunc(marker);
+              }
+            });
+          } else {
+            throw new Error("Parameter 'singlePointClickFuncThis' is required");
+          }
+        }
       };
 
       const cluster = new AMap.MarkerCluster(

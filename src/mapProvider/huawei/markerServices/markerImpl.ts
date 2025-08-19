@@ -21,40 +21,42 @@ export class MarkerManager {
       map: map,
       properties: options?.customData || {},
     } as any;
-    if (options?.label) {
-      markerOptions.label = {
-        color: options.label?.color || "#000",
-        text: options.label.content,
-        fontSize: options.label?.fontSize || "12px",
-      };
-    }
-
+    // if (options?.label) {
+    //   markerOptions.label = {
+    //     color: options.label?.color || "#000",
+    //     text: options.label.content,
+    //     fontSize: options.label?.fontSize || "12px",
+    //   };
+    // }
+    const res = handleIconAndLabel(options?.label, options?.icon);
+    markerOptions.label = res.label;
+    markerOptions.icon = res.icon;
     const marker = new HWMapJsSDK.HWMarker(markerOptions);
-    if (options?.icon) {
-      const icon = options.icon;
-      if (typeof icon === "object") {
-        const img = new Image();
-        img.src = icon.url;
-        img.onload = () => {
-          const scale = icon?.size ? icon.size[0] / img.width : 1;
-          marker.setIcon({
-            scale,
-            url: icon.url,
-          });
-        };
+    // if (options?.icon) {
+    //   const icon = options.icon;
+    //   if (typeof icon === "object") {
+    //     const img = new Image();
+    //     img.src = icon.url;
+    //     img.onload = () => {
+    //       const scale = icon?.size ? icon.size[0] / img.width : 1;
+    //       marker.setIcon({
+    //         scale,
+    //         url: icon.url,
+    //       });
+    //     };
 
-        img.onerror = () => {
-          console.error("Failed to load image");
-        };
-      } else {
-        marker.setIcon({
-          url: icon,
-        });
-      }
-    }
-    marker.getPropertiesUinified = () => {
-      return options?.customData || {}
-    }
+    //     img.onerror = () => {
+    //       console.error("Failed to load image");
+    //     };
+    //   } else {
+    //     marker.setIcon({
+    //       url: icon,
+    //     });
+    //   }
+    // }
+    marker.getCustomDataUinified = () => {
+      return options?.customData || {};
+    };
     return Promise.resolve(marker);
   }
 
@@ -86,22 +88,17 @@ export class MarkerManager {
     // ];
     let markers = [];
     let markerCluster;
-    let locations = [...options.points];
-    for (let i = 0; i < locations.length; i++) {
+    let markersOption = [...options.points];
+    for (let i = 0; i < markersOption.length; i++) {
       let opts = {
-        position: locations[i],
+        ...markersOption[i],
       } as any;
       let tmpLabel, tmpIcon;
-      if (options?.singlePointLabel) {
-        tmpLabel = options?.singlePointLabel;
-      }
-      if (options?.singlePointIcon) {
-        tmpIcon = options?.singlePointIcon;
-      }
-      if (locations[i]?.markerOptions) {
-        tmpLabel = locations[i].markerOptions?.label;
-        tmpIcon = locations[i].markerOptions?.icon;
-      }
+      if (options?.singlePointLabel) tmpLabel = options?.singlePointLabel;
+      if (options?.singlePointIcon) tmpIcon = options?.singlePointIcon;
+      // 优先使用点的自定义配置
+      if (markersOption[i]?.label) tmpLabel = markersOption[i].label;
+      if (markersOption[i]?.icon) tmpIcon = markersOption[i].icon;
 
       // if (tmpLabel) {
       //   opts.label = {
@@ -136,6 +133,23 @@ export class MarkerManager {
       opts.label = res.label;
       opts.icon = res.icon;
       const marker = new HWMapJsSDK.HWMarker(opts);
+      if (options?.singlePointClickFunc) {
+        if (options?.singlePointClickFuncThis) {
+          marker.addListener("click", (c: any) => {
+            const marker = c?.target;
+            if (marker && options?.singlePointClickFunc) {
+              if (options?.singlePointClickFuncThis) {
+                options.singlePointClickFunc.bind(
+                  options.singlePointClickFuncThis
+                );
+              }
+              options.singlePointClickFunc(marker);
+            }
+          });
+        } else {
+          throw new Error("Parameter 'singlePointClickFuncThis' is required");
+        }
+      }
       markers.push(marker);
     }
     let renderClusterMarker = (markers: any) => {
@@ -173,6 +187,23 @@ export class MarkerManager {
     // 初始化聚合点
     markerCluster = new HWMapJsSDK.HWMarkerCluster(map, markers, {
       renderClusterMarker,
+    });
+
+    // 在新建 marker 的时候 写入 getCustomDataUinified 属性的时，在HWMapJsSDK.HWMarkerCluster函数中会被清楚掉，只能在拿到聚合点对象之后给 marker 赋值
+    markerCluster.getMarkers().forEach((itemCluster: any) => {
+      // 由于 context 拿不到原始 marker option 对象，这里通过经纬度唯一标识获取原始 option信息
+      const markerOriginOption = options.points.find((item) => {
+        if (
+          item.position.lng + "" + item.position.lat ===
+          itemCluster.rMarker.position.lng +
+            "" +
+            itemCluster.rMarker.position.lat
+        )
+          return item;
+      });
+      itemCluster.rMarker.getCustomDataUinified = () => {
+        return markerOriginOption?.customData || {};
+      };
     });
     return Promise.resolve(markerCluster);
   }

@@ -8,8 +8,14 @@ export class BaseManager {
   }
   // 初始化地图
   initMap(options: IInitMapOptions): Promise<void> {
-    const map = new HWMapJsSDK.HWMap(options.container, options);
-    return Promise.resolve(map);
+    let map: any;
+    try {
+      map = new HWMapJsSDK.HWMap(options.container, options);
+      return Promise.resolve(map);
+    } catch (error) {
+      console.error("Initialize map failed:", error);
+      return Promise.reject("Initialize map failed");
+    }
   }
   // 设置中心
   setCenter(map: any, position: { lat: number; lng: number }): void {

@@ -136,40 +136,36 @@
           const addMarkerClusterOptions = {
             points: [
               {
-                weight: 8,
-                lng: 116.506647,
-                lat: 39.795337,
-                markerOptions: {
-                  // icon:
-                  //   "//a.amap.com/jsapi_demos/static/images/red.png",
-                  label: {
-                    content: "bj",
-                    fontSize: "16px",
-                    color: "#ffc6cc",
-                  },
+                position: {
+                  lng: 116.506647,
+                  lat: 39.795337,
+                },
+                // icon:
+                //   "//a.amap.com/jsapi_demos/static/images/red.png",
+                label: {
+                  content: "bj",
+                  fontSize: "16px",
+                  color: "#ffc6cc",
                 },
               },
-              { weight: 1, lng: 116.843352, lat: 40.377362 },
-              { weight: 1, lng: 116.637122, lat: 40.324272 },
-              { weight: 1, lng: 116.105381, lat: 39.937183 },
-              { weight: 1, lng: 116.653525, lat: 40.128936 },
-              { weight: 1, lng: 116.486409, lat: 39.921489 },
-              { weight: 1, lng: 116.658603, lat: 39.902486 },
-              { weight: 1, lng: 116.338033, lat: 39.728908 },
-              { weight: 1, lng: 116.235906, lat: 40.218085 },
-              { weight: 1, lng: 116.366794, lat: 39.915309 },
-              { weight: 1, lng: 116.418757, lat: 39.917544 },
-              { weight: 1, lng: 116.139157, lat: 39.735535 },
-              { weight: 1, lng: 116.195445, lat: 39.914601 },
-              { weight: 1, lng: 116.310316, lat: 39.956074 },
-              { weight: 1, lng: 116.286968, lat: 39.863642 },
+              { position: { lng: 116.843352, lat: 40.377362 }, customData: { a: 1 } },
+              { position: { lng: 116.637122, lat: 40.324272 }, customData: { a: 2 } },
+              { position: { lng: 116.105381, lat: 39.937183 }, customData: { a: 3 } },
+              { position: { lng: 116.653525, lat: 40.128936 }, customData: { a: 4 } },
+              { position: { lng: 116.486409, lat: 39.921489 }, customData: { a: 5 } },
+              { position: { lng: 116.658603, lat: 39.902486 }, customData: { a: 6 } },
+              { position: { lng: 116.338033, lat: 39.728908 }, customData: { a: 7 } },
+              { position: { lng: 116.235906, lat: 40.218085 }, customData: { a: 8 } },
+              { position: { lng: 116.366794, lat: 39.915309 }, customData: { a: 9 } },
+              { position: { lng: 116.418757, lat: 39.917544 }, customData: { a: 10 } },
+              { position: { lng: 116.139157, lat: 39.735535 }, customData: { a: 11 } },
+              { position: { lng: 116.195445, lat: 39.914601 }, customData: { a: 12 } },
+              { position: { lng: 116.310316, lat: 39.956074 }, customData: { a: 13 } },
+              {
+                position: { lng: 116.286968, lat: 39.863642 },
+                customData: { a: 1 },
+              },
             ],
-            singlePointIcon:
-              "//a.amap.com/jsapi_demos/static/images/orange.png",
-            singlePointLabel: {
-              content: "1",
-              color: "#fff",
-            },
             clusterPointIcon: "//a.amap.com/jsapi_demos/static/images/blue.png",
             clusterPointLabel: { content: div, color: "#fff" },
             clusterPointIntervalList: [
@@ -181,7 +177,7 @@
               },
               {
                 maxNumber: 4,
-                // clusterPointLabel: { content: div2 },
+                // clusterPointLabel: { content: div2 },∑
                 clusterPointIcon: {
                   url: "//a.amap.com/jsapi_demos/static/images/green.png",
                   size: [32, 32],
@@ -196,6 +192,10 @@
                 },
               },
             ],
+            singlePointClickFunc: function (context) { 
+              console.log(this, '>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<', context)
+              console.log(context.getCustomDataUinified())
+            }.bind({"a": "2"}),
             amapClusterRendererFunc: function (context) {
               // 创建自定义的聚类点容器
               const clusterDiv = document.createElement("div");
@@ -309,9 +309,13 @@
               };
             },
           };
-          amapMap.addMarkerCluster(addMarkerClusterOptions);
-          googleMap.addMarkerCluster(addMarkerClusterOptions);
-          huaweiMap.addMarkerCluster(addMarkerClusterOptions);
+          const amapMarkerCluster = await amapMap.addMarkerCluster(addMarkerClusterOptions);
+          const googleMarkerCluster = await googleMap.addMarkerCluster(addMarkerClusterOptions);
+          const huaweiMarkerCluster = await huaweiMap.addMarkerCluster(addMarkerClusterOptions);
+
+          console.log(amapMarkerCluster, "---> amap");
+          console.log(googleMarkerCluster, "---> google");
+          console.log(huaweiMarkerCluster, "---> huawei");
         } catch (error) {
           console.error("Map initialization failed:", error);
         }

@@ -15,8 +15,14 @@ export class BaseManager {
       amapOptions.center = [options.center.lng, options.center.lat];
     }
     amapOptions.zooms = [options?.minZoom || 2, options?.maxZoom || 20];
-    const map = new AMap.Map(options.container, amapOptions);
-    return Promise.resolve(map);
+    let map: any;
+    try {
+      map = new AMap.Map(options.container, amapOptions);
+      return Promise.resolve(map);
+    } catch (error) {
+      console.error("Initialize map failed:", error);
+      return Promise.reject("Initialize map failed");
+    }
   }
   // 设置中心
   setCenter(map: any, position: { lat: number; lng: number }): void {
