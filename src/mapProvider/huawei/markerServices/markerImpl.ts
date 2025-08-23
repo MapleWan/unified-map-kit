@@ -134,21 +134,12 @@ export class MarkerManager {
       opts.icon = res.icon;
       const marker = new HWMapJsSDK.HWMarker(opts);
       if (options?.singlePointClickFunc) {
-        if (options?.singlePointClickFuncThis) {
-          marker.addListener("click", (c: any) => {
-            const marker = c?.target;
-            if (marker && options?.singlePointClickFunc) {
-              if (options?.singlePointClickFuncThis) {
-                options.singlePointClickFunc.bind(
-                  options.singlePointClickFuncThis
-                );
-              }
-              options.singlePointClickFunc(marker);
-            }
-          });
-        } else {
-          throw new Error("Parameter 'singlePointClickFuncThis' is required");
-        }
+        marker.addListener("click", (c: any) => {
+          const marker = c?.target;
+          if (marker && options?.singlePointClickFunc) {
+            options.singlePointClickFunc(marker);
+          }
+        });
       }
       markers.push(marker);
     }

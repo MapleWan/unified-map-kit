@@ -160,27 +160,12 @@ export class MarkerManager {
         };
         context.marker.setContent(content);
         if (options?.singlePointClickFunc) {
-          if (options?.singlePointClickFuncThis) {
-            // context.marker.on(
-            //   "click",
-            //   options.singlePointClickFunc.bind(
-            //     options.singlePointClickFuncThis
-            //   )
-            // );
-            context.marker.on("click", (c: any) => {
-              const marker = c?.target;
-              if (marker && options?.singlePointClickFunc) {
-                if (options?.singlePointClickFuncThis) {
-                  options.singlePointClickFunc.bind(
-                    options.singlePointClickFuncThis
-                  );
-                }
-                options.singlePointClickFunc(marker);
-              }
-            });
-          } else {
-            throw new Error("Parameter 'singlePointClickFuncThis' is required");
-          }
+          context.marker.on("click", (c: any) => {
+            const marker = c?.target;
+            if (marker && options?.singlePointClickFunc) {
+              options.singlePointClickFunc(marker);
+            }
+          });
         }
       };
 
