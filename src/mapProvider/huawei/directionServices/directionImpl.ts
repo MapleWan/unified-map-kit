@@ -46,7 +46,7 @@ export class DirectionManager {
         (directionsResult: any, directionsStatus: any) => {
           if (directionsStatus == "0") {
             // 通过HWDirectionsRenderer对象渲染路径
-            drectionsRenderer.setDirections(directionsResult);
+            if(options?.isShowPath) drectionsRenderer.setDirections(directionsResult);
             // console.log(directionsResult, ">>>>>>>huawei");
             resolve(directionsResult);
           } else {

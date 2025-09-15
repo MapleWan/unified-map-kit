@@ -51,7 +51,7 @@ export class DirectionManager {
         .route(driveOptions)
         .then((response: any) => {
           // console.log(response, ">>>>>google");
-          directionsRenderer.setDirections(response);
+          if(options?.isShowPath) directionsRenderer.setDirections(response);
           resolve(response);
         })
         .catch((e: any) => {

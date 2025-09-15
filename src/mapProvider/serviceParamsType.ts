@@ -1003,6 +1003,8 @@ export interface IUnifiedRouteDriveOptions {
   avoidHighways?: boolean;
   /** 如果为 true，则指示路线服务尽可能避开收费道路 G:avoidTolls  H: avoid=[1] */
   avoidTolls?: boolean;
+  /** 是否默认显示 路径 */
+  isShowPath?: boolean;
 
   /**
    * A 地图特有属性

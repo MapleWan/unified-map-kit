@@ -108,6 +108,7 @@
             // waypoints: [{ lat: 39.909187, lng: 116.397455 }],
             origin: { lat: 39.844818, lng: 116.397933 },
             destination: { lat: 39.878694, lng: 116.440655 },
+            isShowPath: false
           };
           setTimeout(async () => {
             console.log("驾车路径规划");
@@ -123,9 +124,9 @@
 
             setTimeout(async () => {
               console.log("步行路径规划");
-              huaweiMap.routeWalk(commonRouteOptions).then((res) => {
-                console.log("huawei", res);
-              });
+              // huaweiMap.routeWalk(commonRouteOptions).then((res) => {
+              //   console.log("huawei", res);
+              // });
               amapMap.routeWalk(commonRouteOptions).then((res) => {
                 console.log("amap", res);
               });
@@ -134,9 +135,9 @@
               });
               setTimeout(async () => {
                 console.log("骑行路径规划");
-                huaweiMap.routeRide(commonRouteOptions).then((res) => {
-                  console.log("huawei", res);
-                });
+                // huaweiMap.routeRide(commonRouteOptions).then((res) => {
+                //   console.log("huawei", res);
+                // });
                 amapMap.routeRide(commonRouteOptions).then((res) => {
                   console.log("amap", res);
                 });
