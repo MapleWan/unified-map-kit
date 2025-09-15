@@ -74,6 +74,28 @@ export class UnifiedProvider implements IMapProvider {
     }
   }
 
+  // 预留以后可能要改为工具函数
+  // static geocode(
+  //   provider: MapProviderEnum,
+  //   options: IUnifiedGeocodeOptions
+  // ): Promise<Array<IUnifiedPlaceResults>> {
+  //   const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(options, [
+  //     "address",
+  //   ]);
+  //   const geocoderManager = new UnifiedProvider.providerSerivces[provider]["geocoderManager"]
+  //   return geocoderManager.geocode(null, formattedOptions);
+  // }
+  // static reverseGeocode(
+  //   provider: MapProviderEnum,
+  //   options: IUnifiedReverseGeocodeOptions
+  // ): Promise<Array<IUnifiedPlaceResults>> {
+  //   const formattedOptions = formatOptions<IUnifiedGeocodeOptions>(options, [
+  //     "location",
+  //   ]);
+  //   const geocoderManager = new UnifiedProvider.providerSerivces[provider]["geocoderManager"]
+  //   return geocoderManager.reverseGeocode(null, formattedOptions);
+  // }
+
   constructor(provider: MapProviderEnum, loader: any) {
     this.loader = loader;
     this.mapProvider = provider;
@@ -176,11 +198,11 @@ export class UnifiedProvider implements IMapProvider {
       "path",
     ]);
 
-    if (options.path.length < 1) {
-      throw new Error(
-        "Parameter 'path' is required and must be an array of at least one point"
-      );
-    }
+    // if (options.path.length < 1) {
+    //   throw new Error(
+    //     "Parameter 'path' is required and must be an array of at least one point"
+    //   );
+    // }
     return this.lineManager.addPolyline(this.map, formattedOptions);
   }
   removePolyline(polyline: any): void {
@@ -282,7 +304,7 @@ export class UnifiedProvider implements IMapProvider {
     const formattedOptions = formatOptions<IUnifiedRouteDriveOptions>(options, [
       "origin",
       "destination",
-    ]);
+    ], {isShowPath: true});
     return this.directionManager.routeDrive(this.map, formattedOptions);
   }
   routeWalk(options: IUnifiedRouteWalkOptions): Promise<any> {
