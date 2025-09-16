@@ -10,8 +10,9 @@ declare const AMap: any;
 function handleSearchResult(
   status: any,
   result: any,
-  resolve: (value: Array<IUnifiedPlaceResults>) => void,
-  reject: (reason?: any) => void
+  resolve: (value: Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }) => void,
+  reject: (reason?: any) => void,
+  placeSearch = null
 ): void {
   let resPositionList: Array<IUnifiedPlaceResults> = [];
   if (status === "complete" || status === "no_data") {
@@ -29,7 +30,12 @@ function handleSearchResult(
         sourceResult: results[i],
       });
     }
-    resolve(resPositionList);
+    if (placeSearch) {
+      debugger
+      resolve({ resList: resPositionList, placeSearch });
+    } else {
+      resolve(resPositionList);
+    }
   } else {
     reject(new Error("Search failed with AMap, status: " + status));
   }
@@ -44,7 +50,7 @@ export class SearchManager {
   async searchPlaceByKeyword(
     map: any,
     options: IUnifiedSearchByKeywordOptions
-  ): Promise<Array<IUnifiedPlaceResults>> {
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }> {
     return new Promise((resolve, reject) => {
       // 初始化请求参数对象
       AMap.plugin("AMap.PlaceSearch", () => {
@@ -54,7 +60,11 @@ export class SearchManager {
           ...options,
         });
         placeSearch.search(options?.query || "", (status: any, result: any) => {
-          handleSearchResult(status, result, resolve, reject);
+          if (options?.isNeedPlaceSearch) {
+            handleSearchResult(status, result, resolve, reject, placeSearch);
+          } else {
+            handleSearchResult(status, result, resolve, reject);
+          }
         });
       });
     });
@@ -64,7 +74,7 @@ export class SearchManager {
   async searchPlaceNearby(
     map: any,
     options: IUnifiedSearchNearbyOptions
-  ): Promise<Array<IUnifiedPlaceResults>> {
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }> {
     return new Promise((resolve, reject) => {
       // 初始化请求参数对象
       AMap.plugin("AMap.PlaceSearch", () => {
@@ -79,7 +89,12 @@ export class SearchManager {
           [options?.location?.lng, options?.location?.lat],
           options?.radius,
           (status: any, result: any) => {
-            handleSearchResult(status, result, resolve, reject);
+            // handleSearchResult(status, result, resolve, reject);
+            if (options?.isNeedPlaceSearch) {
+              handleSearchResult(status, result, resolve, reject, placeSearch);
+            } else {
+              handleSearchResult(status, result, resolve, reject);
+            }
           }
         );
       });

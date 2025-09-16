@@ -710,6 +710,8 @@ export interface IUnifiedSearchByKeywordOptions {
   renderStyle?: string;
   /** 是用于控制在搜索结束后，是否自动调整地图视野使绘制的Marker点都处于视口的可见范围 */
   autoFitView?: boolean;
+  /** 用于是否返回 placeSearch 对象， map-kit 自定义*/
+  isNeedPlaceSearch?: boolean;
 
   /**
    * G 地图特有属性
@@ -802,6 +804,8 @@ export interface IUnifiedSearchNearbyOptions {
   renderStyle?: string;
   /** 是用于控制在搜索结束后，是否自动调整地图视野使绘制的Marker点都处于视口的可见范围 */
   autoFitView?: boolean;
+  /** 用于是否返回 placeSearch 对象， map-kit 自定义*/
+  isNeedPlaceSearch?: boolean;
 
   /**
    * G 地图特有属性
@@ -969,6 +973,58 @@ export interface IUnifiedReverseGeocodeOptions {
   // location?: { lat: number; lng: number }; // 查询结果偏向的搜索范围。
   /** 是否返回POI的地点名称，默认true。目前逆地理接口，只能返回机场的名称，其他POI不支持返回名称（2025年6月3日）。 */
   returnPoi?: boolean;
+}
+
+/**
+ * 时间基础路径动画的控制器接口
+ * 提供动画播放控制和状态查询功能
+ */
+export interface ITimeBasedPathAnimationController {
+  /** 开始/重新开始动画 */
+  start(): void;
+
+  /** 暂停动画 */
+  pause(): void;
+
+  /** 恢复动画 */
+  resume(): void;
+
+  /** 停止动画 */
+  stop(): void;
+
+  /** 重置动画到初始状态 */
+  reset(): void;
+
+  /** 设置播放速度 */
+  setSpeed(speed: number): void;
+
+  /** 跳转到指定时间点 */
+  seekToTime(time: number): void;
+
+  /** 跳转到指定路径点 */
+  seekToPoint(index: number): void;
+
+  /** 获取当前播放状态 */
+  getState(): {
+    /** 是否正在播放 */
+    isPlaying: boolean;
+    /** 是否已暂停 */
+    isPaused: boolean;
+    /** 当前时间 */
+    currentTime: number;
+    /** 播放进度 (0-1) */
+    progress: number;
+    /** 当前路径点索引 */
+    currentPointIndex: number;
+    /** 当前播放速度 */
+    speed: number;
+  };
+
+  /** 获取总时长 */
+  getDuration(): number;
+
+  /** 销毁动画控制器，清理资源 */
+  destroy(): void;
 }
 
 export interface IUnifiedRouteDriveOptions {
@@ -1325,6 +1381,109 @@ export interface IPathAnimateOptions {
         /** 宽高，google:创建HTMLElement 传给content.glyph, huawei:icon.scale(要将传入的参数转换成 0-1 的 scale), amap:icon.size */
         size?: [number, number];
       };
+}
+
+/**
+ * 基于时间的路径动画选项接口
+ * 用于实现更高级的路径动画功能，包括倍速播放、时间点跳转等
+ */
+export interface ITimeBasedPathAnimateOptions {
+  /**
+   * 路径点列表，每个点包含坐标和时间信息
+   * 时间可以是Unix时间戳（毫秒）或相对时间（秒）
+   */
+  path: Array<{
+    lat: number;
+    lng: number;
+    /** 该点所处的时间，可以是  "时间戳（毫秒）/ 1000" 或相对时间（秒） */
+    time: number;
+    /** 可选的额外数据，如速度、方向等 */
+    data?: any;
+  }>;
+
+  /** 动画总时长（毫秒），如果未指定则根据路径点时间自动计算 */
+  duration?: number;
+
+  /** 播放速度倍率，默认1.0（正常速度），2.0表示2倍速，0.5表示0.5倍速 */
+  speed?: number;
+
+  /** 是否自动开始播放，默认false */
+  autoPlay?: boolean;
+
+  /** 是否循环播放，默认false */
+  loop?: boolean;
+
+  /** 路径线条样式 */
+  pathStyle?: {
+    /** 完整路径线条颜色 */
+    strokeColor?: string;
+    /** 完整路径线条宽度 */
+    strokeWeight?: number;
+    /** 完整路径线条透明度 */
+    strokeOpacity?: number;
+    /** 是否显示方向箭头 */
+    showDirection?: boolean;
+  };
+
+  /** 已走过路径的样式 */
+  passedStyle?: {
+    /** 已走过路径线条颜色 */
+    strokeColor?: string;
+    /** 已走过路径线条宽度 */
+    strokeWeight?: number;
+    /** 已走过路径线条透明度 */
+    strokeOpacity?: number;
+    /** 是否显示方向箭头 */
+    showDirection?: boolean;
+  };
+
+  /** 移动标记的样式 */
+  markerStyle?: {
+    /** 标记图标 */
+    icon?:
+      | string
+      | {
+          url: string;
+          size?: [number, number];
+        };
+    /** 标记大小 */
+    size?: [number, number];
+    /** 是否显示标记 */
+    visible?: boolean;
+  };
+
+  /** 动画帧率，默认60fps */
+  frameRate?: number;
+
+  /** 平滑插值设置 */
+  interpolation?: {
+    /** 是否启用插值，默认true */
+    enabled?: boolean;
+    /** 插值类型：'linear' 或自定义插值函数 */
+    type?:
+      | "linear"
+      | (( p0: any, p1: any, path: Array<{ lat: number; lng: number; time: number; data?: any;}> ) => { lat: number; lng: number; time: number; data?: any });
+  };
+
+  /** 事件回调 */
+  callbacks?: {
+    /** 动画开始回调 */
+    onStart?: () => void;
+    /** 动画暂停回调 */
+    onPause?: () => void;
+    /** 动画恢复回调 */
+    onResume?: () => void;
+    /** 动画停止回调 */
+    onStop?: () => void;
+    /** 动画重置回调 */
+    onReset?: () => void;
+    /** 动画结束回调 */
+    onEnd?: () => void;
+    /** 时间更新回调，返回当前时间和进度 */
+    onTimeUpdate?: (currentTime: number, progress: number) => void;
+    /** 到达路径点回调 */
+    onReachPoint?: (point: any, index: number) => void;
+  };
 }
 
 export interface IInfoWindowOptions {
