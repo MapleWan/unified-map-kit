@@ -20,6 +20,8 @@ import {
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
   IPathAnimateOptions,
+  ITimeBasedPathAnimateOptions,
+  ITimeBasedPathAnimationController,
   IUnifiedMarkerClusterOptions,
   IInfoWindowOptions,
 } from "./serviceParamsType";
@@ -330,6 +332,24 @@ export class UnifiedProvider implements IMapProvider {
       }
     );
     return this.directionManager.animatePath(this.map, formattedOptions);
+  }
+
+  /**
+   * 基于时间的路径动画
+   * 支持倍速播放、时间点跳转等高级功能
+   */
+  animateTimeBasedPath(options: ITimeBasedPathAnimateOptions): Promise<ITimeBasedPathAnimationController> {
+    const formattedOptions = formatOptions<ITimeBasedPathAnimateOptions>(
+      options,
+      ["path"],
+      {
+        speed: 1.0,
+        autoPlay: false,
+        loop: false,
+        frameRate: 60
+      }
+    );
+    return this.lineManager.animateTimeBasedPath(this.map, formattedOptions);
   }
 
   lnglatToPixel(options: ILnglatToPixelOptions): { x: number; y: number } {

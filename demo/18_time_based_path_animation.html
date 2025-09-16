@@ -1,0 +1,463 @@
+<!-- 时间基础路径动画演示 -->
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>时间基础路径动画演示</title>
+    <link
+      rel="stylesheet"
+      href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"
+    />
+    <style>
+      #map-container {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ccc;
+      }
+
+      .controls {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+
+      .control-group {
+        margin-bottom: 10px;
+      }
+
+      .control-group label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+      }
+
+      .control-group input,
+      .control-group button,
+      .control-group select {
+        margin: 5px;
+        padding: 5px;
+      }
+
+      .buttons {
+        margin-top: 10px;
+      }
+
+      .buttons button {
+        margin-right: 10px;
+        padding: 8px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .buttons button:hover {
+        background-color: #0056b3;
+      }
+
+      .buttons button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+      }
+
+      .map-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .map-item {
+        width: 45%;
+        height: 600px;
+        margin: 10px;
+        border: 1px solid #ccc;
+      }
+
+      #huawei-map,
+      #google-map,
+      #amap-map {
+        width: 100%;
+        height: calc(100% - 24px);
+      }
+
+      .map-item-title {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>时间基础路径动画演示</h1>
+    <p>本演示展示了基于时间的路径动画功能，支持倍速播放、时间点跳转等功能。</p>
+
+    <div class="map-wrapper">
+      <div class="map-item">
+        <div class="map-item-title">华为地图</div>
+        <div id="huawei-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">谷歌地图</div>
+        <div id="google-map"></div>
+      </div>
+      <div class="map-item">
+        <div class="map-item-title">高德地图</div>
+        <div id="amap-map"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <h3>动画控制</h3>
+      <div class="control-group">
+        <label for="speed">播放速度:</label>
+        <input type="range" id="speed" min="0.1" max="5" step="0.1" value="1" />
+        <span id="speed-value">1.0x</span>
+      </div>
+
+      <div class="control-group">
+        <label for="time-slider">时间控制:</label>
+        <input type="range" id="time-slider" min="0" max="100" value="0" />
+        <span id="time-value">0%</span>
+      </div>
+
+      <div class="control-group">
+        <label for="point-selector">跳转到点:</label>
+        <select id="point-selector">
+          <option value="">选择路径点</option>
+        </select>
+      </div>
+
+      <div class="buttons">
+        <button id="start-btn">开始</button>
+        <button id="pause-btn">暂停</button>
+        <button id="resume-btn">继续</button>
+        <button id="reset-btn">重置</button>
+        <button id="stop-btn">停止</button>
+      </div>
+
+      <div class="status">
+        <strong>状态:</strong>
+        <span id="status-text">未开始</span>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createMap, init } from "../src/index";
+
+      (async () => {
+        try {
+          const YOUR_HUAWEI_MAP_API_KEY =
+            "DQEDAOsMbufDe6F1yd9h/n2oT0X6cgvox100RZ1grENQYkeg6U8WKkMwraTufpxslI6sBDPNV2gkWyInl34w2z7k/rrGxv+AtPwTqg==";
+          const YOUR_AMAP_API_KEY = "9354b13f06de39b2c918b02439054582";
+          const YOUR_GOOGLE_MAP_API_KEY =
+            "AIzaSyBYSQbOJCrrU2uLUcqOAS9g-oRrvbn7fK0";
+
+          const initCommonMapOption = {
+            center: { lat: 39.997761, lng: 116.478935 },
+            zoom: 17,
+          };
+
+          // 创建三个地图实例
+          const huaweiMap = await init({
+            container: document.getElementById("huawei-map"),
+            mapProvider: "huawei",
+            apiKey: YOUR_HUAWEI_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          const amapMap = await init({
+            container: document.getElementById("amap-map"),
+            mapProvider: "amap",
+            apiKey: YOUR_AMAP_API_KEY,
+            securityJsCode: "8215d7d759a5b8c28827e3f89a65d2a4",
+            ...initCommonMapOption,
+          });
+
+          const googleMap = await init({
+            container: document.getElementById("google-map"),
+            mapProvider: "google",
+            apiKey: YOUR_GOOGLE_MAP_API_KEY,
+            ...initCommonMapOption,
+          });
+
+          // 定义路径点，包含时间信息
+          const path = [
+            { lat: 39.997761, lng: 116.478935, time: 0 },
+            { lat: 39.997825, lng: 116.478939, time: 10 },
+            { lat: 39.998549, lng: 116.478912, time: 20 },
+            { lat: 39.998555, lng: 116.478998, time: 30 },
+            { lat: 39.99856, lng: 116.479282, time: 40 },
+            { lat: 39.998528, lng: 116.479658, time: 50 },
+            { lat: 39.998453, lng: 116.480151, time: 60 },
+            { lat: 39.998302, lng: 116.480784, time: 70 },
+            { lat: 39.998184, lng: 116.481149, time: 80 },
+            { lat: 39.997997, lng: 116.481573, time: 90 },
+            { lat: 39.997846, lng: 116.481863, time: 100 },
+            { lat: 39.997718, lng: 116.482072, time: 110 },
+            { lat: 39.997718, lng: 116.482362, time: 120 },
+            { lat: 39.998935, lng: 116.483633, time: 130 },
+            { lat: 39.998968, lng: 116.48367, time: 140 },
+            { lat: 39.999861, lng: 116.484648, time: 150 },
+          ];
+
+          // 为每个地图创建动画控制器
+          const huaweiController = await huaweiMap.animateTimeBasedPath({
+            path: [...path],
+            speed: 1.0,
+            autoPlay: false,
+            loop: true,
+            pathStyle: {
+              strokeColor: "#0066CC",
+              strokeWeight: 4,
+              showDirection: false,
+            },
+            passedStyle: {
+              strokeColor: "#00AA00",
+              strokeWeight: 6,
+              showDirection: false,
+            },
+            markerStyle: {
+              visible: true,
+              icon: {
+                url: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                size: [32, 32],
+              },
+            },
+            interpolation: {
+              enabled: true,
+              type: "linear",
+            },
+            callbacks: {
+              onStart: () => {
+                updateStatus("华为地图: 动画开始");
+              },
+              onPause: () => {
+                updateStatus("华为地图: 动画暂停");
+              },
+              onResume: () => {
+                updateStatus("华为地图: 动画继续");
+              },
+              onStop: () => {
+                updateStatus("华为地图: 动画停止");
+              },
+              onReset: () => {
+                updateStatus("华为地图: 动画重置");
+              },
+              onEnd: () => {
+                updateStatus("华为地图: 动画结束");
+              },
+              onTimeUpdate: (currentTime, progress) => {
+                updateTimeSlider(progress * 100);
+              },
+              onReachPoint: (point, index) => {
+                console.log(`华为地图: 到达路径点 ${index}`);
+              },
+            },
+          });
+
+          const amapController = await amapMap.animateTimeBasedPath({
+            path: [...path],
+            speed: 1.0,
+            autoPlay: false,
+            loop: true,
+            pathStyle: {
+              strokeColor: "#0066CC",
+              strokeWeight: 4,
+              showDirection: true,
+            },
+            passedStyle: {
+              strokeColor: "#00AA00",
+              strokeWeight: 6,
+            },
+            markerStyle: {
+              visible: true,
+              icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+            },
+            callbacks: {
+              onStart: () => {
+                updateStatus("高德地图: 动画开始");
+              },
+              onPause: () => {
+                updateStatus("高德地图: 动画暂停");
+              },
+              onResume: () => {
+                updateStatus("高德地图: 动画继续");
+              },
+              onStop: () => {
+                updateStatus("高德地图: 动画停止");
+              },
+              onReset: () => {
+                updateStatus("高德地图: 动画重置");
+              },
+              onEnd: () => {
+                updateStatus("高德地图: 动画结束");
+              },
+              onTimeUpdate: (currentTime, progress) => {
+                updateTimeSlider(progress * 100);
+              },
+              onReachPoint: (point, index) => {
+                console.log(`高德地图: 到达路径点 ${index}`);
+              },
+            },
+          });
+
+          const googleController = await googleMap.animateTimeBasedPath({
+            path: [...path],
+            speed: 1.0,
+            autoPlay: false,
+            loop: true,
+            pathStyle: {
+              strokeColor: "#0066CC",
+              strokeWeight: 4,
+              showDirection: true,
+            },
+            passedStyle: {
+              strokeColor: "#00AA00",
+              strokeWeight: 6,
+            },
+            markerStyle: {
+              visible: true,
+              icon: {
+                url: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+                size: [32, 32],
+                // anchor: [16, 32]
+              },
+            },
+            callbacks: {
+              onStart: () => {
+                updateStatus("谷歌地图: 动画开始");
+              },
+              onPause: () => {
+                updateStatus("谷歌地图: 动画暂停");
+              },
+              onResume: () => {
+                updateStatus("谷歌地图: 动画继续");
+              },
+              onStop: () => {
+                updateStatus("谷歌地图: 动画停止");
+              },
+              onReset: () => {
+                updateStatus("谷歌地图: 动画重置");
+              },
+              onEnd: () => {
+                updateStatus("谷歌地图: 动画结束");
+              },
+              onTimeUpdate: (currentTime, progress) => {
+                updateTimeSlider(progress * 100);
+              },
+              onReachPoint: (point, index) => {
+                console.log(`谷歌地图: 到达路径点 ${index}`);
+              },
+            },
+          });
+
+          // 初始化控制元素
+          initControls(
+            [huaweiController, amapController, googleController],
+            path
+          );
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+        }
+      })();
+
+      // 初始化控制元素
+      function initControls(controllers, path) {
+        // 填充路径点选择器
+        const pointSelector = document.getElementById("point-selector");
+        path.forEach((point, index) => {
+          const option = document.createElement("option");
+          option.value = index;
+          option.textContent = `路径点 ${index} (时间: ${point.time})`;
+          pointSelector.appendChild(option);
+        });
+
+        // 获取控制元素
+        const speedSlider = document.getElementById("speed");
+        const speedValue = document.getElementById("speed-value");
+        const timeSlider = document.getElementById("time-slider");
+        const timeValue = document.getElementById("time-value");
+        const startBtn = document.getElementById("start-btn");
+        const pauseBtn = document.getElementById("pause-btn");
+        const resumeBtn = document.getElementById("resume-btn");
+        const resetBtn = document.getElementById("reset-btn");
+        const stopBtn = document.getElementById("stop-btn");
+        const pointSelectorElement = document.getElementById("point-selector");
+
+        // 设置速度控制
+        speedSlider.addEventListener("input", (e) => {
+          const speed = parseFloat(e.target.value);
+          speedValue.textContent = speed.toFixed(1) + "x";
+          controllers.forEach((controller) => controller.setSpeed(speed));
+        });
+
+        // 设置时间滑块控制
+        timeSlider.addEventListener("input", (e) => {
+          const progress = parseFloat(e.target.value) / 100;
+          timeValue.textContent = Math.round(progress * 100) + "%";
+          // 这里可以根据进度计算对应的时间点
+          // 简化处理，直接使用进度作为时间比例
+          const minTime = path[0].time;
+          const maxTime = path[path.length - 1].time;
+          const targetTime = minTime + (maxTime - minTime) * progress;
+          controllers.forEach((controller) =>
+            controller.seekToTime(targetTime)
+          );
+        });
+
+        // 设置路径点跳转
+        pointSelectorElement.addEventListener("change", (e) => {
+          const index = parseInt(e.target.value);
+          if (!isNaN(index)) {
+            controllers.forEach((controller) => controller.seekToPoint(index));
+          }
+        });
+
+        // 设置按钮控制
+        startBtn.addEventListener("click", () => {
+          controllers.forEach((controller) => controller.start());
+        });
+
+        pauseBtn.addEventListener("click", () => {
+          controllers.forEach((controller) => controller.pause());
+        });
+
+        resumeBtn.addEventListener("click", () => {
+          controllers.forEach((controller) => controller.resume());
+        });
+
+        resetBtn.addEventListener("click", () => {
+          controllers.forEach((controller) => controller.reset());
+        });
+
+        stopBtn.addEventListener("click", () => {
+          controllers.forEach((controller) => controller.stop());
+        });
+      }
+
+      // 更新状态显示
+      function updateStatus(text) {
+        const statusText = document.getElementById("status-text");
+        statusText.textContent = text;
+      }
+
+      // 更新时间滑块显示
+      function updateTimeSlider(value) {
+        const timeSlider = document.getElementById("time-slider");
+        const timeValue = document.getElementById("time-value");
+        timeSlider.value = value;
+        timeValue.textContent = Math.round(value) + "%";
+      }
+    </script>
+  </body>
+</html>

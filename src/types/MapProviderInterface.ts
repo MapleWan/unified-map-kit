@@ -20,6 +20,8 @@ import {
   ILnglatToPixelOptions,
   IPixelToLnglatOptions,
   IPathAnimateOptions,
+  ITimeBasedPathAnimateOptions,
+  ITimeBasedPathAnimationController,
   IInfoWindowOptions,
 } from "../mapProvider/serviceParamsType";
 
@@ -109,6 +111,9 @@ export interface IMapProvider {
     pause(): void;
     resume(): void;
   }>;
+  
+  /** 基于时间的路径动画 */
+  animateTimeBasedPath(options: ITimeBasedPathAnimateOptions): Promise<ITimeBasedPathAnimationController>;
 
   // containerToLnglat(options: any): Promise<any>;
   // lngLatToContainer(options: any): Promise<any>;
