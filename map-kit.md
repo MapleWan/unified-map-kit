@@ -901,7 +901,7 @@ const addMarkerClusterOptions = {
     },
     {
       maxNumber: 4,
-      // clusterPointLabel: { content: div2 },∑
+      // clusterPointLabel: { content: div2 },
       clusterPointIcon: {
         url: "//a.amap.com/jsapi_demos/static/images/green.png",
         size: [32, 32],
@@ -1225,6 +1225,464 @@ removePolyline(polyline: any): void;
 
 ```javascript
 amapMap.removePolyline(ampPolyline) // 详细可参考 addPolyline 中示例代码
+```
+
+
+### 轨迹回放
+
+#### 使用说明
+
+##### 方法声明
+
+```typescript
+/** 基于时间的路径动画 */
+animateTimeBasedPath(options: ITimeBasedPathAnimateOptions): Promise<ITimeBasedPathAnimationController>;
+```
+
+##### 方法参数
+
+```typescript
+/**
+ * 基于时间的路径动画选项接口
+ * 用于实现更高级的路径动画功能，包括倍速播放、时间点跳转等
+ */
+interface ITimeBasedPathAnimateOptions {
+  /**
+   * 路径点列表，每个点包含坐标和时间信息
+   * 时间可以是Unix时间戳（毫秒）或相对时间（秒）
+   */
+  path: Array<{
+    lat: number;
+    lng: number;
+    /** 该点所处的时间，可以是  "时间戳（毫秒）/ 1000" 或相对时间（秒） */
+    time: number;
+    /** 可选的额外数据，如速度、方向等 */
+    data?: any;
+  }>;
+
+  /** 动画总时长（毫秒），如果未指定则根据路径点时间自动计算 */
+  duration?: number;
+
+  /** 播放速度倍率，默认1.0（正常速度），2.0表示2倍速，0.5表示0.5倍速 */
+  speed?: number;
+
+  /** 是否自动开始播放，默认false */
+  autoPlay?: boolean;
+
+  /** 是否循环播放，默认false */
+  loop?: boolean;
+
+  /** 路径线条样式 */
+  pathStyle?: {
+    /** 完整路径线条颜色 */
+    strokeColor?: string;
+    /** 完整路径线条宽度 */
+    strokeWeight?: number;
+    /** 完整路径线条透明度 */
+    strokeOpacity?: number;
+    /** 是否显示方向箭头 */
+    showDirection?: boolean;
+  };
+
+  /** 已走过路径的样式 */
+  passedStyle?: {
+    /** 已走过路径线条颜色 */
+    strokeColor?: string;
+    /** 已走过路径线条宽度 */
+    strokeWeight?: number;
+    /** 已走过路径线条透明度 */
+    strokeOpacity?: number;
+    /** 是否显示方向箭头 */
+    showDirection?: boolean;
+  };
+
+  /** 移动标记的样式 */
+  markerStyle?: {
+    /** 标记图标 */
+    icon?:
+      | string
+      | {
+          url: string;
+          size?: [number, number];
+        };
+    /** 标记大小 */
+    size?: [number, number];
+    /** 是否显示标记 */
+    visible?: boolean;
+  };
+
+  /** 平滑插值设置 */
+  interpolation?: {
+    /** 是否启用插值，默认true */
+    enabled?: boolean;
+    /** 插值类型：'linear' 或自定义插值函数 */
+    type?:
+      | "linear"
+      | (( p0: any, p1: any, path: Array<{ lat: number; lng: number; time: number; data?: any;}> ) => { lat: number; lng: number; time: number; data?: any });
+  };
+
+  /** 事件回调 */
+  callbacks?: {
+    /** 动画开始回调 */
+    onStart?: () => void;
+    /** 动画暂停回调 */
+    onPause?: () => void;
+    /** 动画恢复回调 */
+    onResume?: () => void;
+    /** 动画停止回调 */
+    onStop?: () => void;
+    /** 动画重置回调 */
+    onReset?: () => void;
+    /** 动画结束回调 */
+    onEnd?: () => void;
+    /** 时间更新回调，返回当前时间和进度 */
+    onTimeUpdate?: (currentTime: number, progress: number) => void;
+    /** 到达路径点回调 */
+    onReachPoint?: (point: any, index: number) => void;
+  };
+}
+```
+
+##### 返回参数
+```typescript
+/**
+ * 时间基础路径动画的控制器接口
+ * 提供动画播放控制和状态查询功能
+ */
+export interface ITimeBasedPathAnimationController {
+  /** 开始/重新开始动画 */
+  start(): void;
+
+  /** 暂停动画 */
+  pause(): void;
+
+  /** 恢复动画 */
+  resume(): void;
+
+  /** 停止动画 */
+  stop(): void;
+
+  /** 重置动画到初始状态 */
+  reset(): void;
+
+  /** 设置播放速度 */
+  setSpeed(speed: number): void;
+
+  /** 跳转到指定时间点 */
+  seekToTime(time: number): void;
+
+  /** 跳转到指定路径点 */
+  seekToPoint(index: number): void;
+
+  /** 获取当前播放状态 */
+  getState(): {
+    /** 是否正在播放 */
+    isPlaying: boolean;
+    /** 是否已暂停 */
+    isPaused: boolean;
+    /** 当前时间 */
+    currentTime: number;
+    /** 播放进度 (0-1) */
+    progress: number;
+    /** 当前路径点索引 */
+    currentPointIndex: number;
+    /** 当前播放速度 */
+    speed: number;
+  };
+
+  /** 获取总时长 */
+  getDuration(): number;
+
+  /** 销毁动画控制器，清理资源 */
+  destroy(): void;
+}
+```
+#### 示例代码
+
+```javascript
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高德地图时间基础路径动画演示</title>
+    <style>
+      #container {
+        width: 100%;
+        height: 500px;
+      }
+      .control-panel {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      .control-group {
+        margin: 10px 0;
+      }
+      label {
+        display: inline-block;
+        width: 120px;
+      }
+      button {
+        margin: 5px;
+        padding: 5px 10px;
+      }
+      .status {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>高德地图时间基础路径动画演示</h1>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <button id="startBtn">开始动画</button>
+        <button id="pauseBtn">暂停动画</button>
+        <button id="resumeBtn">恢复动画</button>
+        <button id="stopBtn">停止动画</button>
+        <button id="resetBtn">重置动画</button>
+      </div>
+
+      <div class="control-group">
+        <label for="speedInput">播放速度:</label>
+        <input
+          type="range"
+          id="speedInput"
+          min="0.1"
+          max="3"
+          step="0.1"
+          value="1"
+        />
+        <span id="speedValue">1.0</span>
+      </div>
+
+      <div class="control-group">
+        <label for="timeSlider">时间控制:</label>
+        <input type="range" id="timeSlider" min="0" max="100" value="0" />
+        <span id="timeValue">0%</span>
+      </div>
+
+      <div class="control-group">
+        <label for="pointSelector">跳转到点:</label>
+        <select id="pointSelector">
+          <option value="">选择路径点</option>
+        </select>
+      </div>
+
+      <div class="status">
+        <strong>状态:</strong>
+        <span id="statusText">未开始</span>
+      </div>
+    </div>
+
+    <div id="container"></div>
+
+    <script type="module">
+      import { init } from "../src/index";
+
+      // 初始化地图
+      let map;
+      let animationController = null;
+      let pathData = []; // 保存路径数据用于跳转
+
+      (async () => {
+        try {
+          map = await init({
+            container: document.getElementById("container"),
+            mapProvider: "amap",
+            apiKey: "xxx",
+            securityJsCode: "xxx",
+            center: { lat: 39.997761, lng: 116.478935 },
+            zoom: 16,
+          });
+
+          // 创建测试路径数据
+          const now = Date.now();
+          pathData = [
+            { lat: 39.997761, lng: 116.478935, time: 0 },
+            { lat: 39.997825, lng: 116.478939, time: 10 },
+            { lat: 39.998549, lng: 116.478912, time: 20 },
+            { lat: 39.998555, lng: 116.478998, time: 30 },
+            { lat: 39.99856, lng: 116.479282, time: 40 },
+            { lat: 39.998528, lng: 116.479658, time: 50 },
+            { lat: 39.998453, lng: 116.480151, time: 60 },
+            { lat: 39.998302, lng: 116.480784, time: 70 },
+            { lat: 39.998184, lng: 116.481149, time: 80 },
+            { lat: 39.997997, lng: 116.481573, time: 90 },
+            { lat: 39.997846, lng: 116.481863, time: 100 },
+            { lat: 39.997718, lng: 116.482072, time: 110 },
+            { lat: 39.997718, lng: 116.482362, time: 120 },
+            { lat: 39.998935, lng: 116.483633, time: 130 },
+            { lat: 39.998968, lng: 116.48367, time: 140 },
+            { lat: 39.999861, lng: 116.484648, time: 150 },
+          ];
+
+          // 填充路径点选择器
+          const pointSelector = document.getElementById("pointSelector");
+          pathData.forEach((point, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = `路径点 ${index} (时间: ${point.time})`;
+            pointSelector.appendChild(option);
+          });
+          // 更新状态显示
+          function updateStatus(text) {
+            const statusText = document.getElementById("statusText");
+            statusText.textContent = text;
+          }
+
+          // 更新时间滑块显示
+          function updateTimeSlider(value) {
+            const timeSlider = document.getElementById("timeSlider");
+            const timeValue = document.getElementById("timeValue");
+            timeSlider.value = value;
+            timeValue.textContent = Math.round(value) + "%";
+          }
+
+          // 初始化动画
+          async function initAnimation() {
+            try {
+              animationController = await map.animateTimeBasedPath({
+                path: pathData,
+                speed: 1.0,
+                autoPlay: false,
+                loop: true,
+                interpolation: {
+                  enabled: true,
+                  type: "linear", // 默认线性插值
+                  precision: 20,
+                },
+                pathStyle: {
+                  strokeColor: "#0066CC",
+                  strokeWeight: 4,
+                  strokeOpacity: 0.6,
+                  showDirection: true,
+                },
+                passedStyle: {
+                  strokeColor: "#00AA00",
+                  strokeWeight: 6,
+                  strokeOpacity: 1.0,
+                },
+                markerStyle: {
+                  visible: true,
+                  icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                },
+                callbacks: {
+                  onStart: () => {
+                    updateStatus("动画开始");
+                  },
+                  onPause: () => {
+                    updateStatus("动画暂停");
+                  },
+                  onResume: () => {
+                    updateStatus("动画恢复");
+                  },
+                  onStop: () => {
+                    updateStatus("动画停止");
+                  },
+                  onReset: () => {
+                    updateStatus("动画重置");
+                    updateTimeSlider(0);
+                  },
+                  onEnd: () => {
+                    updateStatus("动画结束");
+                  },
+                  onTimeUpdate: (currentTime, progress) => {
+                    updateTimeSlider(progress * 100);
+                  },
+                  onReachPoint: (point, index) => {
+                    console.log(`到达路径点 ${index}:`, point);
+                  },
+                },
+              });
+
+              console.log("动画控制器初始化成功");
+            } catch (error) {
+              console.error("初始化动画失败:", error);
+            }
+          }
+
+          // 事件监听器
+          document.getElementById("startBtn").addEventListener("click", () => {
+            if (animationController) {
+              animationController.start();
+            }
+          });
+
+          document.getElementById("pauseBtn").addEventListener("click", () => {
+            if (animationController) {
+              animationController.pause();
+            }
+          });
+
+          document.getElementById("resumeBtn").addEventListener("click", () => {
+            if (animationController) {
+              animationController.resume();
+            }
+          });
+
+          document.getElementById("stopBtn").addEventListener("click", () => {
+            if (animationController) {
+              animationController.stop();
+            }
+          });
+
+          document.getElementById("resetBtn").addEventListener("click", () => {
+            if (animationController) {
+              animationController.reset();
+            }
+          });
+
+          document
+            .getElementById("speedInput")
+            .addEventListener("input", (e) => {
+              const speed = parseFloat(e.target.value);
+              document.getElementById("speedValue").textContent =
+                speed.toFixed(1);
+              if (animationController) {
+                animationController.setSpeed(speed);
+              }
+            });
+
+          // 设置时间滑块控制
+          document
+            .getElementById("timeSlider")
+            .addEventListener("input", (e) => {
+              const progress = parseFloat(e.target.value) / 100;
+              document.getElementById("timeValue").textContent =
+                Math.round(progress * 100) + "%";
+
+              if (animationController && pathData.length > 0) {
+                const minTime = pathData[0].time;
+                const maxTime = pathData[pathData.length - 1].time;
+                const targetTime = minTime + (maxTime - minTime) * progress;
+                animationController.seekToTime(targetTime);
+              }
+            });
+
+          // 设置路径点跳转
+          document
+            .getElementById("pointSelector")
+            .addEventListener("change", (e) => {
+              const index = parseInt(e.target.value);
+              if (!isNaN(index) && animationController) {
+                animationController.seekToPoint(index);
+              }
+            });
+
+          // 初始化
+          await initAnimation();
+        } catch (error) {
+          console.error("Map initialization failed:", error);
+        }
+      })();
+    </script>
+  </body>
+</html>
 ```
 
 ## 面
@@ -2901,7 +3359,7 @@ interface IUnifiedRouteRideOptions {
 
 
 
-### 轨迹回放
+### 轨迹回放（⚠️废弃，请使用 animateTimeBasedPath）
 
 #### 使用说明
 
