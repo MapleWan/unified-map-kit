@@ -13,6 +13,15 @@ export class GeometryManager {
     const { spherical } = await google.maps.importLibrary("geometry");
     return spherical.computeDistanceBetween(start, end);
   }
+  getDistanceBetweenSync(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number },
+    map: any
+  ): number {
+    // const { spherical } = await google.maps.importLibrary("geometry");
+    const spherical = map.SphericalMapKit;
+    return spherical.computeDistanceBetween(start, end);
+  }
 
   // 计算多边形的面积
   async getPolygonArea(

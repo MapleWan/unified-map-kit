@@ -111,13 +111,21 @@
           ];
           setTimeout(async () => {
             console.log("计算 distance");
-            const huaweiDistance = await huaweiMap.getDistanceBetween(start, end);
-            const amapDistance = await amapMap.getDistanceBetween(start, end);
-            const googleDistance = await googleMap.getDistanceBetween(start, end);
+            // const huaweiDistance = await huaweiMap.getDistanceBetween(start, end);
+            // const amapDistance = await amapMap.getDistanceBetween(start, end);
+            // const googleDistance = await googleMap.getDistanceBetween(start, end);
 
-            const googleArea = await huaweiMap.getPolygonArea(path);
-            const amapArea = await huaweiMap.getPolygonArea(path);
-            const huaweiArea = await huaweiMap.getPolygonArea(path);
+            // const googleArea = await huaweiMap.getPolygonArea(path);
+            // const amapArea = await huaweiMap.getPolygonArea(path);
+            // const huaweiArea = await huaweiMap.getPolygonArea(path);
+
+            const huaweiDistance = huaweiMap.getDistanceBetweenSync(start, end);
+            const amapDistance = amapMap.getDistanceBetweenSync(start, end);
+            const googleDistance = googleMap.getDistanceBetweenSync(start, end);
+
+            const googleArea = huaweiMap.getPolygonAreaSync(path);
+            const amapArea = huaweiMap.getPolygonAreaSync(path);
+            const huaweiArea = huaweiMap.getPolygonAreaSync(path);
 
             console.log(amapDistance, googleDistance, huaweiDistance)
             console.log(amapArea, googleArea, huaweiArea)

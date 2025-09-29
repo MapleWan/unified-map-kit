@@ -300,6 +300,18 @@ export class UnifiedProvider implements IMapProvider {
     }
     return this.geometryManager.getDistanceBetween(start, end);
   }
+  getDistanceBetweenSync(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number }
+  ): number {
+    if (!start) {
+      throw new Error("Parameter 'start' is required");
+    }
+    if (!end) {
+      throw new Error("Parameter 'end' is required");
+    }
+    return this.geometryManager.getDistanceBetweenSync(start, end, this.map);
+  }
   getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number> {
     if (!path || path.length < 3) {
       throw new Error(
@@ -307,6 +319,14 @@ export class UnifiedProvider implements IMapProvider {
       );
     }
     return this.geometryManager.getPolygonArea(this.map, path);
+  }
+  getPolygonAreaSync(path: Array<{ lat: number; lng: number }>): number {
+    if (!path || path.length < 3) {
+      throw new Error(
+        "Parameter 'paths' is required and must be an array of at least 3 points"
+      );
+    }
+    return this.geometryManager.getPolygonAreaSync(this.map, path);
   }
 
   searchPlaceByKeyword(
