@@ -66,6 +66,28 @@ export class MarkerManager {
     };
     return Promise.resolve(marker);
   }
+  addMarkerSync(map: any, options: IUnifiedMapMarkerOptions): any {
+    let markerOptions = {
+      ...options,
+      map: map,
+      gmpDraggable: options?.draggable,
+    } as any;
+    // 传入 customData AdanceMarkerElement 构造函数会报错
+    if ("customData" in markerOptions) {
+      delete markerOptions.customData;
+    }
+    delete markerOptions.label;
+    delete markerOptions.icon;
+    const res = handleIconAndLabel(options?.label, options?.icon);
+    markerOptions.content = res.content;
+    // const { AdvancedMarkerElement } = await this.loader.importLibrary("marker");
+    const AdvancedMarkerElement = map.AdvancedMarkerElementMapKit;
+    const marker = new AdvancedMarkerElement(markerOptions);
+    marker.getCustomDataUinified = () => {
+      return options?.customData || {};
+    };
+    return marker;
+  }
 
   // 删除标记
   removeMarker(marker: any): void {
@@ -192,6 +214,95 @@ export class MarkerManager {
     });
     return Promise.resolve(markerCluster);
   }
+  addMarkerClusterSync(
+    map: any,
+    options: IUnifiedMarkerClusterOptions
+  ): any {
+    const locations = [...options.points];
+    const AdvancedMarkerElement = map.AdvancedMarkerElementMapKit;
+    const markers = locations.map((markerOption, i) => {
+      let tmpLabel, tmpIcon;
+
+      if (options?.singlePointLabel) tmpLabel = options?.singlePointLabel;
+      if (options?.singlePointIcon) tmpIcon = options?.singlePointIcon;
+
+      // 优先使用点的自定义配置
+      if (markerOption?.label) tmpLabel = markerOption.label;
+      if (markerOption?.icon) tmpIcon = markerOption.icon;
+
+      const tmpOption = {
+        ...markerOption,
+        map: map,
+        gmpDraggable: markerOption?.draggable,
+      } as any;
+      // 传入 customData AdanceMarkerElement 构造函数会报错
+      if ("customData" in tmpOption) {
+        delete tmpOption.customData;
+      }
+      delete tmpOption.label;
+      delete tmpOption.icon;
+      const res = handleIconAndLabel(tmpLabel, tmpIcon);
+      tmpOption.content = res.content;
+      const marker = new AdvancedMarkerElement(tmpOption);
+      marker.getCustomDataUinified = () => {
+        return markerOption?.customData || {};
+      };
+      if (options?.singlePointClickFunc) {
+        marker.addListener("click", (c: any) => {
+          const marker = c?.domEvent?.target;
+          if (marker && options?.singlePointClickFunc) {
+            options.singlePointClickFunc(marker);
+          }
+        });
+      }
+      return marker;
+    });
+    // Add a marker clusterer to manage the markers.
+    let clusterPointRenderer = function render(obj: any) {
+      let content = undefined;
+      if (options?.clusterPointLabel) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (options?.clusterPointIcon) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (
+        options?.clusterPointIntervalList &&
+        options.clusterPointIntervalList.length
+      ) {
+        let iconIndex = getIndexFromIntervalList(
+          options?.clusterPointIntervalList.map((item) => item.maxNumber),
+          obj.count
+        );
+        const res = handleIconAndLabel(
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel,
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      content.innerHTML = obj.count;
+      return new AdvancedMarkerElement({
+        position: obj._position,
+        content: content,
+      });
+    };
+    if (options?.googleClusterRendererFunc)
+      clusterPointRenderer = options.googleClusterRendererFunc;
+    const markerCluster = new MarkerClusterer({
+      markers,
+      map,
+      renderer: { render: clusterPointRenderer },
+    });
+    return markerCluster;
+  }  
 }
 
 UnifiedProvider.registerServiceToUnifiedProvider(

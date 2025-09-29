@@ -14,6 +14,14 @@ export class BaseManager {
         ...options,
         mapId: "PLACEHOLDER_MAP_ID",
       });
+      const { Marker, AdvancedMarkerElement } = await this.loader.importLibrary("marker");
+      const { Polyline, Polygon, Circle, Rectangle } = await this.loader.importLibrary("maps");
+      map.MarkerMapKit = Marker;
+      map.AdvancedMarkerElementMapKit = AdvancedMarkerElement;
+      map.PolylineMapKit = Polyline;
+      map.PolygonMapKit = Polygon;
+      map.CircleMapKit = Circle;
+      map.RectangleMapKit = Rectangle;
       return Promise.resolve(map);
     } catch (error) {
       console.error("Initialize map failed:", error);

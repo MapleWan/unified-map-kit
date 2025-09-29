@@ -188,11 +188,24 @@ export class UnifiedProvider implements IMapProvider {
     );
     return this.markerManager.addMarker(this.map, formattedOptions);
   }
+  addMarkerSync(options: IUnifiedMapMarkerOptions): any {
+    const formattedOptions = formatOptions<IUnifiedMapMarkerOptions>(
+      options,
+      ["position"],
+      {
+        draggable: false,
+      }
+    );
+    return this.markerManager.addMarkerSync(this.map, formattedOptions);
+  }
   removeMarker(marker: any): void {
     this.markerManager.removeMarker(marker);
   }
   addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any> {
     return this.markerManager.addMarkerCluster(this.map, options);
+  }
+  addMarkerClusterSync(options: IUnifiedMarkerClusterOptions): any {
+    return this.markerManager.addMarkerClusterSync(this.map, options);
   }
 
   addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
