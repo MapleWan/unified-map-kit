@@ -49,26 +49,32 @@ export interface IMapProvider {
 
   /** 添加标记 */
   addMarker(options: IUnifiedMapMarkerOptions): Promise<any>;
+  addMarkerSync(options: IUnifiedMapMarkerOptions): any;
   /** 移除标记 */
   removeMarker(marker: any): void;
   /** 添加标记聚类 */
   addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any>;
+  addMarkerClusterSync(options: IUnifiedMarkerClusterOptions): any;
 
   /** 添加折线 */
   addPolyline(options: IUnifiedPolylineOptions): Promise<any>;
+  addPolylineSync(options: IUnifiedPolylineOptions): any;
   /** 移除折线 */
   removePolyline(polyline: any): void;
 
   /** 添加多边形 */
   addPolygon(options: IUnifiedPolygonOptions): Promise<any>;
+  addPolygonSync(options: IUnifiedPolygonOptions): any;
   /** 移除多边形 */
   removePolygon(polygon: any): void;
   /** 添加圆形 */
   addCircle(options: IUnifiedCircleOptions): Promise<any>;
+  addCircleSync(options: IUnifiedCircleOptions): any;
   /** 移除圆形 */
   removeCircle(circle: any): void;
   /** 添加矩形 */
   addRectangle(options: IUnifiedRectangleOptions): Promise<any>;
+  addRectangleSync(options: IUnifiedRectangleOptions): any;
   /** 移除矩形 */
   removeRectangle(rectangle: any): void;
 
@@ -77,8 +83,13 @@ export interface IMapProvider {
     start: { lat: number; lng: number },
     end: { lat: number; lng: number }
   ): Promise<number>;
+  getDistanceBetweenSync(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number }
+  ): number;
   /** 获取多边形面积 */
   getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number>;
+  getPolygonAreaSync(path: Array<{ lat: number; lng: number }>): number;
 
   /** 搜索地点 */
   searchPlaceByKeyword(
@@ -114,6 +125,7 @@ export interface IMapProvider {
   
   /** 基于时间的路径动画 */
   animateTimeBasedPath(options: ITimeBasedPathAnimateOptions): Promise<ITimeBasedPathAnimationController>;
+  animateTimeBasedPathSync(options: ITimeBasedPathAnimateOptions): ITimeBasedPathAnimationController;
 
   // containerToLnglat(options: any): Promise<any>;
   // lngLatToContainer(options: any): Promise<any>;
@@ -135,6 +147,7 @@ export interface IMapProvider {
 
   /** 创建信息窗体 */
   createInfoWindow(options: IInfoWindowOptions): Promise<any>;
+  createInfoWindowSync(options: IInfoWindowOptions): any;
   /** 打开信息窗体 */
   openInfoWindow(infoWindow: any, marker?: any): void;
   /** 关闭信息窗体 */
