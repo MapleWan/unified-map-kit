@@ -131,13 +131,23 @@
 
           setTimeout(async () => {
             console.log("添加 polygon");
-            const huawei = await huaweiMap.addPolygon({
+            // const huawei = await huaweiMap.addPolygon({
+            //   ...commonOptions,
+            // });
+            // const amap = await amapMap.addPolygon({
+            //   ...commonOptions,
+            // });
+            // const google = await googleMap.addPolygon({
+            //   ...commonOptions,
+            // });
+
+            const huawei = huaweiMap.addPolygonSync({
               ...commonOptions,
             });
-            const amap = await amapMap.addPolygon({
+            const amap = amapMap.addPolygonSync({
               ...commonOptions,
             });
-            const google = await googleMap.addPolygon({
+            const google = googleMap.addPolygonSync({
               ...commonOptions,
             });
 

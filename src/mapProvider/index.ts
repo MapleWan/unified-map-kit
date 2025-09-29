@@ -241,6 +241,17 @@ export class UnifiedProvider implements IMapProvider {
     }
     return this.polygonManager.addPolygon(this.map, formattedOptions);
   }
+  addPolygonSync(options: IUnifiedPolygonOptions): any {
+    const formattedOptions = formatOptions<IUnifiedPolygonOptions>(options, [
+      "path",
+    ]);
+    if (options.path.length < 3) {
+      throw new Error(
+        "Parameter 'path' is required and must be an array of at least three points"
+      );
+    }
+    return this.polygonManager.addPolygonSync(this.map, formattedOptions);
+  }
   removePolygon(polygon: any): void {
     this.polygonManager.removePolygon(this.map, polygon);
   }
@@ -251,6 +262,13 @@ export class UnifiedProvider implements IMapProvider {
     ]);
     return this.polygonManager.addCircle(this.map, formattedOptions);
   }
+  addCircleSync(options: IUnifiedCircleOptions): any {
+    const formattedOptions = formatOptions<IUnifiedCircleOptions>(options, [
+      "center",
+      "radius",
+    ]);
+    return this.polygonManager.addCircleSync(this.map, formattedOptions);
+  }
   removeCircle(circle: any): void {
     this.polygonManager.removeCircle(this.map, circle);
   }
@@ -259,6 +277,12 @@ export class UnifiedProvider implements IMapProvider {
       "bounds",
     ]);
     return this.polygonManager.addRectangle(this.map, formattedOptions);
+  }
+  addRectangleSync(options: IUnifiedRectangleOptions): any {
+    const formattedOptions = formatOptions<IUnifiedRectangleOptions>(options, [
+      "bounds",
+    ]);
+    return this.polygonManager.addRectangleSync(this.map, formattedOptions);
   }
   removeRectangle(rectangle: any): void {
     this.polygonManager.removeRectangle(this.map, rectangle);
