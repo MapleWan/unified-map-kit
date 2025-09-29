@@ -463,6 +463,14 @@ export class UnifiedProvider implements IMapProvider {
     );
     return this.widgetManager.createInfoWindow(this.map, formattedOptions);
   }
+  createInfoWindowSync(options: IInfoWindowOptions): any {
+    const formattedOptions = formatOptions(
+      options,
+      ["position", "content"],
+      {}
+    );
+    return this.widgetManager.createInfoWindowSync(this.map, formattedOptions);
+  }
   openInfoWindow(infoWindow: any, marker?: any): void {
     if (!infoWindow) {
       throw new Error("Parameter 'infoWindow' is required");

@@ -24,6 +24,21 @@ export class WidgetManager {
     return Promise.resolve(infoWindow);
   }
 
+  createInfoWindowSync(map: any, options: IInfoWindowOptions) {
+    let infoOption = { ...options } as any;
+    if (options?.content instanceof HTMLElement) {
+      infoOption.content = options.content.cloneNode(true) as HTMLElement;
+    }
+    if (options?.offset) {
+      infoOption.pixelOffset = options.offset;
+    }
+    const infoWindow = new google.maps.InfoWindow(infoOption);
+    if (options.isAutoOpen) {
+      infoWindow.open(map);
+    }
+    return infoWindow;
+  }
+
   openInfoWindow(map: any, infoWindow: any, marker: any) {
     if (marker) {
       infoWindow.open({ anchor: marker });

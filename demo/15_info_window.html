@@ -141,9 +141,13 @@
             ...commonOptions,
           });
           const googleMarker = await googleMap.addMarker(commonOptions);
-          const amapObj = await amapMap.createInfoWindow(infoWindowOptions);
-          const googleObj = await googleMap.createInfoWindow(infoWindowOptions);
-          const huaweiObj = await huaweiMap.createInfoWindow(infoWindowOptions);
+          // const amapObj = await amapMap.createInfoWindow(infoWindowOptions);
+          // const googleObj = await googleMap.createInfoWindow(infoWindowOptions);
+          // const huaweiObj = await huaweiMap.createInfoWindow(infoWindowOptions);
+
+          const amapObj = amapMap.createInfoWindowSync(infoWindowOptions);
+          const googleObj = googleMap.createInfoWindowSync(infoWindowOptions);
+          const huaweiObj = huaweiMap.createInfoWindowSync(infoWindowOptions);
 
           amapMap.openInfoWindow(amapObj, amapMarker);
           googleMap.openInfoWindow(googleObj, googleMarker);
