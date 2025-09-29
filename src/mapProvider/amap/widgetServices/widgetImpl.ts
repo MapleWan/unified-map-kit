@@ -23,6 +23,21 @@ export class WidgetManager {
     }
     return Promise.resolve(infoWindow);
   }
+  createInfoWindowSync(map: any, options: IInfoWindowOptions): any {
+    let infoOption = { ...options } as any;
+    if (options?.content instanceof HTMLElement) {
+      infoOption.content = options.content.cloneNode(true) as HTMLElement;
+    }
+    if (options?.offset && options?.offset?.length >= 2) {
+      infoOption.offset = new AMap.Pixel(options.offset[0], options.offset[1]);
+    }
+    infoOption.position = [options.position.lng, options.position.lat];
+    const infoWindow = new AMap.InfoWindow(infoOption);
+    if (options.isAutoOpen) {
+      infoWindow.open(map);
+    }
+    return infoWindow;
+  }
 
   openInfoWindow(map: any, infoWindow: any, marker: any) {
     infoWindow.open(map);

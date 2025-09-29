@@ -1,5 +1,7 @@
 import { IInitMapOptions } from "../../../types/MapProviderInterface";
 import { UnifiedProvider } from "../../../mapProvider";
+declare const google: any;
+
 export class BaseManager {
   private loader: any;
   constructor(loader: any) {
@@ -14,6 +16,26 @@ export class BaseManager {
         ...options,
         mapId: "PLACEHOLDER_MAP_ID",
       });
+      // const { Marker, AdvancedMarkerElement } = await this.loader.importLibrary("marker");
+      // const { Polyline, Polygon, Circle, Rectangle } = await this.loader.importLibrary("maps");
+      // const { spherical } = await google.maps.importLibrary("geometry");
+      const [markerLibrary, mapsLibrary, geometryLibrary] = await Promise.all([
+        this.loader.importLibrary("marker"),
+        this.loader.importLibrary("maps"),
+        google.maps.importLibrary("geometry")
+      ]);
+
+      const { Marker, AdvancedMarkerElement } = markerLibrary;
+      const { Polyline, Polygon, Circle, Rectangle } = mapsLibrary;
+      const { spherical } = geometryLibrary;
+
+      map.MarkerMapKit = Marker;
+      map.AdvancedMarkerElementMapKit = AdvancedMarkerElement;
+      map.PolylineMapKit = Polyline;
+      map.PolygonMapKit = Polygon;
+      map.CircleMapKit = Circle;
+      map.RectangleMapKit = Rectangle;
+      map.SphericalMapKit = spherical;
       return Promise.resolve(map);
     } catch (error) {
       console.error("Initialize map failed:", error);

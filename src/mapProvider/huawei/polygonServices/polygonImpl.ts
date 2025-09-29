@@ -35,6 +35,29 @@ export class PolygonManager {
     const polygon = new HWMapJsSDK.HWPolygon(polygonOptions);
     return Promise.resolve(polygon);
   }
+  addPolygonSync(map: any, options: IUnifiedPolygonOptions): any {
+    let polygonOptions = {
+      map: map,
+      ...options,
+      paths:
+        options.path.length && Array.isArray(options.path[0])
+          ? options.path
+          : [options.path],
+    };
+
+    if (options?.strokeOpacity) {
+      console.warn(
+        "huawei map does not support strokeOpacity, you can set color opacity by setting stokeColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    if (options?.fillOpacity) {
+      console.warn(
+        "huawei map does not support fillOpacity, you can set color opacity by setting fillColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    const polygon = new HWMapJsSDK.HWPolygon(polygonOptions);
+    return polygon;
+  }
   // 删除多边形
   removePolygon(map: any, polygon: any): void {
     if (!polygon) {
@@ -45,7 +68,7 @@ export class PolygonManager {
   }
 
   // 添加圆
-  async addCircle(map: any, options: IUnifiedCircleOptions) {
+  async addCircle(map: any, options: IUnifiedCircleOptions): Promise<any> {
     const circleOptions = {
       ...options,
       map: map,
@@ -63,6 +86,25 @@ export class PolygonManager {
     }
     const circle = new HWMapJsSDK.HWCircle(circleOptions);
     return Promise.resolve(circle);
+  }
+  addCircleSync(map: any, options: IUnifiedCircleOptions): any {
+    const circleOptions = {
+      ...options,
+      map: map,
+    };
+
+    if (options?.strokeOpacity) {
+      console.warn(
+        "huawei map does not support strokeOpacity, you can set color opacity by setting stokeColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    if (options?.fillOpacity) {
+      console.warn(
+        "huawei map does not support fillOpacity, you can set color opacity by setting fillColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    const circle = new HWMapJsSDK.HWCircle(circleOptions);
+    return circle;
   }
   // 删除圆
   removeCircle(map: any, circle: any) {
@@ -100,6 +142,33 @@ export class PolygonManager {
     const rectangle = new HWMapJsSDK.HWPolygon(rectangleOptions);
     rectangle.setMap(map);
     return Promise.resolve(rectangle);
+  }
+  addRectangleSync(map: any, options: IUnifiedRectangleOptions): any {
+    const path = [
+      { lat: options.bounds.north, lng: options.bounds.east },
+      { lat: options.bounds.south, lng: options.bounds.east },
+      { lat: options.bounds.south, lng: options.bounds.west },
+      { lat: options.bounds.north, lng: options.bounds.west },
+    ];
+    let rectangleOptions = {
+      map: map,
+      ...options,
+      paths: [path],
+    };
+
+    if (options?.strokeOpacity) {
+      console.warn(
+        "huawei map does not support strokeOpacity, you can set color opacity by setting stokeColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    if (options?.fillOpacity) {
+      console.warn(
+        "huawei map does not support fillOpacity, you can set color opacity by setting fillColor with format '#RRGGBBAA' or 'HSL'"
+      );
+    }
+    const rectangle = new HWMapJsSDK.HWPolygon(rectangleOptions);
+    rectangle.setMap(map);
+    return rectangle;
   }
   // 删除矩形
   removeRectangle(map: any, rectangle: any) {

@@ -119,13 +119,22 @@
 
           setTimeout(async () => {
             console.log("添加 rectangle");
-            const huawei = await huaweiMap.addRectangle({
+            // const huawei = await huaweiMap.addRectangle({
+            //   ...commonOptions,
+            // });
+            // const amap = await amapMap.addRectangle({
+            //   ...commonOptions,
+            // });
+            // const google = await googleMap.addRectangle({
+            //   ...commonOptions,
+            // });
+            const huawei = huaweiMap.addRectangleSync({
               ...commonOptions,
             });
-            const amap = await amapMap.addRectangle({
+            const amap = amapMap.addRectangleSync({
               ...commonOptions,
             });
-            const google = await googleMap.addRectangle({
+            const google = googleMap.addRectangleSync({
               ...commonOptions,
             });
 

@@ -11,7 +11,7 @@ export class MarkerManager {
     this.loader = loader;
   }
   // 添加标记
-  addMarker(map: any, options: IUnifiedMapMarkerOptions): Promise<void> {
+  addMarker(map: any, options: IUnifiedMapMarkerOptions): Promise<any> {
     let markerOptions = {
       ...options,
       map: map,
@@ -58,6 +58,24 @@ export class MarkerManager {
     };
     // return new AMap.Marker(markerOptions);
     return Promise.resolve(marker);
+  }
+  // 添加标记 - 同步方法
+  addMarkerSync(map: any, options: IUnifiedMapMarkerOptions): any {
+    let markerOptions = {
+      ...options,
+      map: map,
+      position: [options.position.lng, options.position.lat],
+      extData: options?.customData || {},
+    } as any;
+    delete markerOptions.label;
+    delete markerOptions.icon;
+    const res = handleIconAndLabel(options?.label, options?.icon);
+    markerOptions.content = res.content;
+    const marker = new AMap.Marker(markerOptions);
+    marker.getCustomDataUinified = () => {
+      return options?.customData || {};
+    };
+    return marker;
   }
 
   // 删除标记
@@ -125,7 +143,6 @@ export class MarkerManager {
         _renderClusterMarker = options.amapClusterRendererFunc;
       //非聚合点样式
       let _renderMarker = function (context: any) {
-        console.log(context, "--------<<<<<");
         //context 为回调参数，
         //包含如下属性 marker:当前非聚合点
         // console.log("非聚合点", context);
@@ -188,6 +205,100 @@ export class MarkerManager {
       // );
       resolve(cluster);
     });
+  }
+
+  addMarkerClusterSync(map: any, options: IUnifiedMarkerClusterOptions): any {
+    let points = options.points.map((item) => {
+      return {
+        ...item,
+        lnglat: [item.position.lng, item.position.lat],
+      };
+    });
+    //聚合点样式
+    let _renderClusterMarker = function (context: any) {
+      let content = undefined;
+      if (options?.clusterPointLabel) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (options?.clusterPointIcon) {
+        const res = handleIconAndLabel(
+          options?.clusterPointLabel,
+          options?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      if (
+        options?.clusterPointIntervalList &&
+        options.clusterPointIntervalList.length
+      ) {
+        let iconIndex = getIndexFromIntervalList(
+          options?.clusterPointIntervalList.map((item) => item.maxNumber),
+          context.count
+        );
+        const res = handleIconAndLabel(
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointLabel,
+          options?.clusterPointIntervalList[iconIndex]?.clusterPointIcon
+        );
+        content = res?.content;
+      }
+      content.innerHTML = context.count;
+      context.marker.setContent(content);
+    };
+    if (options?.amapClusterRendererFunc)
+      _renderClusterMarker = options.amapClusterRendererFunc;
+    //非聚合点样式
+    let _renderMarker = function (context: any) {
+      let tmpLabel, tmpIcon;
+      if (options?.singlePointLabel) {
+        tmpLabel = options?.singlePointLabel;
+      }
+      if (options?.singlePointIcon) {
+        tmpIcon = options?.singlePointIcon;
+      }
+      const pointData = context.data[0]?.markerOptions;
+      if (pointData) {
+        tmpLabel = pointData?.label;
+        tmpIcon = pointData?.icon;
+      }
+      const { content } = handleIconAndLabel(tmpLabel, tmpIcon);
+
+      // 由于 context 拿不到原始 marker option 对象，这里通过经纬度唯一标识获取原始 option信息
+      const markerOriginOption = options.points.find((item) => {
+        if (
+          item.position.lng + "" + item.position.lat ===
+          context.data[0].position.lng + "" + context.data[0].position.lat
+        )
+          return item;
+      });
+      context.marker.getCustomDataUinified = () => {
+        // return context.data[0]?.customData || {};  // 拿不到 customData 信息
+        return markerOriginOption?.customData || {};
+      };
+      context.marker.setContent(content);
+      if (options?.singlePointClickFunc) {
+        context.marker.on("click", (c: any) => {
+          const marker = c?.target;
+          if (marker && options?.singlePointClickFunc) {
+            options.singlePointClickFunc(marker);
+          }
+        });
+      }
+    };
+
+    const cluster = new AMap.MarkerCluster(
+      map, //地图实例
+      points, //海量点数据，数据中需包含经纬度信息字段 lnglat
+      {
+        gridSize: 60, //数据聚合计算时网格的像素大小
+        renderClusterMarker: _renderClusterMarker, //上述步骤的自定义聚合点样式
+        renderMarker: _renderMarker, //上述步骤的自定义非聚合点样式
+      }
+    );
+     return cluster;
   }
 }
 

@@ -124,14 +124,23 @@
 
           setTimeout(async () => {
             console.log("添加 marker");
-            const huaweiMarker = await huaweiMap.addMarker({
+            // const huaweiMarker = await huaweiMap.addMarker({
+            //   ...commonOptions,
+            //   animation: "DROP",
+            // });
+            // const amapMarker = await amapMap.addMarker({
+            //   ...commonOptions,
+            // })
+            // const googleMarker = await googleMap.addMarker(commonOptions);
+
+            const huaweiMarker = huaweiMap.addMarkerSync({
               ...commonOptions,
-              animation: "DROP",
+              // animation: "DROP",
             });
-            const amapMarker = await amapMap.addMarker({
+            const amapMarker = amapMap.addMarkerSync({
               ...commonOptions,
             })
-            const googleMarker = await googleMap.addMarker(commonOptions);
+            const googleMarker = googleMap.addMarkerSync(commonOptions);
 
             console.log(huaweiMarker.getCustomDataUinified(), "----->>>>> huaiwei properties")
             console.log(amapMarker.getCustomDataUinified(), "----->>>>> amap properties")
@@ -139,9 +148,9 @@
 
             setTimeout(() => {
               console.log("删除 marker");
-              huaweiMap.removeMarker(huaweiMarker);
-              amapMap.removeMarker(amapMarker);
-              googleMap.removeMarker(googleMarker);
+              // huaweiMap.removeMarker(huaweiMarker);
+              // amapMap.removeMarker(amapMarker);
+              // googleMap.removeMarker(googleMarker);
             }, 2000);
           }, 2000);
         } catch (error) {

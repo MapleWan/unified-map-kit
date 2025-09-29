@@ -14,6 +14,13 @@ export class GeometryManager {
       AMap.GeometryUtil.distance([start.lng, start.lat], [end.lng, end.lat])
     );
   }
+  getDistanceBetweenSync(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number },
+    map: any
+  ): number {
+    return AMap.GeometryUtil.distance([start.lng, start.lat], [end.lng, end.lat]);
+  }
 
   // 计算多边形面积
   getPolygonArea(
@@ -22,6 +29,13 @@ export class GeometryManager {
   ): Promise<number> {
     const amapPathList = path.map((item) => [item.lng, item.lat]);
     return Promise.resolve(AMap.GeometryUtil.ringArea(amapPathList));
+  }
+  getPolygonAreaSync(
+    map: any,
+    path: Array<{ lat: number; lng: number }>
+  ): Promise<number> {
+    const amapPathList = path.map((item) => [item.lng, item.lat]);
+    return AMap.GeometryUtil.ringArea(amapPathList);
   }
 }
 

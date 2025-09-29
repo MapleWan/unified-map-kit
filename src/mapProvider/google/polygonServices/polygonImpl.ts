@@ -28,6 +28,25 @@ export class PolygonManager {
     polygon.setMap(map);
     return Promise.resolve(polygon);
   }
+  addPolygonSync(map: any, options: IUnifiedPolygonOptions): any {
+    // const { Polygon } = await this.loader.importLibrary("maps");
+    const Polygon = map.PolygonMapKit;
+    let polygonOptions = {
+      ...options,
+      map: map,
+      paths:
+        options.path.length && Array.isArray(options.path[0])
+          ? options.path
+          : [options.path],
+    };
+    // 设置虚线样式
+    if (options?.strokeLineDash) {
+      console.warn("google map does not support strokeLineDash");
+    }
+    const polygon = new Polygon(polygonOptions);
+    polygon.setMap(map);
+    return polygon;
+  }
   // 删除多边形
   removePolygon(map: any, polygon: any): void {
     if (!polygon) {
@@ -38,7 +57,7 @@ export class PolygonManager {
   }
 
   // 添加圆
-  async addCircle(map: any, options: IUnifiedCircleOptions) {
+  async addCircle(map: any, options: IUnifiedCircleOptions) : Promise<any> {
     const { Circle } = await this.loader.importLibrary("maps");
 
     const circleOptions = {
@@ -53,6 +72,20 @@ export class PolygonManager {
     circle.setMap(map);
     return Promise.resolve(circle);
   }
+  addCircleSync(map: any, options: IUnifiedCircleOptions): any {
+    const Circle = map.CircleMapKit;
+    const circleOptions = {
+      ...options,
+      map: map,
+    } as any;
+    // 设置虚线样式
+    if (options?.strokeLineDash) {
+      console.warn("google map does not support strokeLineDash");
+    }
+    const circle = new Circle(circleOptions);
+    circle.setMap(map);
+    return circle;
+  }
   // 删除圆
   removeCircle(map: any, circle: any) {
     if (!circle) {
@@ -63,7 +96,7 @@ export class PolygonManager {
   }
 
   // 添加矩形
-  async addRectangle(map: any, options: IUnifiedRectangleOptions) {
+  async addRectangle(map: any, options: IUnifiedRectangleOptions): Promise<any> {
     if (!options.bounds) {
       throw new Error("Parameter 'bounds' is required");
     }
@@ -81,6 +114,26 @@ export class PolygonManager {
     const rectangle = new Rectangle(rectangleOptions);
     rectangle.setMap(map);
     return Promise.resolve(rectangle);
+  }
+  addRectangleSync(map: any, options: IUnifiedRectangleOptions): any {
+    if (!options.bounds) {
+      throw new Error("Parameter 'bounds' is required");
+    }
+    // const { Rectangle } = await this.loader.importLibrary("maps");
+    const Rectangle = map.RectangleMapKit;
+
+    let rectangleOptions = {
+      ...options,
+      map: map,
+    } as any;
+
+    // 设置虚线样式
+    if (options?.strokeLineDash) {
+      console.warn("google map does not support strokeLineDash");
+    }
+    const rectangle = new Rectangle(rectangleOptions);
+    rectangle.setMap(map);
+    return rectangle;
   }
   // 删除矩形
   removeRectangle(map: any, rectangle: any) {

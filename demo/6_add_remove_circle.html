@@ -115,13 +115,22 @@
 
           setTimeout(async () => {
             console.log("添加 circle");
-            const huawei = await huaweiMap.addCircle({
+            // const huawei = await huaweiMap.addCircle({
+            //   ...commonOptions,
+            // });
+            // const amap = await amapMap.addCircle({
+            //   ...commonOptions,
+            // });
+            // const google = await googleMap.addCircle({
+            //   ...commonOptions,
+            // });
+            const huawei = huaweiMap.addCircleSync({
               ...commonOptions,
             });
-            const amap = await amapMap.addCircle({
+            const amap = amapMap.addCircleSync({
               ...commonOptions,
             });
-            const google = await googleMap.addCircle({
+            const google = googleMap.addCircleSync({
               ...commonOptions,
             });
 

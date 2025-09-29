@@ -25,6 +25,14 @@ npm安装统一地图组件库：`npm install unified-map-kit`
 + [华为地图（Huawei）](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/javascript-api-0000001050162106)
   - [https://developer.huawei.com/consumer/cn/doc/HMSCore-References/js-api-0000001050710114](https://developer.huawei.com/consumer/cn/doc/HMSCore-References/js-api-0000001050710114)
 
+## 注意
+
+1. 在`zvos-map-kit`中，目前只统一了如标记、折线等对象的创建，暂未完全实现对相关返回对象的使用（仅一部分，如实现了标记聚类中点的单击监听），如监听单击双击等事件，如有需要，可以使用原生地图服务商实现，如后续可能有切换地图需求，可联系技术中心技术平台室改造`zvos-map-kit`相关 api 封装
+2. 在后续的方法中，某些功能提供了 `xxx`和`xxxSync`两个方法，`xxx`方法返回的是一个`Promise`对象，这是早期版本中为了适配`google`地图中按需加载的逻辑，因此使用时需要注意异步的问题。`xxxSync`方法是一个同步方法，不存在异步的问题，为了避免已接入系统产生兼容性问题，保留了`xxx`方法，因此对于<font color="#ff0000">新接入的系统</font>，<font color="#ff0000">当两者都可使用时，尽量使用</font>`xxxSync`方法
+
+`xxxSync`参考：
+> addMarkerSync, addMarkerClusterSync, addPolylineSync, addPolygonSync, addCircleSync, addRectangleSync, getDistanceBetweenSync, getPolygonAreaSync, animateTimeBasedPathSync, createInfoWindowSync
+
 ---
 
 ## 初始化方法
@@ -460,21 +468,22 @@ amapMap.onZoomChange(zoomChangeCallback);
 
 ## 标记
 
-### 添加标记: addMarker
+### 添加标记: addMarker、addMarkerSync
 
-#### addMarker 使用说明
+#### addMarker、addMarkerSync 使用说明
 
 **<font style="color:#DF2A3F;">注意：</font>**
 
 1. **<font style="color:#DF2A3F;">使用 高德 和 谷歌 两种地图的时候，“icon 和 label 属性同时设置”且“label.content 中传入 HTMLElement”的时候会优先生效 icon</font>**
 
-##### addMarker 方法声明
+##### addMarker、addMarkerSync 方法声明
 
 ```typescript
 addMarker(options: IUnifiedMapMarkerOptions): Promise<any>;
+addMarkerSync(options: IUnifiedMapMarkerOptions): any;
 ```
 
-##### addMarkder参数
+##### addMarker、addMarkerSync参数
 
 ```typescript
 interface IUnifiedMapMarkerOptions {
@@ -517,7 +526,7 @@ interface IUnifiedMapMarkerOptions {
 }
 ```
 
-##### addMarkder返回说明
+##### addMarker、addMarkerSync返回说明
 
 对于参数`customData`：google原返回对象不支持自定义数据的获取，且华为地图返回对象`marker`需要调用`getProperties()`获取，高德地图返回对象`marker`需要调用`getExtData()`获取。
 
@@ -718,11 +727,11 @@ removeMarker(marker: any): void;
 amapMap.removeMarker(ampMarker) // 详细可参考 addMarker 中示例代码
 ```
 
-### 添加标记聚类：addMarkerCluster
-#### addMarkerCluster使用说明
+### 添加标记聚类：addMarkerCluster、addMarkerClusterSync
+#### addMarkerCluster、addMarkerClusterSync使用说明
 
 1. <font color="red">在构造 MarkerCluster 的时候，各地图服务商构造方法的使用是不一致的，如华为和 google 使用 `xxx(markers, **args)`，需要传入构造好的`marker`对象；而高德使用`xxx([{position: [lng1, lat1]}, ...])`，只能传入具体的点的位置信息，甚至无法传入‘额外的对象信息’`customData`。对于以上差异，我们参考高德地图的使用方式，因为采用 google 或 华为地图的方式，暂时无法做到统一 api。</font>
-2. addMarkerCluster 中 `points` 参数为必传参数，类型为：`Array<IUnifiedMapMarkerOptions>`
+2. addMarkerCluster、addMarkerClusterSync 中 `points` 参数为必传参数，类型为：`Array<IUnifiedMapMarkerOptions>`
 3. 针对单点样式的设置，我们也可以在 `singlePointIcon` 和 `singlePointLabel`属性中设置整个 `points`中单点的样式，同时需要注意：“singlePointIcon 和 singlePointLabel 属性同时设置”且“singlePointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
 4. 针对聚类点样式的设置，可以通过 `clusterPointIcon` 和 `clusterPointLabel` 来设置，同样需要注意：“clusterPointIcon 和 clusterPointLabel 属性同时设置”且“clusterPointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
 5. 当需要根据聚类点里点的数量来自定义设置不同的聚类点样式时，可以通过 `clusterPointIntervalList` 数组参数来设置，此参数使用需要注意以下几点
@@ -732,11 +741,12 @@ amapMap.removeMarker(ampMarker) // 详细可参考 addMarker 中示例代码
 6. 为了满足各地图的一些自定义的功能，提供`amapClusterRendererFunc`， `googleClusterRendererFunc`，`huaweiClusterRendererFunc`三个参数，支持用户传入对应地图的自定义聚类样式方法，可以参考以下示例代码以及官方文档 [高德地图自定义聚类样式参考](https://lbs.amap.com/api/javascript-api-v2/guide/amap-massmarker/marker-cluster#s3)，[google 地图自定义聚类样式参考](https://googlemaps.github.io/js-markerclusterer/classes/DefaultRenderer.html)，[huawei 地图自定义样式参考](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/javascript-api-marker-clustering-0000001064784288#section11832838155511)
 7. 默认提供对 `points`中点的 `click` 事件监听方法，需要通过 `singlePointClickFunc`参数传入，其中`singlePointClickFunc`函数的入参是点击的点对象。<font color="red">`singlePointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
 
-##### addMarkerCluster 方法声明
+##### addMarkerCluster、addMarkerClusterSync 方法声明
 ```typescript
 addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any>;
+addMarkerClusterSync(options: IUnifiedMarkerClusterOptions): any;
 ```
-##### addMarkerCluster 参数
+##### addMarkerCluster、 addMarkerClusterSync参数
 ```typescript
 interface IUnifiedMarkerClusterOptions {
   /** 点，weight属性只适用于高德地图, */
@@ -1040,19 +1050,20 @@ console.log(amapMarkerCluster, "---> amap");
 
 ## 线
 
-### 添加折线：addPolyline
+### 添加折线：addPolyline、addPolylineSync
 
-#### addPolyline 使用说明
+#### addPolyline、addPolylineSync使用说明
 
 **<font style="color:#DF2A3F;">注意： strokeOpacity用于设置线条透明度 // AMap/Google 原生支持，华为需通过颜色透明度实现</font>**
 
-##### addPolyline 方法声明
+##### addPolyline、addPolylineSync方法声明
 
 ```typescript
 addPolyline(options: IUnifiedPolylineOptions): Promise<any>;
+addPolylineSync(options: IUnifiedPolylineOptions): any;
 ```
 
-##### addPolyline 方法参数
+##### addPolyline、addPolylineSync方法参数
 
 ```typescript
 interface IUnifiedPolylineOptions {
@@ -1228,15 +1239,16 @@ amapMap.removePolyline(ampPolyline) // 详细可参考 addPolyline 中示例代�
 ```
 
 
-### 轨迹回放
+### 轨迹回放：animateTimeBasedPath、animateTimeBasedPathSync
 
 #### 使用说明
 
-##### 方法声明
+##### animateTimeBasedPath、animateTimeBasedPathSync方法声明
 
 ```typescript
 /** 基于时间的路径动画 */
 animateTimeBasedPath(options: ITimeBasedPathAnimateOptions): Promise<ITimeBasedPathAnimationController>;
+animateTimeBasedPathSync(options: ITimeBasedPathAnimateOptions): ITimeBasedPathAnimationController;
 ```
 
 ##### 方法参数
@@ -1687,12 +1699,13 @@ export interface ITimeBasedPathAnimationController {
 
 ## 面
 
-### 添加多边形：addPolygon
+### 添加多边形：addPolygon、addPolygonSync
 
-#### addPolygon 使用说明
+#### addPolygon、addPolygonSync 使用说明
 
 ```typescript
 addPolygon(options: IUnifiedPolygonOptions): Promise<any>;
+addPolygonSync(options: IUnifiedPolygonOptions): any;
 ```
 
 <font style="color:#DF2A3F;">注意：</font>
@@ -1896,17 +1909,18 @@ removePolygon(polygon: any): void;
 amapMap.removePolygon(amapPolygon); // amapPolygon 对象获取请参考 addPolygon 示例
 ```
 
-### 添加圆：addCircle
+### 添加圆：addCircle、addCircleSync
 
-#### addCircle 使用说明
+#### addCircle、addCircleSync使用说明
 
-##### addCircle 方法声明
+##### addCircle、addCircleSync 方法声明
 
 ```typescript
 addCircle(options: IUnifiedCircleOptions): Promise<any>;
+addCircleSync(options: IUnifiedCircleOptions): any;
 ```
 
-##### addCircle 方法参数
+##### addCircle、addCircleSync方法参数
 
 ```typescript
 interface IUnifiedCircleOptions {
@@ -2094,17 +2108,18 @@ removeCircle(circle: any): void;
 amapMap.removeCircle(amapCircle); // amapCircle 对象获取请参考 addCircle 示例代码
 ```
 
-### 添加矩形：addRectangle
+### 添加矩形：addRectangle、addRectangleSync
 
-#### addRectangle 使用说明
+#### addRectangle 、addRectangleSync使用说明
 
-##### addRectangle 方法声明
+##### addRectangle、addRectangleSync 方法声明
 
 ```typescript
 addRectangle(options: IUnifiedRectangleOptions): Promise<any>;
+addRectangleSync(options: IUnifiedRectangleOptions): any;
 ```
 
-##### addRectangle 方法参数
+##### addRectangle、addRectangleSync方法参数
 
 ```typescript
 interface IUnifiedRectangleOptions {
@@ -3639,12 +3654,13 @@ console.log(
 
 ### 信息弹窗
 
-#### 创建信息弹窗对象：createInfoWindow
+#### 创建信息弹窗对象：createInfoWindow、createInfoWindowSync
 
 ##### 方法声明
 
 ```typescript
 createInfoWindow(options: IInfoWindowOptions): Promise<any>;
+createInfoWindowSync(options: IInfoWindowOptions): any;
 ```
 
 ##### 方法参数

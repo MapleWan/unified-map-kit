@@ -188,11 +188,24 @@ export class UnifiedProvider implements IMapProvider {
     );
     return this.markerManager.addMarker(this.map, formattedOptions);
   }
+  addMarkerSync(options: IUnifiedMapMarkerOptions): any {
+    const formattedOptions = formatOptions<IUnifiedMapMarkerOptions>(
+      options,
+      ["position"],
+      {
+        draggable: false,
+      }
+    );
+    return this.markerManager.addMarkerSync(this.map, formattedOptions);
+  }
   removeMarker(marker: any): void {
     this.markerManager.removeMarker(marker);
   }
   addMarkerCluster(options: IUnifiedMarkerClusterOptions): Promise<any> {
     return this.markerManager.addMarkerCluster(this.map, options);
+  }
+  addMarkerClusterSync(options: IUnifiedMarkerClusterOptions): any {
+    return this.markerManager.addMarkerClusterSync(this.map, options);
   }
 
   addPolyline(options: IUnifiedPolylineOptions): Promise<any> {
@@ -206,6 +219,12 @@ export class UnifiedProvider implements IMapProvider {
     //   );
     // }
     return this.lineManager.addPolyline(this.map, formattedOptions);
+  }
+  addPolylineSync(options: IUnifiedPolylineOptions): any {
+    const formattedOptions = formatOptions<IUnifiedPolylineOptions>(options, [
+      "path",
+    ]);
+    return this.lineManager.addPolylineSync(this.map, formattedOptions);
   }
   removePolyline(polyline: any): void {
     this.lineManager.removePolyline(this.map, polyline);
@@ -222,6 +241,17 @@ export class UnifiedProvider implements IMapProvider {
     }
     return this.polygonManager.addPolygon(this.map, formattedOptions);
   }
+  addPolygonSync(options: IUnifiedPolygonOptions): any {
+    const formattedOptions = formatOptions<IUnifiedPolygonOptions>(options, [
+      "path",
+    ]);
+    if (options.path.length < 3) {
+      throw new Error(
+        "Parameter 'path' is required and must be an array of at least three points"
+      );
+    }
+    return this.polygonManager.addPolygonSync(this.map, formattedOptions);
+  }
   removePolygon(polygon: any): void {
     this.polygonManager.removePolygon(this.map, polygon);
   }
@@ -232,6 +262,13 @@ export class UnifiedProvider implements IMapProvider {
     ]);
     return this.polygonManager.addCircle(this.map, formattedOptions);
   }
+  addCircleSync(options: IUnifiedCircleOptions): any {
+    const formattedOptions = formatOptions<IUnifiedCircleOptions>(options, [
+      "center",
+      "radius",
+    ]);
+    return this.polygonManager.addCircleSync(this.map, formattedOptions);
+  }
   removeCircle(circle: any): void {
     this.polygonManager.removeCircle(this.map, circle);
   }
@@ -240,6 +277,12 @@ export class UnifiedProvider implements IMapProvider {
       "bounds",
     ]);
     return this.polygonManager.addRectangle(this.map, formattedOptions);
+  }
+  addRectangleSync(options: IUnifiedRectangleOptions): any {
+    const formattedOptions = formatOptions<IUnifiedRectangleOptions>(options, [
+      "bounds",
+    ]);
+    return this.polygonManager.addRectangleSync(this.map, formattedOptions);
   }
   removeRectangle(rectangle: any): void {
     this.polygonManager.removeRectangle(this.map, rectangle);
@@ -257,6 +300,18 @@ export class UnifiedProvider implements IMapProvider {
     }
     return this.geometryManager.getDistanceBetween(start, end);
   }
+  getDistanceBetweenSync(
+    start: { lat: number; lng: number },
+    end: { lat: number; lng: number }
+  ): number {
+    if (!start) {
+      throw new Error("Parameter 'start' is required");
+    }
+    if (!end) {
+      throw new Error("Parameter 'end' is required");
+    }
+    return this.geometryManager.getDistanceBetweenSync(start, end, this.map);
+  }
   getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number> {
     if (!path || path.length < 3) {
       throw new Error(
@@ -264,6 +319,14 @@ export class UnifiedProvider implements IMapProvider {
       );
     }
     return this.geometryManager.getPolygonArea(this.map, path);
+  }
+  getPolygonAreaSync(path: Array<{ lat: number; lng: number }>): number {
+    if (!path || path.length < 3) {
+      throw new Error(
+        "Parameter 'paths' is required and must be an array of at least 3 points"
+      );
+    }
+    return this.geometryManager.getPolygonAreaSync(this.map, path);
   }
 
   searchPlaceByKeyword(
@@ -351,6 +414,19 @@ export class UnifiedProvider implements IMapProvider {
     );
     return this.lineManager.animateTimeBasedPath(this.map, formattedOptions);
   }
+  animateTimeBasedPathSync(options: ITimeBasedPathAnimateOptions): ITimeBasedPathAnimationController {
+    const formattedOptions = formatOptions<ITimeBasedPathAnimateOptions>(
+      options,
+      ["path"],
+      {
+        speed: 1.0,
+        autoPlay: false,
+        loop: false,
+        frameRate: 60
+      }
+    );
+    return this.lineManager.animateTimeBasedPathSync(this.map, formattedOptions);
+  }
 
   lnglatToPixel(options: ILnglatToPixelOptions): { x: number; y: number } {
     const formattedOptions = formatOptions<ILnglatToPixelOptions>(options, [
@@ -386,6 +462,14 @@ export class UnifiedProvider implements IMapProvider {
       {}
     );
     return this.widgetManager.createInfoWindow(this.map, formattedOptions);
+  }
+  createInfoWindowSync(options: IInfoWindowOptions): any {
+    const formattedOptions = formatOptions(
+      options,
+      ["position", "content"],
+      {}
+    );
+    return this.widgetManager.createInfoWindowSync(this.map, formattedOptions);
   }
   openInfoWindow(infoWindow: any, marker?: any): void {
     if (!infoWindow) {

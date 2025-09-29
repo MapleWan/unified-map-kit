@@ -31,7 +31,6 @@ function handleSearchResult(
       });
     }
     if (placeSearch) {
-      debugger
       resolve({ resList: resPositionList, placeSearch });
     } else {
       resolve(resPositionList);

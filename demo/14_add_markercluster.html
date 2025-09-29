@@ -308,9 +308,13 @@
               };
             },
           };
-          const amapMarkerCluster = await amapMap.addMarkerCluster(addMarkerClusterOptions);
-          const googleMarkerCluster = await googleMap.addMarkerCluster(addMarkerClusterOptions);
-          const huaweiMarkerCluster = await huaweiMap.addMarkerCluster(addMarkerClusterOptions);
+          // const amapMarkerCluster = await amapMap.addMarkerCluster(addMarkerClusterOptions);
+          // const googleMarkerCluster = await googleMap.addMarkerCluster(addMarkerClusterOptions);
+          // const huaweiMarkerCluster = await huaweiMap.addMarkerCluster(addMarkerClusterOptions);
+
+          const amapMarkerCluster = await amapMap.addMarkerClusterSync(addMarkerClusterOptions);
+          const googleMarkerCluster = await googleMap.addMarkerClusterSync(addMarkerClusterOptions);
+          const huaweiMarkerCluster = await huaweiMap.addMarkerClusterSync(addMarkerClusterOptions);
 
           console.log(amapMarkerCluster, "---> amap");
           console.log(googleMarkerCluster, "---> google");
