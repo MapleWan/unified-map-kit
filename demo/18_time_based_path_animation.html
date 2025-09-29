@@ -211,7 +211,8 @@
           ];
 
           // 为每个地图创建动画控制器
-          const huaweiController = await huaweiMap.animateTimeBasedPath({
+          // const huaweiController = await huaweiMap.animateTimeBasedPath({
+          const huaweiController = huaweiMap.animateTimeBasedPathSync({
             path: [...path],
             speed: 1.0,
             autoPlay: false,
@@ -265,7 +266,8 @@
             },
           });
 
-          const amapController = await amapMap.animateTimeBasedPath({
+          // const amapController = await amapMap.animateTimeBasedPath({
+          const amapController = amapMap.animateTimeBasedPathSync({
             path: [...path],
             speed: 1.0,
             autoPlay: false,
@@ -311,7 +313,8 @@
             },
           });
 
-          const googleController = await googleMap.animateTimeBasedPath({
+          // const googleController = await googleMap.animateTimeBasedPath({
+          const googleController = googleMap.animateTimeBasedPathSync({
             path: [...path],
             speed: 1.0,
             autoPlay: false,

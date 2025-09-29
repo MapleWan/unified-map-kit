@@ -220,6 +220,12 @@ export class UnifiedProvider implements IMapProvider {
     // }
     return this.lineManager.addPolyline(this.map, formattedOptions);
   }
+  addPolylineSync(options: IUnifiedPolylineOptions): any {
+    const formattedOptions = formatOptions<IUnifiedPolylineOptions>(options, [
+      "path",
+    ]);
+    return this.lineManager.addPolylineSync(this.map, formattedOptions);
+  }
   removePolyline(polyline: any): void {
     this.lineManager.removePolyline(this.map, polyline);
   }
@@ -363,6 +369,19 @@ export class UnifiedProvider implements IMapProvider {
       }
     );
     return this.lineManager.animateTimeBasedPath(this.map, formattedOptions);
+  }
+  animateTimeBasedPathSync(options: ITimeBasedPathAnimateOptions): ITimeBasedPathAnimationController {
+    const formattedOptions = formatOptions<ITimeBasedPathAnimateOptions>(
+      options,
+      ["path"],
+      {
+        speed: 1.0,
+        autoPlay: false,
+        loop: false,
+        frameRate: 60
+      }
+    );
+    return this.lineManager.animateTimeBasedPathSync(this.map, formattedOptions);
   }
 
   lnglatToPixel(options: ILnglatToPixelOptions): { x: number; y: number } {

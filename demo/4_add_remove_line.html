@@ -79,7 +79,7 @@
 
           const initCommonMapOption = {
             center: { lat: 0, lng: -180 },
-            zoom: 12,
+            zoom: 2,
           };
           const huaweiMap = await init({
             container: document.getElementById("huawei-map"),
@@ -118,21 +118,30 @@
 
           setTimeout(async () => {
             console.log("添加 line");
-            const huawei = await huaweiMap.addPolyline({
+            // const huawei = await huaweiMap.addPolyline({
+            //   ...commonOptions,
+            // });
+            // const amap = await amapMap.addPolyline({
+            //   ...commonOptions,
+            // });
+            // const google = await googleMap.addPolyline({
+            //   ...commonOptions,
+            // });
+            const huawei = huaweiMap.addPolylineSync({
               ...commonOptions,
             });
-            const amap = await amapMap.addPolyline({
+            const amap = amapMap.addPolylineSync({
               ...commonOptions,
             });
-            const google = await googleMap.addPolyline({
+            const google = googleMap.addPolylineSync({
               ...commonOptions,
             });
 
             setTimeout(() => {
-              console.log("删除 line");
-              huaweiMap.removePolyline(huawei);
-              amapMap.removePolyline(amap);
-              googleMap.removePolyline(google);
+              // console.log("删除 line");
+              // huaweiMap.removePolyline(huawei);
+              // amapMap.removePolyline(amap);
+              // googleMap.removePolyline(google);
             }, 10000);
           }, 2000);
         } catch (error) {
