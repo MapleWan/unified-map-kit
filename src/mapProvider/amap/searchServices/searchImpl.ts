@@ -54,7 +54,7 @@ export class SearchManager {
       // 初始化请求参数对象
       AMap.plugin("AMap.PlaceSearch", () => {
         const placeSearch = new AMap.PlaceSearch({
-          map: map,
+          // map: map,
           type: options?.poiType,
           ...options,
         });
@@ -78,7 +78,7 @@ export class SearchManager {
       // 初始化请求参数对象
       AMap.plugin("AMap.PlaceSearch", () => {
         const placeSearch = new AMap.PlaceSearch({
-          map: map,
+          // map: map,
           type: options?.poiType,
           ...options,
         });
