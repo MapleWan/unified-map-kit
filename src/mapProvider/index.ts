@@ -331,7 +331,7 @@ export class UnifiedProvider implements IMapProvider {
 
   searchPlaceByKeyword(
     options: IUnifiedSearchByKeywordOptions
-  ): Promise<Array<IUnifiedPlaceResults>> {
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }> {
     const formattedOptions = formatOptions<IUnifiedSearchByKeywordOptions>(
       options,
       ["query"]
@@ -340,7 +340,7 @@ export class UnifiedProvider implements IMapProvider {
   }
   searchPlaceNearby(
     options: IUnifiedSearchNearbyOptions
-  ): Promise<Array<IUnifiedPlaceResults>> {
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }> {
     const formattedOptions = formatOptions<IUnifiedSearchNearbyOptions>(
       options,
       ["location", "radius"]
