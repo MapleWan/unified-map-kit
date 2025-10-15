@@ -475,6 +475,7 @@ amapMap.onZoomChange(zoomChangeCallback);
 **<font style="color:#DF2A3F;">注意：</font>**
 
 1. **<font style="color:#DF2A3F;">使用 高德 和 谷歌 两种地图的时候，“icon 和 label 属性同时设置”且“label.content 中传入 HTMLElement”的时候会优先生效 icon</font>**
+2. 提供对点的 `click` 事件监听方法，需要通过 `pointClickFunc`参数传入，其中`pointClickFunc(obj, e)`函数的入参分别为 ①`obj`：点击的点对象；②`e`:原地图事件对象。<font color="red">`pointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
 
 ##### addMarker、addMarkerSync 方法声明
 
@@ -494,6 +495,11 @@ interface IUnifiedMapMarkerOptions {
   position: { lat: number; lng: number }; // 坐标位置，google:position, huawei:position, amap:[position.lng, position.lat]
   zIndex?: number; // 层级高度（默认由地图实现决定）
   draggable?: boolean; // 是否可拖拽（默认 false），google:gmpDraggable, huawei:draggable, amap:draggable
+  /** 单个点点击方法 
+   * obj: 单个点对象
+   * e: 原地图事件对象
+  */
+  pointClickFunc?: (obj: any, e?: any) => any;
 
   // ----------- 跨平台兼容设计属性 -----------
   /** 图标配置（支持三种格式转换） */
@@ -591,6 +597,11 @@ interface IUnifiedMapMarkerOptions {
   position: { lat: number; lng: number }; // 坐标位置，google:position, huawei:position, amap:[position.lng, position.lat]
   zIndex?: number; // 层级高度（默认由地图实现决定）
   draggable?: boolean; // 是否可拖拽（默认 false），google:gmpDraggable, huawei:draggable, amap:draggable
+  /** 单个点点击方法 
+   * obj: 单个点对象
+   * e: 原地图事件对象
+  */
+  pointClickFunc?: (obj: any, e?: any) => any;
 
   // ----------- 跨平台兼容设计属性 -----------
   /** 图标配置（支持三种格式转换） */
@@ -739,7 +750,7 @@ amapMap.removeMarker(ampMarker) // 详细可参考 addMarker 中示例代码
 	2. maxNumber 用于划分区间，区间为“左开右闭”。如：`[{maxNumber: 2， clusterPointIcon： icon1}, {maxNumber: 4, clusterPointIcon: icon2}, {maxNumber: 8, clusterPointIcon: icon3}]`表示`（0,2]`数量的点设置`icon1`，`(2,4]`数量的点设置 `icon2`，以此类推。当点数量 > 8 时，默认取`clusterPointIntervalList`中最后一个元素设置的样式，此示例中会设置为`icon3`
 	3. “clusterPointIcon 和 clusterPointLabel 属性同时设置”且“clusterPointLabel.content 中传入 HTMLElement”的时候会优先生效 icon
 6. 为了满足各地图的一些自定义的功能，提供`amapClusterRendererFunc`， `googleClusterRendererFunc`，`huaweiClusterRendererFunc`三个参数，支持用户传入对应地图的自定义聚类样式方法，可以参考以下示例代码以及官方文档 [高德地图自定义聚类样式参考](https://lbs.amap.com/api/javascript-api-v2/guide/amap-massmarker/marker-cluster#s3)，[google 地图自定义聚类样式参考](https://googlemaps.github.io/js-markerclusterer/classes/DefaultRenderer.html)，[huawei 地图自定义样式参考](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/javascript-api-marker-clustering-0000001064784288#section11832838155511)
-7. 默认提供对 `points`中点的 `click` 事件监听方法，需要通过 `singlePointClickFunc`参数传入，其中`singlePointClickFunc`函数的入参是点击的点对象。<font color="red">`singlePointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
+7. 默认提供对 `points`中点的 `click` 事件监听方法，需要通过 `singlePointClickFunc`参数传入，其中`singlePointClickFunc(obj, e)`函数的入参分别为 ①`obj`：点击的点对象；②`e`:原地图事件对象。<font color="red">`singlePointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
 
 ##### addMarkerCluster、addMarkerClusterSync 方法声明
 ```typescript
@@ -802,8 +813,11 @@ interface IUnifiedMarkerClusterOptions {
       color?: string;
     };
   }>;
-  /** 单个点点击方法 */
-  singlePointClickFunc?: (obj: any) => any;
+  /** 单个点点击方法 
+   * obj: 单个点对象
+   * e: 原地图事件对象
+  */
+  singlePointClickFunc?: (obj: any, e?: any) => any;
   
   /**
    * A
