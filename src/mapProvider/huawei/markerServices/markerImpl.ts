@@ -57,6 +57,17 @@ export class MarkerManager {
     marker.getCustomDataUinified = () => {
       return options?.customData || {};
     };
+    
+    // 添加单点点击事件处理
+    if (options?.pointClickFunc) {
+      marker.addListener("click", (e: any) => {
+        if (marker && options?.pointClickFunc) {
+          // options.pointClickFunc(marker);
+          options.pointClickFunc(marker, e);
+        }
+      });
+    }
+    
     return Promise.resolve(marker);
   }
     // 添加标记
@@ -76,6 +87,17 @@ export class MarkerManager {
     marker.getCustomDataUinified = () => {
       return options?.customData || {};
     };
+    
+    // 添加单点点击事件处理
+    if (options?.pointClickFunc) {
+      marker.addListener("click", (e: any) => {
+        if (marker && options?.pointClickFunc) {
+          // options.pointClickFunc(marker);
+          options.pointClickFunc(marker, e);
+        }
+      });
+    }
+    
     return marker;
   }
 
@@ -156,7 +178,8 @@ export class MarkerManager {
         marker.addListener("click", (c: any) => {
           const marker = c?.target;
           if (marker && options?.singlePointClickFunc) {
-            options.singlePointClickFunc(marker);
+            // options.singlePointClickFunc(marker);
+            options.singlePointClickFunc(marker, c);
           }
         });
       }
@@ -242,7 +265,8 @@ export class MarkerManager {
         marker.addListener("click", (c: any) => {
           const marker = c?.target;
           if (marker && options?.singlePointClickFunc) {
-            options.singlePointClickFunc(marker);
+            // options.singlePointClickFunc(marker);
+            options.singlePointClickFunc(marker, c);
           }
         });
       }

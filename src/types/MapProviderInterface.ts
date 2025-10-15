@@ -91,14 +91,14 @@ export interface IMapProvider {
   getPolygonArea(path: Array<{ lat: number; lng: number }>): Promise<number>;
   getPolygonAreaSync(path: Array<{ lat: number; lng: number }>): number;
 
-  /** 搜索地点 */
+ /** 搜索地点 */
   searchPlaceByKeyword(
     options: IUnifiedSearchByKeywordOptions
-  ): Promise<Array<IUnifiedPlaceResults>>;
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }>;
   /** 搜索附近地点 */
   searchPlaceNearby(
     options: IUnifiedSearchNearbyOptions
-  ): Promise<Array<IUnifiedPlaceResults>>;
+  ): Promise<Array<IUnifiedPlaceResults> | { resList: Array<IUnifiedPlaceResults>; placeSearch: any }>;
 
   /** 地址解析 */
   geocode(

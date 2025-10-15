@@ -119,7 +119,11 @@
             },
             customData: {
               test: 'test'
-            }
+            },
+            pointClickFunc: function (context, e) { 
+              console.log(this, '>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<', context, '!!!!!!!!!!!', e)
+              console.log(context.getCustomDataUinified())
+            }.bind({"a": "2"}),
           };
 
           setTimeout(async () => {

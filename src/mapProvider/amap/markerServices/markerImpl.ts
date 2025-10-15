@@ -56,6 +56,16 @@ export class MarkerManager {
     marker.getCustomDataUinified = () => {
       return options?.customData || {};
     };
+    
+    // 添加单点点击事件处理
+    if (options?.pointClickFunc) {
+      marker.on("click", (e: any) => {
+        if (marker && options?.pointClickFunc) {
+          options.pointClickFunc(marker, e);
+        }
+      });
+    }
+    
     // return new AMap.Marker(markerOptions);
     return Promise.resolve(marker);
   }
@@ -75,6 +85,16 @@ export class MarkerManager {
     marker.getCustomDataUinified = () => {
       return options?.customData || {};
     };
+    
+    // 添加单点点击事件处理
+    if (options?.pointClickFunc) {
+      marker.on("click", (e: any) => {
+        if (marker && options?.pointClickFunc) {
+          options.pointClickFunc(marker, e);
+        }
+      });
+    }
+    
     return marker;
   }
 
@@ -180,7 +200,8 @@ export class MarkerManager {
           context.marker.on("click", (c: any) => {
             const marker = c?.target;
             if (marker && options?.singlePointClickFunc) {
-              options.singlePointClickFunc(marker);
+              // options.singlePointClickFunc(marker);
+              options.singlePointClickFunc(marker, c);
             }
           });
         }
@@ -283,7 +304,8 @@ export class MarkerManager {
         context.marker.on("click", (c: any) => {
           const marker = c?.target;
           if (marker && options?.singlePointClickFunc) {
-            options.singlePointClickFunc(marker);
+            // options.singlePointClickFunc(marker);
+            options.singlePointClickFunc(marker, c);
           }
         });
       }
