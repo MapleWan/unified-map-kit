@@ -13,6 +13,8 @@ export interface IUnifiedMapMarkerOptions {
   zIndex?: number;
   /** 是否可拖拽（默认 false），google:gmpDraggable, huawei:draggable, amap:draggable */
   draggable?: boolean;
+  /** 单个点点击方法 */
+  pointClickFunc?: (obj: any, e?: any) => any;
 
   /* ----------- 跨平台兼容设计属性 ----------- */
   /** 图标配置（支持三种格式转换） */
@@ -207,7 +209,7 @@ export interface IUnifiedMarkerClusterOptions {
     };
   }>;
   /** 单个点点击方法 */
-  singlePointClickFunc?: (obj: any) => any;
+  singlePointClickFunc?: (obj: any, e?: any) => any;
 
   /**
    * A

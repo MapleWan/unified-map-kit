@@ -191,8 +191,8 @@
                 },
               },
             ],
-            singlePointClickFunc: function (context) { 
-              console.log(this, '>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<', context)
+            singlePointClickFunc: function (context, e) { 
+              console.log(this, '>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<', context, '!!!!!!!!!', e)
               console.log(context.getCustomDataUinified())
             }.bind({"a": "2"}),
             amapClusterRendererFunc: function (context) {
