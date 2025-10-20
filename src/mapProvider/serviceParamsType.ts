@@ -35,6 +35,10 @@ export interface IUnifiedMapMarkerOptions {
     fontSize?: string;
     /* 字体颜色 */
     color?: string;
+    /** 单位 px, x轴偏移，相对 position 进行偏移 */
+    offsetX?: number;
+    /** 单位 px, y轴偏移，相对 position 进行偏移 */
+    offsetY?: number;
   };
   /**
    * AG 地图共有属性

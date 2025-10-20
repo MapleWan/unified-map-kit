@@ -515,6 +515,8 @@ interface IUnifiedMapMarkerOptions {
     content: string | HTMLElement; // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
     fontSize?: string; // 设置字体大小
     color?: string; // 字体颜色
+    offsetX?: number; // 单位 px, x轴偏移，相对 position 进行偏移
+    offsetY?: number; // 单位 px, y轴偏移，相对 position 进行偏移
   };
   /**
    * AG 地图共有属性
@@ -562,6 +564,8 @@ const commonOptions = {
     color: "red",
     content: "cs",
     fontSize: "20px",
+    offsetX: 10,
+    offsetY: 10,
   },
   // icon: "../src/assets/images/location-icon.png"
   icon: {
@@ -617,6 +621,8 @@ interface IUnifiedMapMarkerOptions {
     content: string | HTMLElement; // google:content.glyph<string, HTMLElement>, huawei:label.text<string>, amap:content<string, HTMLElement>
     fontSize?: string; // 设置字体大小
     color?: string; // 字体颜色
+    offsetX?: number; // 单位 px, x轴偏移，相对 position 进行偏移
+    offsetY?: number; // 单位 px, y轴偏移，相对 position 进行偏移
   };
   /**
    * AG 地图共有属性

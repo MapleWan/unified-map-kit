@@ -4,6 +4,8 @@ export function handleIconAndLabel(label: any, icon: any) {
     color: label?.color || "#000",
     text: typeof label?.content === "string" ? label?.content : "",
     fontSize: label?.fontSize || "12px",
+    offsetX: label?.offsetX || 0,
+    offsetY: label?.offsetY || 0,
   };
   if (icon) {
     if (typeof icon === "object") {
