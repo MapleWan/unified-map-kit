@@ -61,6 +61,8 @@ export interface IMapProvider {
   addPolylineSync(options: IUnifiedPolylineOptions): any;
   /** 移除折线 */
   removePolyline(polyline: any): void;
+  /** 设置折线可见 */
+  setPolylineVisible(polyline: any, visible: boolean): void;
 
   /** 添加多边形 */
   addPolygon(options: IUnifiedPolygonOptions): Promise<any>;

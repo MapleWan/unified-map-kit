@@ -1258,6 +1258,22 @@ removePolyline(polyline: any): void;
 amapMap.removePolyline(ampPolyline) // 详细可参考 addPolyline 中示例代码
 ```
 
+###  线的显隐：setPolylineVisible
+
+#### setPolylineVisible 使用说明
+
+##### setPolylineVisible方法声明
+
+```typescript
+setPolylineVisible(polyline: any, visible: boolean): void;
+```
+
+#### 示例代码
+
+```javascript
+amapMap.setPolylineVisible(ampPolyline, false) // 隐藏线
+```
+
 
 ### 轨迹回放：animateTimeBasedPath、animateTimeBasedPathSync
 

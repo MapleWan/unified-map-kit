@@ -92,6 +92,19 @@ export class LineManager {
     line.setMap(null);
     line = null;
   }
+  
+  // 设置折线显隐
+  setPolylineVisible(line: any, visible: boolean): void {
+    if (!line) {
+      throw new Error("Parameter 'line' is required");
+    }
+    
+    if (visible) {
+      line.setOptions({ visible: true });
+    } else {
+      line.setOptions({ visible: false });
+    }
+  }
 
   /**
    * 基于时间的路径动画功能 - Google 地图实现

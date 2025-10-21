@@ -47,6 +47,19 @@ export class LineManager {
     line.setMap(null);
     line = null;
   }
+  
+  // 设置折线显隐
+  setPolylineVisible(line: any, visible: boolean): void {
+    if (!line) {
+      throw new Error("Parameter 'line' is required");
+    }
+    
+    if (visible) {
+      line.setVisible(true);
+    } else {
+      line.setVisible(false);
+    }
+  }
 
   /**
    * 基于时间的路径动画功能 - 华为地图实现
@@ -229,7 +242,7 @@ export class LineManager {
 
         animationState.currentTime = currentTime;
         updatePosition(currentTime);
-        
+      
         animationState.animationFrameId = requestAnimationFrame(animate);
       };
 

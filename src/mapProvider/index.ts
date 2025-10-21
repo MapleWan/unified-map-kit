@@ -229,6 +229,9 @@ export class UnifiedProvider implements IMapProvider {
   removePolyline(polyline: any): void {
     this.lineManager.removePolyline(this.map, polyline);
   }
+  setPolylineVisible(polyline: any, visible: boolean): void {
+    this.lineManager.setPolylineVisible(polyline, visible);
+  }
 
   addPolygon(options: IUnifiedPolygonOptions): Promise<any> {
     const formattedOptions = formatOptions<IUnifiedPolygonOptions>(options, [
