@@ -30,7 +30,7 @@ export class DirectionManager {
       // 高德地图 路径规划
       AMap.plugin("AMap.Driving", () => {
         const driving = new AMap.Driving({
-          map: map,
+          map: options?.isShowPath ? map : null,
           ...driveOptions,
         });
         const startLngLat = [driveOptions.origin.lng, driveOptions.origin.lat]; //起始点坐标
