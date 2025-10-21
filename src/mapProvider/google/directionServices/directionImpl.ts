@@ -24,6 +24,8 @@ export class DirectionManager {
         await google.maps.importLibrary("routes");
       const directionsService = new DirectionsService();
       const directionsRenderer = new DirectionsRenderer();
+      const isShowPath = options?.isShowPath
+      if("isShowPath" in options) delete options.isShowPath;
       directionsRenderer.setMap(map);
       let driveOptions = {
         ...options,
@@ -51,7 +53,7 @@ export class DirectionManager {
         .route(driveOptions)
         .then((response: any) => {
           // console.log(response, ">>>>>google");
-          if(options?.isShowPath) directionsRenderer.setDirections(response);
+          if(isShowPath) directionsRenderer.setDirections(response);
           resolve(response);
         })
         .catch((e: any) => {

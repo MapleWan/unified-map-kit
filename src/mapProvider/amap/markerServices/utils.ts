@@ -14,12 +14,12 @@ export function handleIconAndLabel(label: any, icon: any) {
     }
   }
   if (icon) {
-
     // 用 div 做容器，设置背景图
     const customDiv = document.createElement("div");
     customDiv.style.display = "flex";
     customDiv.style.justifyContent = "center";
     customDiv.style.alignItems = "center";
+    customDiv.style.position = "relative";
     customDiv.style.backgroundImage = `url(${
       typeof icon === "object" ? icon.url : icon
     })`;
@@ -39,14 +39,30 @@ export function handleIconAndLabel(label: any, icon: any) {
     // 你可以在 customDiv 里加 label 或其他内容
     if (label) {
       if (label?.content instanceof HTMLElement) {
-        customDiv.appendChild(label.content);
+        const labelElement = label.content.cloneNode(true) as HTMLElement;
+        labelElement.style.position = "absolute";
+        labelElement.style.left = "50%";
+        labelElement.style.top = "50%";
+        
+        // 添加 offsetX 和 offsetY 支持
+        const offsetX = label?.offsetX || 0;
+        const offsetY = label?.offsetY || 0;
+        labelElement.style.transform = `translate(calc(${offsetX}px), calc(50% + ${offsetY}px))`;
+        labelElement.style.color = label?.color || "#FFF";
+        labelElement.style.fontSize = label?.fontSize || "12px";
+        customDiv.appendChild(labelElement);
       } else {
         const labelSpan = document.createElement("span");
         labelSpan.innerHTML = (label?.content as string) || "";
         labelSpan.style.position = "absolute";
-        labelSpan.style.left = "50%";
-        labelSpan.style.top = "50%";
-        labelSpan.style.transform = "translate(-50%, -50%)";
+        // labelSpan.style.left = "50%";
+        // labelSpan.style.top = "50%";
+        
+        // 添加 offsetX 和 offsetY 支持
+        const offsetX = label?.offsetX || 0;
+        const offsetY = label?.offsetY || 0;
+        labelSpan.style.transform = `translate(calc(${offsetX}px), calc(50% + ${offsetY}px))`;
+
         labelSpan.style.color = label?.color || "#FFF";
         labelSpan.style.fontSize = label?.fontSize || "12px";
         customDiv.appendChild(labelSpan);

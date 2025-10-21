@@ -49,6 +49,19 @@ export class LineManager {
     }
     map.remove(line);
   }
+  
+  // 设置折线显隐
+  setPolylineVisible(line: any, visible: boolean): void {
+    if (!line) {
+      throw new Error("Parameter 'line' is required");
+    }
+    
+    if (visible) {
+      line.show();
+    } else {
+      line.hide();
+    }
+  }
 
   /**
    * 基于时间的路径动画功能
@@ -228,7 +241,7 @@ export class LineManager {
 
         animationState.currentTime = currentTime;
         updatePosition(currentTime);
-        
+      
         animationState.animationFrameId = requestAnimationFrame(animate);
       };
 

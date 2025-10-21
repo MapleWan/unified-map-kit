@@ -54,9 +54,9 @@ class MapSourceFactory {
         // 为高德地图加载默认插件 AMap.MarkerCluster
         let amapPlugins = []
         if (options?.plugins?.length) {
-          amapPlugins = [...options.plugins, "AMap.MarkerCluster"];
+          amapPlugins = [...options.plugins, "AMap.MarkerCluster", "AMap.PlaceSearch"];
         } else {
-          amapPlugins = ["AMap.MarkerCluster"];
+          amapPlugins = ["AMap.MarkerCluster", "AMap.PlaceSearch"];
         }
         return AMapLoader.load({
           key: formattedOptions.apiKey,
