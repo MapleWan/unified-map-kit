@@ -41,6 +41,11 @@ npm安装统一地图组件库：`npm install unified-map-kit`
 
 #### createMap 使用说明
 
+**注意：**
+
+1. **高德地图默认会加载 1.3.2 版本，但此文档关于高德地图 API 参考来自于 2.0 版本**
+2. **关于三家地图的独有参数，此文档仅供参考，具体请参考官方文档**
+
 ##### createMap 方法声明
 
 ```typescript
@@ -476,6 +481,7 @@ amapMap.onZoomChange(zoomChangeCallback);
 
 1. **<font style="color:#DF2A3F;">使用 高德 和 谷歌 两种地图的时候，“icon 和 label 属性同时设置”且“label.content 中传入 HTMLElement”的时候会优先生效 icon</font>**
 2. 提供对点的 `click` 事件监听方法，需要通过 `pointClickFunc`参数传入，其中`pointClickFunc(obj, e)`函数的入参分别为 ①`obj`：点击的点对象；②`e`:原地图事件对象。<font color="red">`pointClickFunc`可能中会使用`this`，使用时注意使用`bind`对`this`进行提前指定，可以参考一下的示例代码</font>
+3. 高德地图在使用 2.0 版本的时候，请添加参数 `offset:{-width / 2, -height}`，其中 `width``height`的值分别为图片宽度和高度，如果图片设置了 `size`参数，则对应 `size`参数设置的宽高。 否则会出现“缩放或放大地图的时候，标记点不在指定经纬度上，对于需要高精确标记的需求场景有影响”。 此问题预计会在后续版本中修复【2025 年 10 月 30 日 18:38:36】
 
 ##### addMarker、addMarkerSync 方法声明
 
@@ -1273,7 +1279,6 @@ setPolylineVisible(polyline: any, visible: boolean): void;
 ```javascript
 amapMap.setPolylineVisible(ampPolyline, false) // 隐藏线
 ```
-
 
 ### 轨迹回放：animateTimeBasedPath、animateTimeBasedPathSync
 
@@ -2988,7 +2993,9 @@ interface IUnifiedRouteDriveOptions {
   origin: { lat: number; lng: number }; // 起点 A: origin  G: origin    H: origin
   destination: { lat: number; lng: number }; // 终点 A: destination  G: destination    H: destination
   waypoints?: Array<{ lat: number; lng: number }>; // 中转点 A: opts.waypoints  G: waypoints H: waypoints
-
+  /** 是否默认显示 路径，默认值为 true */
+  isShowPath?: boolean;
+  
   /**
    * AG 地图共有属性
    */
@@ -3045,6 +3052,8 @@ interface IUnifiedRouteDriveOptions {
   origin: { lat: number; lng: number }; // 起点 A: origin  G: origin    H: origin
   destination: { lat: number; lng: number }; // 终点 A: destination  G: destination    H: destination
   waypoints?: Array<{ lat: number; lng: number }>; // 中转点 A: opts.waypoints  G: waypoints H: waypoints
+  /** 是否默认显示 路径，默认值为 true */
+  isShowPath?: boolean;
 
   /**
    * AG 地图共有属性
